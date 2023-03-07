@@ -6,9 +6,9 @@ interface Props {
 
 const Layout = ({ children }: Props) => {
   return (
-    <div className="relative h-full">
+    <div className="flex flex-col justify-between min-h-screen">
       {/* nav bar */}
-      <div className="navbar bg-base-100">
+      <div className="navbar bg-base-100 shrink-0">
         <div className="flex-1">
           <a className="btn btn-ghost normal-case text-xl">daisyUI</a>
         </div>
@@ -24,10 +24,12 @@ const Layout = ({ children }: Props) => {
         </div>
       </div>
       {/* contents */}
-      <div className="container mx-auto">{children}</div>
+      <div className="container mx-auto grow py-5">
+        <div>{children}</div>
+      </div>
       {/* footer */}
 
-      <footer className="footer footer-center p-10 bg-base-200 text-base-content rounded bottom-0 ">
+      <footer className="footer footer-center p-10 bg-base-200 text-base-content rounded shrink-0">
         <div className="grid grid-flow-col gap-4">
           <a className="link link-hover">About us</a>
           <a className="link link-hover">Contact</a>
