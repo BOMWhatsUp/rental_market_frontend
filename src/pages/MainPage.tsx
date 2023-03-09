@@ -1,6 +1,6 @@
 import React from "react";
 import RentalProductItem from "../components/RentalProductItem";
-
+import { Bars3Icon } from "@heroicons/react/24/outline";
 export default function MainPage() {
   return (
     <>
@@ -51,7 +51,7 @@ export default function MainPage() {
           {/* 카테고리 */}
           <div className="dropdown dropdown-bottom dropdown-end">
             <label tabIndex={0} className="btn btn-ghost m-1">
-              카테고리
+              <Bars3Icon className="h-6 w-6" />
             </label>
             <ul
               tabIndex={0}

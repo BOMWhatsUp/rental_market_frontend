@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 interface Props {
   children: ReactNode;
@@ -10,15 +11,27 @@ const Layout = ({ children }: Props) => {
       {/* nav bar */}
       <div className="navbar bg-base-100 shrink-0">
         <div className="flex-1">
-          <a className="btn btn-ghost normal-case text-xl">daisyUI</a>
+          <a className="btn btn-ghost normal-case text-xl">렌탈마켓</a>
         </div>
         <div className="flex-none">
           <ul className="menu menu-horizontal px-1">
             <li>
-              <a>Item 1</a>
+              <Link to="main">렌탈하기</Link>
             </li>
             <li>
-              <a>Item 3</a>
+              <Link to="/product/create">렌탈등록</Link>
+            </li>
+            <li>
+              <Link to="/chat/list">채팅</Link>
+            </li>
+            <li>
+              <Link to="/login">로그인</Link>
+            </li>
+            <li>
+              <Link to="/signup">회원가입</Link>
+            </li>
+            <li>
+              <Link to="/my">My</Link>
             </li>
           </ul>
         </div>
