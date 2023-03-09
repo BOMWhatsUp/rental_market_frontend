@@ -1,5 +1,9 @@
 import React from "react";
 
 export default function RentalDetailPage() {
-  return <></>;
+  return (
+    <>
+      <h1>RentalDetailPage</h1>
+    </>
+  );
 }
