@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 // DB있는 유저데이터라고 가정
 const user = {
   email: "aa123@gmail.com",
@@ -7,9 +7,10 @@ const user = {
 };
 
 // 정규식 로직
-const initialErrorData = {
+const initialErrorData: any = {
   email: "",
   nickName: "",
+  region: "",
   password: "",
   passwordCheck: "",
 };
@@ -23,12 +24,21 @@ const PASSWORD_REGEX = new RegExp("^[a-zA-Z0-9]{8,16}$");
 const ERROR_MSG = {
   required: "필수 정보입니다.",
   invalidEmail: "올바른 이메일을 입력해주세요.",
-  invalidNickName: "올바른 닉네임을 입력해주세요.",
-  invalidPw: "8~16자 영문 대 소문자, 숫자를 사용하세요.",
+  invalidNickName: "2~8자 한글을 사용하세요.",
+  invalidRegion: "주요 거래 장소를 입력해주세요.",
+  invalidPw: "8~16자 영문, 숫자를 사용하세요.",
   invalidConfirmPw: "비밀번호가 일치하지 않습니다.",
 };
 
+const CHECK_MSG = {
+  isValidEmail: "가입 가능한 이메일입니다.",
+  invalidEmail: "이미 가입한 이메일입니다.",
+  isValidNickName: "사용 가능한 닉네임입니다.",
+  invalidNickName: "이미 사용중인 닉네임입니다.",
+};
+
 export default function SignUpPage() {
+  const navigte = useNavigate();
   const [signUpInfo, setSignUpInfo] = useState({
     email: "",
     nickName: "",
@@ -40,17 +50,10 @@ export default function SignUpPage() {
   // 정규식 로직
   const [errorData, setErrorData] = useState(initialErrorData);
 
-  const [signUpInfoCheck, setSignUpInfoCheck] = useState({
-    email: false,
-    nickName: false,
+  const [signUpInfoCheck, setSignUpInfoCheck]: any = useState({
+    email: "",
+    nickName: "",
   });
-
-  // const [regexError, setRegexError] = useState({
-  //   email: false,
-  //   nickName: false,
-  //   password: false,
-  //   passwordCheck: false,
-  // });
 
   const onClickHandler = (key: string) => {
     // 추후 DB에서 email값이 있는지 체크 후 받은 boolean값으로 대체하면 될 듯..
@@ -62,23 +65,26 @@ export default function SignUpPage() {
   };
 
   // 정규식 체크
-  const checkRex = (inputId: string, inputValue: string) => {
+  const checkRex = (inputName: string, inputValue: string) => {
     let result: string | boolean;
-    const value = inputValue;
+    let value = inputValue;
 
     if (value.length === 0) {
       result = "required";
     } else {
-      switch (inputId) {
+      switch (inputName) {
         case "email":
           result = EMAIL_REGEX.test(value) ? true : "invalidEmail";
           break;
         case "nickName":
           result = NICKNAME_REGEX.test(value) ? true : "invalidNickName";
           break;
+        case "region":
+          result = value.length > 6 ? true : "invalidRegion";
+          break;
         case "password":
           result = PASSWORD_REGEX.test(value) ? true : "invalidPw";
-          checkRex("passwordCheck", inputValue);
+          checkRex("passwordCheck", signUpInfo["passwordCheck"]);
           break;
         case "passwordCheck":
           result = value === signUpInfo["password"] ? true : "invalidConfirmPw";
@@ -87,7 +93,7 @@ export default function SignUpPage() {
           return;
       }
     }
-    setErrorData((prev) => ({ ...prev, [inputId]: result }));
+    setErrorData((prev: any) => ({ ...prev, [inputName]: result }));
   };
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,8 +105,13 @@ export default function SignUpPage() {
     e.preventDefault();
     // 작성한 회원가입 정보를 서버로 전송하는 로직...
 
-    // routing 설정 후 로그인 페이지로 이동 예정..
+    isValid && isValidCheck && navigte("/login");
   };
+
+  const isValid = Object.values(errorData).every((value) => value === true);
+  const isValidCheck = Object.values(signUpInfoCheck).every(
+    (value) => value === false
+  );
 
   return (
     <div className="flex flex-col items-center">
@@ -125,19 +136,41 @@ export default function SignUpPage() {
                 type="text"
                 placeholder="email"
                 className={`mr-3 input input-bordered w-11/12  max-w-xs  focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
-                  errorData["email"] ? "border-red-500" : ""
+                  errorData["email"].length === 0
+                    ? ""
+                    : errorData["email"] === true
+                    ? ""
+                    : "border-red-500"
                 }`}
+                value={signUpInfo["email"]}
+                onBlur={onChangeHandler}
                 onChange={onChangeHandler}
+                autoFocus
               />
-              <button className="btn" onClick={() => onClickHandler("email")}>
+              <button
+                className={`btn ${
+                  errorData["email"] === true ? "" : "btn-disabled"
+                }`}
+                type="button"
+                onClick={() => onClickHandler("email")}
+              >
                 중복확인
               </button>
             </div>
 
             <label className="label">
               <span className="label-text-alt text-error">
-                {/* {signUpInfoCheck.email && "이미 사용중인 email 입니다."} */}
-                {errorData && ERROR_MSG[errorData["email"]]}
+                {errorData !== true ? ERROR_MSG[errorData["email"]] : ""}
+
+                {signUpInfoCheck.email === true &&
+                errorData.email === true &&
+                signUpInfoCheck.email !== ""
+                  ? CHECK_MSG["invalidEmail"]
+                  : signUpInfoCheck.email !== true &&
+                    errorData.email === true &&
+                    signUpInfoCheck.email !== ""
+                  ? CHECK_MSG["isValidEmail"]
+                  : ""}
               </span>
             </label>
           </div>
@@ -150,11 +183,22 @@ export default function SignUpPage() {
                 name="nickName"
                 type="text"
                 placeholder="닉네임"
-                className="mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0"
+                className={`mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
+                  errorData["nickName"].length === 0
+                    ? ""
+                    : errorData["nickName"] === true
+                    ? ""
+                    : "border-red-500"
+                }`}
+                value={signUpInfo["nickName"]}
+                onBlur={onChangeHandler}
                 onChange={onChangeHandler}
               />
               <button
-                className="btn"
+                className={`btn ${
+                  errorData["nickName"] === true ? "" : "btn-disabled"
+                }`}
+                type="button"
                 onClick={() => onClickHandler("nickName")}
               >
                 중복확인
@@ -162,8 +206,17 @@ export default function SignUpPage() {
             </div>
             <label className="label">
               <span className="label-text-alt text-error">
-                {/* {signUpInfoCheck.nickName && "이미 사용중인 닉네임입니다."} */}
-                {errorData && ERROR_MSG[errorData["nickName"]]}
+                {errorData !== true ? ERROR_MSG[errorData["nickName"]] : ""}
+
+                {signUpInfoCheck.nickName === true &&
+                errorData.nickName === true &&
+                signUpInfoCheck.nickName !== ""
+                  ? CHECK_MSG["invalidNickName"]
+                  : signUpInfoCheck.nickName !== true &&
+                    errorData.nickName === true &&
+                    signUpInfoCheck.nickName !== ""
+                  ? CHECK_MSG["isValidNickName"]
+                  : ""}
               </span>
             </label>
           </div>
@@ -176,7 +229,15 @@ export default function SignUpPage() {
                 name="region"
                 type="text"
                 placeholder="주요 거래 장소 입력"
-                className="input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 focus:border-r-0 "
+                className={`input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 focus:border-r-0 ${
+                  errorData["region"].length === 0
+                    ? ""
+                    : errorData["region"] === true
+                    ? ""
+                    : "border-red-500"
+                }`}
+                value={signUpInfo["region"]}
+                onBlur={onChangeHandler}
                 onChange={onChangeHandler}
                 autoComplete="off"
               />
@@ -197,6 +258,11 @@ export default function SignUpPage() {
                 </svg>
               </button>
             </div>
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errorData !== true ? ERROR_MSG[errorData["region"]] : ""}
+              </span>
+            </label>
           </div>
           <div className="form-control w-full max-w-xs h-28">
             <label className="label">
@@ -207,15 +273,22 @@ export default function SignUpPage() {
                 name="password"
                 type="password"
                 placeholder="비밀번호"
-                className="mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0"
+                className={`mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
+                  errorData["password"].length === 0
+                    ? ""
+                    : errorData["password"] === true
+                    ? ""
+                    : "border-red-500"
+                }`}
+                value={signUpInfo["password"]}
+                onBlur={onChangeHandler}
                 onChange={onChangeHandler}
                 autoComplete="off"
               />
             </div>
             <label className="label">
               <span className="label-text-alt text-error">
-                {/* {signUpInfoCheck.nickName && "이미 사용중인 닉네임입니다."} */}
-                {errorData && ERROR_MSG[errorData["password"]]}
+                {errorData !== true ? ERROR_MSG[errorData["password"]] : ""}
               </span>
             </label>
           </div>
@@ -228,21 +301,35 @@ export default function SignUpPage() {
                 name="passwordCheck"
                 type="password"
                 placeholder="비밀번호 확인"
-                className="mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0"
-                // onBlur={onChangeHandler}
+                className={`mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
+                  errorData["passwordCheck"].length === 0
+                    ? ""
+                    : errorData["passwordCheck"] === true
+                    ? ""
+                    : "border-red-500"
+                }`}
+                value={signUpInfo["passwordCheck"]}
+                onBlur={onChangeHandler}
                 onChange={onChangeHandler}
                 autoComplete="off"
               />
             </div>
             <label className="label">
               <span className="label-text-alt text-error">
-                {signUpInfo.passwordCheck !== "" &&
-                  signUpInfo.passwordCheck !== signUpInfo.password &&
-                  "비밀번호가 일치하지 않습니다."}
+                {errorData !== true
+                  ? ERROR_MSG[errorData["passwordCheck"]]
+                  : ""}
               </span>
             </label>
           </div>
-          <button className="btn btn-primary w-28">회원가입</button>
+          <button
+            type="submit"
+            className={`btn ${
+              isValid && isValidCheck ? "btn-primary" : "btn-disabled"
+            } w-28 `}
+          >
+            회원가입
+          </button>
         </form>
       </div>
     </div>
