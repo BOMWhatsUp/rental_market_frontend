@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function RentalProductItem() {
   return (
@@ -16,13 +17,16 @@ export default function RentalProductItem() {
         <div className="card-body">
           <div className="text-accent text-sm">가구/인테리어</div>
 
-          <h2 className="card-title">진로 두꺼비</h2>
-          <p>소중한 두꺼비 인형을 렌트해 드려요~</p>
+          <h2 className="card-title">진로 두꺼비 인형</h2>
+          <p>소중한 두꺼비 인형을 렌트해 드려요~..</p>
           <div className="card-actions justify-between">
             <div>1300원 / 일 ∙ 최대 60 일</div>
-            <button className="btn btn-primary sm:btn-xs md:btn-sm lg:btn-md">
+            <Link
+              to="/product/detail"
+              className="btn btn-primary sm:btn-xs md:btn-sm lg:btn-md"
+            >
               상세보기
-            </button>
+            </Link>
           </div>
         </div>
       </div>
