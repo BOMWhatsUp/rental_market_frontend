@@ -12,13 +12,17 @@ module.exports = {
     },
     extend: {},
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require("daisyui"),
+    require("@tailwindcss/line-clamp"),
+    require("tailwind-scrollbar-hide"),
+  ],
   daisyui: {
-      styled: true,
-      themes: ['light'],
-      base: true,
-      utils: true,
-      logs: true,
-      rtl: false
+    styled: true,
+    themes: ["light"],
+    base: true,
+    utils: true,
+    logs: true,
+    rtl: false,
   },
 };

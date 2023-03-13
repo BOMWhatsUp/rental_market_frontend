@@ -17,12 +17,14 @@
     "v6": "^0.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/line-clamp": "^0.4.2",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
     "autoprefixer": "^10.4.13",
     "daisyui": "^2.51.3",
     "postcss": "^8.4.21",
+    "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss": "^3.2.7",
     "typescript": "^4.9.3",
     "vite": "^4.1.0"
