@@ -28,7 +28,7 @@ export default function RentalProductItem({ isSeller }: ProductItemProps) {
   return (
     <>
       <div className="card card-side bg-base-100 shadow-xl my-5">
-        <figure className="w-1/3 relative">
+        <figure className="min-w-[30%] w-1/3 relative">
           <Link to="/product/detail">
             <img
               src="http://m.ezendolls.com/web/product/big/202103/2252d8e72c6cf7983f5d18e41d3f3213.jpg"
@@ -46,7 +46,11 @@ export default function RentalProductItem({ isSeller }: ProductItemProps) {
           <h2 className="card-title">
             <Link to="/product/detail">진로 두꺼비 인형</Link>
           </h2>
-          <p>소중한 두꺼비 인형을 렌트해 드려요~..</p>
+          <p className="line-clamp-2 leading-5">
+            소중한 두꺼비 인형을 렌트해 드려요~ 진로 두꺼비 인형의 효능 효과-
+            혈액순환, 암예방, 머머머머, 피부정화, 체질개선, 다이어트, 체중감량,
+            근육 증가 등등등등 좋습니다.
+          </p>
           <div className="card-actions justify-between items-center">
             <div>1300원 / 일 ∙ 최대 60 일</div>
             {isSeller ? (
