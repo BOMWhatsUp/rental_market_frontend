@@ -7,11 +7,14 @@ export default function RentalDetailPage() {
     <>
       <div className="container flex justify-center px-5 md:px-28 lg:px-40">
         <div className="flex flex-col">
-          <div className="w-full h-96 overflow-hidden rounded">
+          <div className="w-full h-96 overflow-hidden rounded relative">
             <img
               src="http://m.ezendolls.com/web/product/big/202103/2252d8e72c6cf7983f5d18e41d3f3213.jpg"
               className="object-cover w-full h-full"
             ></img>
+            <div className="badge badge-success border-base-100 gap-2 p-3 md:p-5 absolute md:text-xl right-4 top-4">
+              대여가능
+            </div>
           </div>
           <div className="flex flex-col">
             <section className="flex justify-between items-center w-full py-3">
@@ -59,6 +62,14 @@ export default function RentalDetailPage() {
               <h3 className="text-lg font-semibold">거래 희망지역</h3>
               <p>서울시 구로구</p>
               <div>상세 주소 - 지도?</div>
+            </section>
+            <section>
+              <Link
+                to="/chat/room/roomid"
+                className="btn btn-primary sm:btn-sm lg:btn-md w-full mt-3 "
+              >
+                렌탈하기
+              </Link>
             </section>
           </div>
         </div>
