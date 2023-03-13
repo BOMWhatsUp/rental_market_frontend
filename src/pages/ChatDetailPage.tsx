@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import RentalProductItem from "../components/RentalProductItem";
 
 export default function ChatDetailPage() {
@@ -178,7 +179,9 @@ export default function ChatDetailPage() {
         </label>
       </div>
       <div className="flex justify-end py-5 mt-3.5 border-t border-solid border-black">
-        <button className="btn btn-primary w-28">랜탈하기</button>
+        <Link to={"/product/pay"} className="btn btn-primary w-28">
+          랜탈하기
+        </Link>
       </div>
     </div>
   );
