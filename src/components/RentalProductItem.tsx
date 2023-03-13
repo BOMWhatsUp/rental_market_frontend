@@ -16,7 +16,9 @@ export default function RentalProductItem({ isSeller }: ProductItemProps) {
   };
   const CheckReturn = () => {
     if (
-      confirm("반납이 완료되어 렌탈 상품 상태를 대여중으로 변경하시겠습니까?")
+      confirm(
+        "반납이 완료되어 렌탈 상품 상태를 '대여가능'으로 변경하시겠습니까?"
+      )
     ) {
       //submit put status
       console.log("반납완료 처리함");
@@ -31,6 +33,7 @@ export default function RentalProductItem({ isSeller }: ProductItemProps) {
             <img
               src="http://m.ezendolls.com/web/product/big/202103/2252d8e72c6cf7983f5d18e41d3f3213.jpg"
               alt="Movie"
+              className="w-full h-full object-cover"
             />
             <div className="badge badge-success border-base-100 gap-2 p-3 absolute left-2 top-2 ">
               대여가능
