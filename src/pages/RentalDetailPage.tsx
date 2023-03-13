@@ -53,8 +53,8 @@ export default function RentalDetailPage() {
               </p>
               <p className="mt-5 font-normal">
                 소중한 두꺼비 인형을 렌트해 드려요~ <br />
-                두꺼비 인형의 효능- 혈액순환, 암예방, 머머머머... 어쨌든
-                좋습니다.
+                두꺼비 인형의 효능- 혈액순환, 암예방, 머머머머, 피부정화,
+                체질개선, 다이어트 어쨌든 좋습니다.
               </p>
             </section>
             <div className="divider"></div>
