@@ -33,6 +33,7 @@ export default function RentalProductItem({ isSeller }: ProductItemProps) {
             <img
               src="http://m.ezendolls.com/web/product/big/202103/2252d8e72c6cf7983f5d18e41d3f3213.jpg"
               alt="Movie"
+              className="w-full h-full object-cover"
             />
             <div className="badge badge-success border-base-100 gap-2 p-3 absolute left-2 top-2 ">
               대여가능
