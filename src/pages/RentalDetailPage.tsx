@@ -7,11 +7,14 @@ export default function RentalDetailPage() {
     <>
       <div className="container flex justify-center px-5 md:px-28 lg:px-40">
         <div className="flex flex-col">
-          <div className="w-full h-96 overflow-hidden rounded">
+          <div className="w-full h-96 overflow-hidden rounded relative">
             <img
               src="http://m.ezendolls.com/web/product/big/202103/2252d8e72c6cf7983f5d18e41d3f3213.jpg"
               className="object-cover w-full h-full"
             ></img>
+            <div className="badge badge-success border-base-100 gap-2 p-5 absolute text-xl right-4 top-4">
+              대여가능
+            </div>
           </div>
           <div className="flex flex-col">
             <section className="flex justify-between items-center w-full py-3">
