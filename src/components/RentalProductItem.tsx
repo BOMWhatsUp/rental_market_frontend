@@ -16,7 +16,9 @@ export default function RentalProductItem({ isSeller }: ProductItemProps) {
   };
   const CheckReturn = () => {
     if (
-      confirm("반납이 완료되어 렌탈 상품 상태를 대여중으로 변경하시겠습니까?")
+      confirm(
+        "반납이 완료되어 렌탈 상품 상태를 '대여가능'으로 변경하시겠습니까?"
+      )
     ) {
       //submit put status
       console.log("반납완료 처리함");
