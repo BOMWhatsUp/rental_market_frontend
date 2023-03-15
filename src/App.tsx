@@ -1,13 +1,5 @@
-import { useState } from "react";
 import "./App.css";
-import {
-  BrowserRouter,
-  Route,
-  Routes,
-  Navigate,
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
@@ -20,6 +12,7 @@ import RentalCreatePage from "./pages/RentalCreatePage";
 import RentalDetailPage from "./pages/RentalDetailPage";
 import RentalReturnPage from "./pages/RentalReturnPage";
 import RentalPayPage from "./pages/RentalPayPage";
+import Test from "./Test";
 
 function App() {
   return (
@@ -36,23 +29,11 @@ function App() {
         <Route path="/signup/*" element={<SignUpPage />} />
         <Route path="/my/*" element={<MyPage />} />
         <Route path="/my/products/*" element={<MyRentalPage />} />
+        <Route path="/mock/test/*" element={<Test />} />
         <Route path="/" element={<Navigate replace to="/main" />} />
       </Routes>
     </Layout>
   );
-
-  // const routes = [
-  //   {
-  //     path: "/",
-  //     element: <MainPage />,
-  //   },
-  //   {
-  //     path: "/login",
-  //     element: <LoginPage />,
-  //   },
-  // ];
-
-  //return <RouterProvider router={createBrowserRouter(routes)} />;
 }
 
 export default App;
