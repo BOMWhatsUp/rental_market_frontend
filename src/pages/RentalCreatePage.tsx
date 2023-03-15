@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import DaumPostcodeInput from "../components/DaumPostcodeInput";
 export default function RentalCreatePage() {
   const newProduct = {
     title: "",
@@ -152,6 +152,7 @@ export default function RentalCreatePage() {
               value={userInputs.wishRegion}
             />
           </div>
+          <DaumPostcodeInput />
           <div className="form-control w-full max-w-sm">
             <label className="label">
               <span className="label-text">상품 이미지</span>
