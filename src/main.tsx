@@ -3,11 +3,29 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
+import { worker } from "./mocks/browsers";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-);
+async function prepare() {
+  if (import.meta.env.DEV) {
+    return worker.start({
+      onUnhandledRequest: "bypass",
+    });
+  }
+}
+
+const queryClient = new QueryClient();
+
+prepare().then(() => {
+  ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+    // <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+    // </React.StrictMode>
+  );
+});
