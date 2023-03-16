@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// DB있는 유저데이터라고 가정
-const user = {
-  email: "aa123@gmail.com",
-  nickName: "레모나",
-};
+import { useSignUp } from "../hooks/useSignUp";
 
 // 정규식 로직
 const initialErrorData: any = {
@@ -37,9 +33,17 @@ const CHECK_MSG = {
   invalidNickName: "이미 사용중인 닉네임입니다.",
 };
 
+export interface signUpInfo {
+  email: string;
+  nickName: string;
+  region: string;
+  password: string;
+  passwordCheck: string;
+}
+
 export default function SignUpPage() {
   const navigte = useNavigate();
-  const [signUpInfo, setSignUpInfo] = useState({
+  const [signUpInfo, setSignUpInfo] = useState<signUpInfo>({
     email: "",
     nickName: "",
     region: "",
@@ -55,13 +59,23 @@ export default function SignUpPage() {
     nickName: "",
   });
 
-  const onClickHandler = (key: string) => {
-    // 추후 DB에서 email값이 있는지 체크 후 받은 boolean값으로 대체하면 될 듯..
+  const { checkMutation, createMutation } = useSignUp();
 
-    setSignUpInfoCheck({
-      ...signUpInfoCheck,
-      [key]: user[key] === signUpInfo[key],
-    });
+  const onClickHandler = (key: string) => {
+    checkMutation.mutate(
+      { type: key, value: signUpInfo[key] },
+      {
+        onSuccess: (response, data) => {
+          const { result } = response;
+          const { type } = data;
+
+          setSignUpInfoCheck({
+            ...signUpInfoCheck,
+            [type]: result,
+          });
+        },
+      }
+    );
   };
 
   // 정규식 체크
@@ -103,9 +117,13 @@ export default function SignUpPage() {
 
   const onSubmithandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // 작성한 회원가입 정보를 서버로 전송하는 로직...
 
-    isValid && isValidCheck && navigte("/login");
+    // 작성한 회원가입 정보를 서버로 전송하는 로직...
+    createMutation.mutate(signUpInfo, {
+      onSuccess: () => {
+        navigte("/login");
+      },
+    });
   };
 
   const isValid = Object.values(errorData).every((value) => value === true);
@@ -159,7 +177,15 @@ export default function SignUpPage() {
             </div>
 
             <label className="label">
-              <span className="label-text-alt text-error">
+              <span
+                className={`label-text-alt ${
+                  signUpInfoCheck.email !== true &&
+                  errorData.email === true &&
+                  signUpInfoCheck.email !== ""
+                    ? "text-accent"
+                    : "text-error"
+                } `}
+              >
                 {errorData !== true ? ERROR_MSG[errorData["email"]] : ""}
 
                 {signUpInfoCheck.email === true &&
@@ -205,7 +231,15 @@ export default function SignUpPage() {
               </button>
             </div>
             <label className="label">
-              <span className="label-text-alt text-error">
+              <span
+                className={`label-text-alt ${
+                  signUpInfoCheck.nickName !== true &&
+                  errorData.nickName === true &&
+                  signUpInfoCheck.nickName !== ""
+                    ? "text-accent"
+                    : "text-error"
+                } `}
+              >
                 {errorData !== true ? ERROR_MSG[errorData["nickName"]] : ""}
 
                 {signUpInfoCheck.nickName === true &&
@@ -241,7 +275,7 @@ export default function SignUpPage() {
                 onChange={onChangeHandler}
                 autoComplete="off"
               />
-              <button className="btn btn-square">
+              <button className="btn btn-square" type="button">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
