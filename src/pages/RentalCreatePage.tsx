@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { AxiosError } from "axios";
 import { addRentalProduct, getRentalProducts } from "../api/rentalCreate";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useProduct } from "../hooks/useProduct";
+
 export default function RentalCreatePage() {
   //test data, 실제로는 server에서 온 user data atom 이 될것
   const userInfo = {
     userId: "whatsup@naver.com",
     nickname: "봄이와썹",
   };
+
+  const { rentalProductMutation } = useProduct();
 
   //post test용 Get
   const { data, error } = useQuery<RentalProduct[], AxiosError>(
@@ -23,6 +27,7 @@ export default function RentalCreatePage() {
     categoryId: string;
     wishRegion: string;
     sellerId: string;
+    nickname: string;
   };
 
   const [userInputs, setUserInputs] = useState({
@@ -46,22 +51,15 @@ export default function RentalCreatePage() {
   };
 
   // Access the client
-  const queryClient = useQueryClient();
+  //const queryClient = useQueryClient();
 
-  // const rentalProductMutation = useMutation(addRentalProduct, {
-  //   onSuccess: () => {
-  //     // Invalidate and refetch
+  // const rentalProductMutation = useMutation({
+  //   mutationFn: (data: RentalProduct) => addRentalProduct(data),
+  //   onSuccess: (res) => {
+  //     console.log(res);
   //     queryClient.invalidateQueries("rentalProducts");
   //   },
   // });
-
-  const rentalProductMutation = useMutation({
-    mutationFn: (data: RentalProduct) => addRentalProduct(data),
-    onSuccess: (res) => {
-      console.log(res);
-      queryClient.invalidateQueries("rentalProducts");
-    },
-  });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -82,12 +80,12 @@ export default function RentalCreatePage() {
       categoryId: categoryId,
       wishRegion: wishRegion,
       sellerId: userInfo.userId, //로그인 유저정보
+      nickname: userInfo.nickname, //로그인 유저정보
     };
 
-    //addRentalProduct(newProduct);
     rentalProductMutation.mutate(newProduct, {
-      onSuccess: () => {
-        //console.log(data);
+      onSuccess: (res) => {
+        console.log(res);
         //router.push(`/post/${feedId}`);
       },
     });
