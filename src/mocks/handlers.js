@@ -4,6 +4,7 @@ const todos = [
   { id: 1, text: "먹기" },
   { id: 2, text: "자기" },
 ];
+const rentalProducts = [];
 
 export const handlers = [
   // 할일 목록
@@ -17,5 +18,16 @@ export const handlers = [
     const data = await req.json();
     todos.push(data);
     return res(ctx.status(201));
+  }),
+
+  //rental create
+  rest.post("/api/product", async (req, res, ctx) => {
+    const data = await req.json();
+    rentalProducts.push(data);
+    return res(ctx.status(201));
+  }),
+  //rental create
+  rest.get("/api/product", async (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(rentalProducts));
   }),
 ];

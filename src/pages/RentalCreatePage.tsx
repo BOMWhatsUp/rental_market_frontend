@@ -1,20 +1,30 @@
 import React, { useState } from "react";
-
+import { AxiosError } from "axios";
+import { addRentalProduct, getRentalProducts } from "../api/rentalCreate";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 export default function RentalCreatePage() {
-  const newProduct = {
-    title: "",
-    content: "",
-    unitPrice: "",
-    maxRentalPeriod: "",
-    createdAt: "",
-    status: "",
-    imageUrl: "",
-    categoryId: "",
-    modifiedAt: "",
-    wishRegion: "",
-    productId: "",
-    sellerId: "",
+  //test data, 실제로는 server에서 온 user data atom 이 될것
+  const userInfo = {
+    userId: "whatsup@naver.com",
+    nickname: "봄이와썹",
   };
+
+  //post test용 Get
+  const { data, error } = useQuery<RentalProduct[], AxiosError>(
+    ["rentalProducts"],
+    getRentalProducts
+  );
+
+  type RentalProduct = {
+    title: string;
+    content: string;
+    unitPrice: number;
+    maxRentalPeriod: string;
+    categoryId: string;
+    wishRegion: string;
+    sellerId: string;
+  };
+
   const [userInputs, setUserInputs] = useState({
     title: "",
     content: "",
@@ -22,7 +32,7 @@ export default function RentalCreatePage() {
     maxRentalPeriod: "",
     wishRegion: "",
     categoryId: "",
-    imageUrl: "", //???
+    //imageUrl: "", //???
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,10 +45,40 @@ export default function RentalCreatePage() {
     setUserInputs({ ...userInputs, [e.target.name]: e.target.value });
   };
 
+  // Access the client
+  const queryClient = useQueryClient();
+
+  const rentalProductMutation = useMutation(addRentalProduct, {
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries("rentalProducts");
+    },
+  });
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // const { title, content } = userInputs;
+    const {
+      title,
+      content,
+      unitPrice,
+      maxRentalPeriod,
+      wishRegion,
+      categoryId,
+    } = userInputs;
+
+    let newProduct: RentalProduct = {
+      title: title,
+      content: content,
+      unitPrice: isNaN(parseInt(unitPrice)) ? 0 : parseInt(unitPrice),
+      maxRentalPeriod: maxRentalPeriod,
+      categoryId: categoryId,
+      wishRegion: wishRegion,
+      sellerId: userInfo.userId, //로그인 유저정보
+    };
+
+    //addRentalProduct(newProduct);
+    rentalProductMutation.mutate(newProduct);
     console.log("submit");
+
     setUserInputs({
       title: "",
       content: "",
@@ -46,11 +86,12 @@ export default function RentalCreatePage() {
       maxRentalPeriod: "",
       wishRegion: "",
       categoryId: "",
-      imageUrl: "", //???
+      //imageUrl: "", //???
     });
-    //TODO Server 로 submit 기능 구현
   };
 
+  //목업데이터 테스트용
+  //console.log(data);
   return (
     <>
       <h1 className="text-primary font-extrabold text-center text-3xl mb-5">
