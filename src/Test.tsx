@@ -87,7 +87,10 @@ function App() {
           value={todo.text}
           onChange={handleChange}
         />
-        <button disabled={!todo}>추가</button>
+        <button type="button">추가 버튼</button>
+        <button type="submit" disabled={!todo}>
+          추가 섭밋
+        </button>
       </form>
     </div>
   );

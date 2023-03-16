@@ -9,6 +9,7 @@ const usersData = [
     passwordCheck: "12341234",
   },
 ];
+const rentalProducts = [];
 
 export const handlers = [
   // // 할일 목록
@@ -63,5 +64,17 @@ export const handlers = [
         message: "회원가입에 성공하였습니다.",
       })
     );
+  }),
+
+  //jylee: rental create
+  rest.post("/api/product", async (req, res, ctx) => {
+    const data = await req.json();
+    rentalProducts.push(data);
+    return res(ctx.status(201), ctx.json(rentalProducts));
+  }),
+
+  //jylee: rental create
+  rest.get("/api/product", async (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(rentalProducts));
   }),
 ];
