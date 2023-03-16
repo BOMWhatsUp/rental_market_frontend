@@ -14,14 +14,14 @@ export const getRentalProducts = async () => {
 };
 
 export const addRentalProduct = async (product: RentalProduct) => {
-  await axios({
+  return await axios({
     method: "post",
     url: "/api/product",
     headers: {
       "content-type": "application/json",
     },
     data: product,
-  });
+  }).then((response) => response.data);
 };
 
 export const deleteTodo = async (id: number) => {

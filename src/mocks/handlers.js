@@ -24,7 +24,7 @@ export const handlers = [
   rest.post("/api/product", async (req, res, ctx) => {
     const data = await req.json();
     rentalProducts.push(data);
-    return res(ctx.status(201));
+    return res(ctx.status(201), ctx.json(rentalProducts));
   }),
   //rental create
   rest.get("/api/product", async (req, res, ctx) => {

@@ -48,12 +48,21 @@ export default function RentalCreatePage() {
   // Access the client
   const queryClient = useQueryClient();
 
-  const rentalProductMutation = useMutation(addRentalProduct, {
-    onSuccess: () => {
-      // Invalidate and refetch
+  // const rentalProductMutation = useMutation(addRentalProduct, {
+  //   onSuccess: () => {
+  //     // Invalidate and refetch
+  //     queryClient.invalidateQueries("rentalProducts");
+  //   },
+  // });
+
+  const rentalProductMutation = useMutation({
+    mutationFn: (data: RentalProduct) => addRentalProduct(data),
+    onSuccess: (res) => {
+      console.log(res);
       queryClient.invalidateQueries("rentalProducts");
     },
   });
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const {
@@ -76,7 +85,14 @@ export default function RentalCreatePage() {
     };
 
     //addRentalProduct(newProduct);
-    rentalProductMutation.mutate(newProduct);
+    rentalProductMutation.mutate(newProduct, {
+      onSuccess: () => {
+        //console.log(data);
+        //router.push(`/post/${feedId}`);
+      },
+    });
+
+    //rentalProductMutation.mutate(newProduct);
     console.log("submit");
 
     setUserInputs({
@@ -90,8 +106,6 @@ export default function RentalCreatePage() {
     });
   };
 
-  //목업데이터 테스트용
-  //console.log(data);
   return (
     <>
       <h1 className="text-primary font-extrabold text-center text-3xl mb-5">
