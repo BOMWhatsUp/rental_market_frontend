@@ -31,4 +31,9 @@ export const handlers = [
   rest.get("/api/product", async (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(rentalProducts));
   }),
+
+  //jylee: rental image files
+  rest.post("/api/product/files", async (req, res, ctx) => {
+    return res(ctx.status(201));
+  }),
 ];

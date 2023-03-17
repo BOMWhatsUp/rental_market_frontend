@@ -11,7 +11,7 @@ export default function RentalCreatePage() {
     nickname: "봄이와썹",
   };
 
-  const { rentalProductMutation } = useProduct();
+  const { rentalProductMutation, rentalProductFilesMutation } = useProduct();
 
   //post test용 Get
   const { data, error } = useQuery<RentalProduct[], AxiosError>(
@@ -28,6 +28,7 @@ export default function RentalCreatePage() {
     wishRegion: string;
     sellerId: string;
     nickname: string;
+    thumbnailIndex: number;
   };
 
   const [userInputs, setUserInputs] = useState({
@@ -63,6 +64,7 @@ export default function RentalCreatePage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    e.persist();
     const {
       title,
       content,
@@ -81,6 +83,7 @@ export default function RentalCreatePage() {
       wishRegion: wishRegion,
       sellerId: userInfo.userId, //로그인 유저정보
       nickname: userInfo.nickname, //로그인 유저정보
+      thumbnailIndex: currentThumbnailIndex,
     };
 
     rentalProductMutation.mutate(newProduct, {
@@ -102,8 +105,68 @@ export default function RentalCreatePage() {
       categoryId: "",
       //imageUrl: "", //???
     });
+
+    let formData = new FormData();
+    for (let i = 0; i < showImages.length; i++) {
+      formData.append("file", showImages[i].file);
+    }
+    for (let value of formData.values()) {
+      console.log("formData value", value);
+    }
+
+    if (formData) {
+      rentalProductFilesMutation.mutate(formData, {
+        onSuccess: (res) => {
+          console.log("formdata!", res);
+          //router.push(`/post/${feedId}`);
+        },
+      });
+    }
+    //submit 끝나면
+    //window.URL.revokeObjectURL(url);
   };
 
+  const [currentThumbnailIndex, setCurrentThunbnailIndex] = useState(0);
+  const [showImages, setShowImages]: any[] = useState([]);
+  type ImagePreview = {
+    index: number;
+    title: string;
+    localUrl: string;
+    file: File;
+  };
+
+  let ImagePreviews: ImagePreview[] = [];
+  const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const imageLists = e.target.files;
+    let imageUrlLists: any[] = [...showImages];
+
+    for (let i = 0; i < imageLists!.length; i++) {
+      const currentImageUrl: any = URL.createObjectURL(imageLists![i]);
+      const imagePreview: ImagePreview = {
+        index: i,
+        title: imageLists![i].name,
+        localUrl: currentImageUrl,
+        file: imageLists![i],
+      };
+      ImagePreviews.push(imagePreview);
+
+      console.log(ImagePreviews);
+    }
+
+    if (imageUrlLists.length > 10) {
+      imageUrlLists = imageUrlLists.slice(0, 10);
+    }
+
+    setShowImages(ImagePreviews);
+  };
+
+  const handleDeleteImage = (id: string) => {
+    //삭제 가능하나 daisy ui input ui 표시되는것 해결이 안되어서 아직 사용 안함
+    setShowImages(showImages.filter((img: any) => img.index !== id));
+  };
+  const handleSelect = (index: number) => {
+    setCurrentThunbnailIndex(index);
+  };
   return (
     <>
       <h1 className="text-primary font-extrabold text-center text-3xl mb-5">
@@ -209,10 +272,38 @@ export default function RentalCreatePage() {
             <label className="label">
               <span className="label-text">상품 이미지</span>
             </label>
+
             <input
               type="file"
               className="file-input file-input-bordered file-input-primary w-full max-w-sm"
+              multiple
+              accept="image/jpg,image/png,image/jpeg,image/gif"
+              onChange={handleAddImages}
             />
+          </div>
+          <div className="w-full max-w-sm flex gap-3 border border-primary-content rounded p-2">
+            {showImages.map((image: any) => (
+              <div
+                key={image.index}
+                className={
+                  image.index === currentThumbnailIndex
+                    ? "w-24 h-24 p-2 rounded cursor-pointer border-2 border-red-400"
+                    : "w-24 h-24 p-2 rounded cursor-pointer"
+                }
+              >
+                <img
+                  src={image.localUrl}
+                  alt={`${image.localUrl}-${image.index}`}
+                  onClick={() => handleSelect(image.index)}
+                />
+                {/* <button onClick={() => handleDeleteImage(image.index)}>
+                  x
+                </button> */}
+                <div className="w-20 text-xs overflow-hidden truncate">
+                  {image.title}
+                </div>
+              </div>
+            ))}
           </div>
 
           <button type="submit" className="btn btn-primary btn-wide mt-5">

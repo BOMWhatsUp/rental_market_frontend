@@ -7,8 +7,9 @@ type RentalProduct = {
   categoryId: string;
   wishRegion: string;
   sellerId: string;
+  nickname: string;
+  thumbnailIndex: number;
 };
-
 export const getRentalProducts = async () => {
   return await axios.get("/api/product").then((response) => response.data);
 };
@@ -23,7 +24,16 @@ export const addRentalProduct = async (product: RentalProduct) => {
     data: product,
   }).then((response) => response.data);
 };
-
+export const addRentalProductImgs = async (formData: FormData) => {
+  return await axios({
+    method: "post",
+    url: "/api/product/files",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data: formData,
+  }).then((response) => response.data);
+};
 export const deleteTodo = async (id: number) => {
   await axios.delete(`todo/${id}`);
 };
