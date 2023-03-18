@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { addRentalProduct, getRentalProducts } from "../api/rentalCreate";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useProduct } from "../hooks/useProduct";
+import { RentalProduct } from "../types/product";
 
 export default function RentalCreatePage() {
   //test data, 실제로는 server에서 온 user data atom 이 될것
@@ -11,25 +12,17 @@ export default function RentalCreatePage() {
     nickname: "봄이와썹",
   };
 
-  const { rentalProductMutation, rentalProductFilesMutation } = useProduct();
+  const {
+    rentalProductMutation,
+    rentalProductFilesMutation,
+    rentalProductFormMutation,
+  } = useProduct();
 
   //post test용 Get
   const { data, error } = useQuery<RentalProduct[], AxiosError>(
     ["rentalProducts"],
     getRentalProducts
   );
-
-  type RentalProduct = {
-    title: string;
-    content: string;
-    unitPrice: number;
-    maxRentalPeriod: string;
-    categoryId: string;
-    wishRegion: string;
-    sellerId: string;
-    nickname: string;
-    thumbnailIndex: number;
-  };
 
   const [userInputs, setUserInputs] = useState({
     title: "",
@@ -83,17 +76,42 @@ export default function RentalCreatePage() {
       wishRegion: wishRegion,
       sellerId: userInfo.userId, //로그인 유저정보
       nickname: userInfo.nickname, //로그인 유저정보
-      thumbnailIndex: currentThumbnailIndex,
+      //thumbnailIndex: currentThumbnailIndex,
     };
 
-    rentalProductMutation.mutate(newProduct, {
-      onSuccess: (res) => {
-        console.log(res);
-        //router.push(`/post/${feedId}`);
-      },
-    });
+    //submit product only
+    // rentalProductMutation.mutate(newProduct, {
+    //   onSuccess: (res) => {
+    //     console.log(res);
+    //   },
+    // });
 
     //rentalProductMutation.mutate(newProduct);
+
+    let formData = new FormData();
+    for (let i = 0; i < showImages.length; i++) {
+      formData.append("file[]", showImages[i].file);
+    }
+    const thumbnailIndex = { thumbnailIndex: currentThumbnailIndex };
+
+    formData.append("thumbnailIndex", `${currentThumbnailIndex}`);
+
+    if (newProduct) {
+      formData.append("product", JSON.stringify(newProduct));
+    }
+
+    for (let value of formData.values()) {
+      console.log("formData value", value);
+    }
+    if (formData) {
+      rentalProductFormMutation.mutate(formData, {
+        onSuccess: (res) => {
+          console.log("formdata!", res);
+          //router.push(`/post/${feedId}`);
+        },
+      });
+    }
+    //submit 끝나면
     console.log("submit");
 
     setUserInputs({
@@ -106,23 +124,6 @@ export default function RentalCreatePage() {
       //imageUrl: "", //???
     });
 
-    let formData = new FormData();
-    for (let i = 0; i < showImages.length; i++) {
-      formData.append("file", showImages[i].file);
-    }
-    for (let value of formData.values()) {
-      console.log("formData value", value);
-    }
-
-    if (formData) {
-      rentalProductFilesMutation.mutate(formData, {
-        onSuccess: (res) => {
-          console.log("formdata!", res);
-          //router.push(`/post/${feedId}`);
-        },
-      });
-    }
-    //submit 끝나면
     //window.URL.revokeObjectURL(url);
   };
 
@@ -138,7 +139,7 @@ export default function RentalCreatePage() {
   let ImagePreviews: ImagePreview[] = [];
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const imageLists = e.target.files;
-    let imageUrlLists: any[] = [...showImages];
+    //let imageUrlLists: any[] = [...showImages];
 
     for (let i = 0; i < imageLists!.length; i++) {
       const currentImageUrl: any = URL.createObjectURL(imageLists![i]);
@@ -149,13 +150,11 @@ export default function RentalCreatePage() {
         file: imageLists![i],
       };
       ImagePreviews.push(imagePreview);
-
       console.log(ImagePreviews);
     }
-
-    if (imageUrlLists.length > 10) {
-      imageUrlLists = imageUrlLists.slice(0, 10);
-    }
+    // if (imageUrlLists.length > 5) {
+    //   imageUrlLists = imageUrlLists.slice(0, 5);
+    // }
 
     setShowImages(ImagePreviews);
   };
@@ -188,12 +187,12 @@ export default function RentalCreatePage() {
               <option value="" disabled>
                 -- 상품 카테고리 선택--
               </option>
-              <option value="clothing">의류</option>
-              <option value="home">생활가전</option>
-              <option value="furniture">가구/인테리어</option>
-              <option value="digital">디지털기기</option>
-              <option value="book">도서</option>
-              <option value="gameandrecord">게임/음반</option>
+              <option value="ClOTHING">의류</option>
+              <option value="HOME">생활가전</option>
+              <option value="FURNITURE">가구/인테리어</option>
+              <option value="DIGITAL">디지털기기</option>
+              <option value="BOOK">도서</option>
+              <option value="GAMEANDRECORD">게임/음반</option>
             </select>
           </div>
           <div className="form-control w-full max-w-sm">

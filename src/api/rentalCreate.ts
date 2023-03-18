@@ -1,15 +1,6 @@
 import axios from "axios";
-type RentalProduct = {
-  title: string;
-  content: string;
-  unitPrice: number;
-  maxRentalPeriod: string;
-  categoryId: string;
-  wishRegion: string;
-  sellerId: string;
-  nickname: string;
-  thumbnailIndex: number;
-};
+import { RentalProduct } from "../types/product";
+
 export const getRentalProducts = async () => {
   return await axios.get("/api/product").then((response) => response.data);
 };
@@ -28,6 +19,16 @@ export const addRentalProductImgs = async (formData: FormData) => {
   return await axios({
     method: "post",
     url: "/api/product/files",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data: formData,
+  }).then((response) => response.data);
+};
+export const addRentalProductForm = async (formData: FormData) => {
+  return await axios({
+    method: "post",
+    url: "/api/product2",
     headers: {
       "Content-Type": "multipart/form-data",
     },

@@ -33,7 +33,7 @@ export const handlers = [
   }),
 
   //jylee: rental image files
-  rest.post("/api/product/files", async (req, res, ctx) => {
+  rest.post("/api/product2", async (req, res, ctx) => {
     return res(ctx.status(201));
   }),
 ];
