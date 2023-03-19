@@ -13,6 +13,10 @@ import RentalDetailPage from "./pages/RentalDetailPage";
 import RentalReturnPage from "./pages/RentalReturnPage";
 import RentalPayPage from "./pages/RentalPayPage";
 import Test from "./Test";
+import axios from "axios";
+
+// axios에 withCredentials를 true로 설정해줘야 refreshToken cookie를 주고받을 수 있다.
+axios.defaults.withCredentials = true;
 
 function App() {
   return (
