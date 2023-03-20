@@ -4,7 +4,7 @@ import { getRentalProducts } from "../api/rentalCreate";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useProduct } from "../hooks/useProduct";
 import { RentalProduct } from "../types/product";
-
+import DaumAddressInput from "../components/DaumAddressButton";
 export default function RentalCreatePage() {
   //test data, 실제로는 server에서 온 user data atom 이 될것
   const userInfo = {
@@ -162,6 +162,10 @@ export default function RentalCreatePage() {
   const handleSelect = (index: number) => {
     setCurrentThunbnailIndex(index);
   };
+
+  const handleSelectAddress = (address: string) => {
+    setUserInputs({ ...userInputs, ["wishRegion"]: address });
+  };
   return (
     <>
       <h1 className="text-primary font-extrabold text-center text-3xl mb-5">
@@ -250,19 +254,25 @@ export default function RentalCreatePage() {
               <option value="3">3개월(90일)</option>
             </select>
           </div>
-          <div className="form-control w-full max-w-sm">
-            <label className="label">
-              <span className="label-text">거래 희망지역</span>
-            </label>
-            <input
-              type="text"
-              placeholder="ex. 서울시 종로구"
-              className="input input-bordered input-primary w-full max-w-sm"
-              name="wishRegion"
-              onChange={handleChange}
-              value={userInputs.wishRegion}
-            />
+          <div className="flex items-end w-full max-w-sm">
+            <div className="w-full">
+              <label className="label">
+                <span className="label-text">거래 희망지역</span>
+              </label>
+              <input
+                type="text"
+                placeholder="ex. 서울시 종로구"
+                className="input input-bordered input-primary w-full max-w-sm"
+                name="wishRegion"
+                onChange={handleChange}
+                value={userInputs.wishRegion}
+                disabled
+              />
+            </div>
+
+            <DaumAddressInput onSelectAddress={handleSelectAddress} />
           </div>
+
           <div className="form-control w-full max-w-sm">
             <label className="label">
               <span className="label-text">상품 이미지</span>
