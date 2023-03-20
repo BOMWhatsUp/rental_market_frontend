@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AxiosError } from "axios";
-import { addRentalProduct, getRentalProducts } from "../api/rentalCreate";
+import { getRentalProducts } from "../api/rentalCreate";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useProduct } from "../hooks/useProduct";
 import { RentalProduct } from "../types/product";
@@ -12,17 +12,13 @@ export default function RentalCreatePage() {
     nickname: "봄이와썹",
   };
 
-  const {
-    rentalProductMutation,
-    rentalProductFilesMutation,
-    rentalProductFormMutation,
-  } = useProduct();
+  const { rentalProductFormMutation } = useProduct();
 
   //post test용 Get
-  const { data, error } = useQuery<RentalProduct[], AxiosError>(
-    ["rentalProducts"],
-    getRentalProducts
-  );
+  // const { data, error } = useQuery<RentalProduct[], AxiosError>(
+  //   ["rentalProducts"],
+  //   getRentalProducts
+  // );
 
   const [userInputs, setUserInputs] = useState({
     title: "",
