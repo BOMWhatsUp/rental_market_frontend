@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { AxiosError } from "axios";
-import { addRentalProduct, getRentalProducts } from "../api/rentalCreate";
+import { getRentalProducts } from "../api/rentalCreate";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useProduct } from "../hooks/useProduct";
-
+import { RentalProduct } from "../types/product";
+import DaumAddressInput from "../components/DaumAddressButton";
 export default function RentalCreatePage() {
   //test data, 실제로는 server에서 온 user data atom 이 될것
   const userInfo = {
@@ -11,24 +12,13 @@ export default function RentalCreatePage() {
     nickname: "봄이와썹",
   };
 
-  const { rentalProductMutation } = useProduct();
+  const { rentalProductFormMutation } = useProduct();
 
   //post test용 Get
-  const { data, error } = useQuery<RentalProduct[], AxiosError>(
-    ["rentalProducts"],
-    getRentalProducts
-  );
-
-  type RentalProduct = {
-    title: string;
-    content: string;
-    unitPrice: number;
-    maxRentalPeriod: string;
-    categoryId: string;
-    wishRegion: string;
-    sellerId: string;
-    nickname: string;
-  };
+  // const { data, error } = useQuery<RentalProduct[], AxiosError>(
+  //   ["rentalProducts"],
+  //   getRentalProducts
+  // );
 
   const [userInputs, setUserInputs] = useState({
     title: "",
@@ -63,6 +53,7 @@ export default function RentalCreatePage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    e.persist();
     const {
       title,
       content,
@@ -81,16 +72,42 @@ export default function RentalCreatePage() {
       wishRegion: wishRegion,
       sellerId: userInfo.userId, //로그인 유저정보
       nickname: userInfo.nickname, //로그인 유저정보
+      //thumbnailIndex: currentThumbnailIndex,
     };
 
-    rentalProductMutation.mutate(newProduct, {
-      onSuccess: (res) => {
-        console.log(res);
-        //router.push(`/post/${feedId}`);
-      },
-    });
+    //submit product only
+    // rentalProductMutation.mutate(newProduct, {
+    //   onSuccess: (res) => {
+    //     console.log(res);
+    //   },
+    // });
 
     //rentalProductMutation.mutate(newProduct);
+
+    let formData = new FormData();
+    for (let i = 0; i < showImages.length; i++) {
+      formData.append("file[]", showImages[i].file);
+    }
+    const thumbnailIndex = { thumbnailIndex: currentThumbnailIndex };
+
+    formData.append("thumbnailIndex", `${currentThumbnailIndex}`);
+
+    if (newProduct) {
+      formData.append("product", JSON.stringify(newProduct));
+    }
+
+    for (let value of formData.values()) {
+      console.log("formData value", value);
+    }
+    if (formData) {
+      rentalProductFormMutation.mutate(formData, {
+        onSuccess: (res) => {
+          console.log("formdata!", res);
+          //router.push(`/post/${feedId}`);
+        },
+      });
+    }
+    //submit 끝나면
     console.log("submit");
 
     setUserInputs({
@@ -102,8 +119,53 @@ export default function RentalCreatePage() {
       categoryId: "",
       //imageUrl: "", //???
     });
+
+    //window.URL.revokeObjectURL(url);
   };
 
+  const [currentThumbnailIndex, setCurrentThunbnailIndex] = useState(0);
+  const [showImages, setShowImages]: any[] = useState([]);
+  type ImagePreview = {
+    index: number;
+    title: string;
+    localUrl: string;
+    file: File;
+  };
+
+  let ImagePreviews: ImagePreview[] = [];
+  const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const imageLists = e.target.files;
+    //let imageUrlLists: any[] = [...showImages];
+
+    for (let i = 0; i < imageLists!.length; i++) {
+      const currentImageUrl: any = URL.createObjectURL(imageLists![i]);
+      const imagePreview: ImagePreview = {
+        index: i,
+        title: imageLists![i].name,
+        localUrl: currentImageUrl,
+        file: imageLists![i],
+      };
+      ImagePreviews.push(imagePreview);
+      console.log(ImagePreviews);
+    }
+    // if (imageUrlLists.length > 5) {
+    //   imageUrlLists = imageUrlLists.slice(0, 5);
+    // }
+
+    setShowImages(ImagePreviews);
+  };
+
+  const handleDeleteImage = (id: string) => {
+    //삭제 가능하나 daisy ui input ui 표시되는것 해결이 안되어서 아직 사용 안함
+    setShowImages(showImages.filter((img: any) => img.index !== id));
+  };
+  const handleSelect = (index: number) => {
+    setCurrentThunbnailIndex(index);
+  };
+
+  const handleSelectAddress = (address: string) => {
+    setUserInputs({ ...userInputs, ["wishRegion"]: address });
+  };
   return (
     <>
       <h1 className="text-primary font-extrabold text-center text-3xl mb-5">
@@ -125,12 +187,12 @@ export default function RentalCreatePage() {
               <option value="" disabled>
                 -- 상품 카테고리 선택--
               </option>
-              <option value="clothing">의류</option>
-              <option value="home">생활가전</option>
-              <option value="furniture">가구/인테리어</option>
-              <option value="digital">디지털기기</option>
-              <option value="book">도서</option>
-              <option value="gameandrecord">게임/음반</option>
+              <option value="ClOTHING">의류</option>
+              <option value="HOME">생활가전</option>
+              <option value="FURNITURE">가구/인테리어</option>
+              <option value="DIGITAL">디지털기기</option>
+              <option value="BOOK">도서</option>
+              <option value="GAMEANDRECORD">게임/음반</option>
             </select>
           </div>
           <div className="form-control w-full max-w-sm">
@@ -192,27 +254,61 @@ export default function RentalCreatePage() {
               <option value="3">3개월(90일)</option>
             </select>
           </div>
-          <div className="form-control w-full max-w-sm">
-            <label className="label">
-              <span className="label-text">거래 희망지역</span>
-            </label>
-            <input
-              type="text"
-              placeholder="ex. 서울시 종로구"
-              className="input input-bordered input-primary w-full max-w-sm"
-              name="wishRegion"
-              onChange={handleChange}
-              value={userInputs.wishRegion}
-            />
+          <div className="flex items-end w-full max-w-sm">
+            <div className="w-full">
+              <label className="label">
+                <span className="label-text">거래 희망지역</span>
+              </label>
+              <input
+                type="text"
+                placeholder="ex. 서울시 종로구"
+                className="input input-bordered input-primary w-full max-w-sm"
+                name="wishRegion"
+                onChange={handleChange}
+                value={userInputs.wishRegion}
+                disabled
+              />
+            </div>
+
+            <DaumAddressInput onSelectAddress={handleSelectAddress} />
           </div>
+
           <div className="form-control w-full max-w-sm">
             <label className="label">
               <span className="label-text">상품 이미지</span>
             </label>
+
             <input
               type="file"
               className="file-input file-input-bordered file-input-primary w-full max-w-sm"
+              multiple
+              accept="image/jpg,image/png,image/jpeg,image/gif"
+              onChange={handleAddImages}
             />
+          </div>
+          <div className="w-full max-w-sm flex gap-3 border border-primary-content rounded p-2">
+            {showImages.map((image: any) => (
+              <div
+                key={image.index}
+                className={
+                  image.index === currentThumbnailIndex
+                    ? "w-24 h-24 p-2 rounded cursor-pointer border-2 border-red-400"
+                    : "w-24 h-24 p-2 rounded cursor-pointer"
+                }
+              >
+                <img
+                  src={image.localUrl}
+                  alt={`${image.localUrl}-${image.index}`}
+                  onClick={() => handleSelect(image.index)}
+                />
+                {/* <button onClick={() => handleDeleteImage(image.index)}>
+                  x
+                </button> */}
+                <div className="w-20 text-xs overflow-hidden truncate">
+                  {image.title}
+                </div>
+              </div>
+            ))}
           </div>
 
           <button type="submit" className="btn btn-primary btn-wide mt-5">
