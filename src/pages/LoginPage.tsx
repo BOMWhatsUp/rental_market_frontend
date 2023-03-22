@@ -7,17 +7,24 @@ import { token } from "../atoms/token";
 import cookies from "react-cookies";
 import { useNavigate } from "react-router-dom";
 import { onSilentRefresh } from "../api/login/loginAPI";
+import { userInfo } from "../atoms/userInfo";
 
 export default function LoginPage() {
   // Access Token 전역 상태로 관리
   const [accessToken, setAccessToken] = useRecoilState(token);
   console.log(accessToken);
+  // 서버로부터 전달 받는 로그인한 유저정보
+  const [loginUserInfo, setLoginUserInfo] = useRecoilState(userInfo);
+  console.log(loginUserInfo);
   const navigate = useNavigate();
   const { loginMutation, silentRefreshMutation } = useLogin();
   const [userInputs, setUserInputs] = useState({
     email: "",
     password: "",
   });
+
+  // 아이디, 비밀번호가 틀렸을 경우 true
+  const [loginError, setLoginError] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInputs({ ...userInputs, [e.target.name]: e.target.value });
@@ -36,31 +43,37 @@ export default function LoginPage() {
     loginMutation.mutate(userInputs, {
       onSuccess: (response) => {
         console.log(response);
-        if (response === undefined || response?.response?.status === 400)
-          return;
-        const { accessToken, refreshToken, data } = response;
+        if (response === undefined) return;
+        if (response?.response?.status === 400) {
+          return setLoginError(!loginError);
+        }
+        const { accessToken, refreshToken, userInfo } = response;
 
         // Recoil 전역 상태로 accessToken, 유저정보 관리 해야함
         // 프로필 사진은 어떻게..??
-        setAccessToken(accessToken);
-
+        //  ===>  https://dj8fgxzkrerlh.cloudfront.net/이미지파일명
+        setAccessToken(accessToken.split(" ")[1]);
+        setLoginUserInfo(userInfo);
         // 토큰 만료 ??시간 전에 토큰 재갱신 => 유저가 인지하지 못하게 자동으로 토큰 재갱신
-        setTimeout(
-          () =>
-            silentRefreshMutation.mutate(accessToken, {
-              onSuccess: (response) => {
-                const { accessToken, refreshToken, data } = response;
+        // setTimeout(
+        //   () =>
+        //     silentRefreshMutation.mutate(accessToken, {
+        //       onSuccess: (response) => {
+        //         const { accessToken, refreshToken, data } = response;
 
-                setAccessToken(accessToken);
-              },
-            }),
-          5000 // 테스트하기 전에 임의로 시간 5초로 설정
-        );
+        //         setAccessToken(accessToken);
+        //       },
+        //     }),
+        //   5000 // 테스트하기 전에 임의로 시간 5초로 설정
+        // );
+
+        navigate("/main");
       },
-      onError: (res) => {
+      onError: (res: any) => {
         // 실패하는 경우는..
-        // 1. 엑세스 토큰이 만료되었을 때
-        // 2. 아이디, 비밀번호가 틀렸을 때
+        // 1. 아이디, 비밀번호가 틀렸을 때
+
+        // 2. 아이디가 존재하지 않을 때
 
         console.log("로그인 실패!");
         console.log(res);
@@ -83,7 +96,7 @@ export default function LoginPage() {
             <input
               type="text"
               placeholder="Email"
-              className="input input-bordered input-primary w-full max-w-xs"
+              className="input input-bordered w-full max-w-xs focus:outline-none focus:border-blue-500 focus:border-1"
               name="email"
               onChange={handleChange}
               value={userInputs.email}
@@ -96,12 +109,13 @@ export default function LoginPage() {
             <input
               type="password"
               placeholder="Password"
-              className="input input-bordered input-primary w-full max-w-xs"
+              className="input input-bordered w-full max-w-xs focus:outline-none focus:border-blue-500 focus:border-1"
               name="password"
               onChange={handleChange}
               value={userInputs.password}
             />
           </div>
+          <div>{loginError ? "아이디, 비밀번호를 다시 확인해주세요." : ""}</div>
           <button type="submit" className="btn btn-primary btn-wide mt-5">
             로그인
           </button>

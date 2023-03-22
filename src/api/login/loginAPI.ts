@@ -1,56 +1,68 @@
 import axios, { AxiosResponse } from "axios";
-// import cookies from "react-cookies";
-// import { useRecoilState } from "recoil";
-// import { token } from "../../atoms/token";
 
+// 로그인
 export const onLogin = async (loginValues: {
   email: string;
   password: string;
-}) => {
-  return await axios({
-    method: "post",
-    url: "/users/login",
-    headers: {
-      "content-type": "application/json",
-    },
-    data: loginValues,
-  })
-    .then((response) => {
-      const { accessToken } = response.data;
-
-      // accessToken 설정
-      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
-
-      return response.data;
-    })
-    .catch((error) => {
-      if (error.response.statusText === "miss match") {
-        // 아이디, 비밀번호가 틀렸을 경우
-
-        console.log("아이디, 비밀번호 불일치!");
-        return error;
-      }
+}): Promise<any> => {
+  try {
+    const response = await axios({
+      method: "post",
+      url: "/users/login",
+      headers: {
+        "content-type": "application/json",
+      },
+      data: loginValues,
     });
+
+    // 로그인 성공한 경우
+    const { accessToken } = response.data.result.data.accessToken.split("")[1];
+    console.log(accessToken);
+
+    // accessToken 설정
+    axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+
+    return response.data.result.data;
+  } catch (error: any) {
+    if (error.response.status === 400) {
+      // 아이디, 비밀번호가 틀렸을 경우
+      console.log("아이디, 비밀번호 불일치!");
+      throw error;
+    }
+
+    throw error;
+  }
 };
 
-export const onSilentRefresh = async (token: any) => {
-  return await axios({
-    method: "post",
-    url: "/users/refreshtoken",
-    headers: {
-      "content-type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => {
-      const { accessToken } = response.data;
-
-      // // 해더에 재발급 된 accessToken 설정
-      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
-      setTimeout(() => onSilentRefresh(accessToken), 5000);
-      return response.data;
-    })
-    .catch((error) => {
-      // ... 로그인 실패 처리
+// 토큰 만료시 재요청
+export const onSilentRefresh = async (retryCount = 0): Promise<any> => {
+  try {
+    const response: AxiosResponse<any> = await axios({
+      method: "post",
+      url: "/users/refreshtoken",
+      headers: {
+        "content-type": "application/json",
+      },
     });
+
+    const accessToken = response.data.result.data.accessToken.split("")[1];
+    axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      if (retryCount < 5) {
+        console.log(`재시도 횟수 (${retryCount + 1}/5)`);
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        return onSilentRefresh(retryCount + 1);
+      } else {
+        console.log(
+          "토큰 재발행 요청 횟수를 초과하여 로그아웃 처리하였습니다!"
+        );
+      }
+    } else if (error.response?.status === 403) {
+      axios.defaults.headers.common["Authorization"] = ``;
+      console.log("로그 아웃 처리!");
+    }
+    throw error;
+  }
 };

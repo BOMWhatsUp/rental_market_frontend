@@ -7,7 +7,7 @@ export const useLogin = () => {
   });
 
   const silentRefreshMutation = useMutation({
-    mutationFn: (token: any) => onSilentRefresh(token),
+    mutationFn: () => onSilentRefresh(),
   });
 
   return {

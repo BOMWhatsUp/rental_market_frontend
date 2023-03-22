@@ -44,6 +44,8 @@ const usersData = [
     email: "aa123@gmail.com",
     nickName: "레모나",
     region: "서울시 강남구",
+    profileImage:
+      "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg",
     password: "12341234",
     passwordCheck: "12341234",
   },
@@ -119,10 +121,25 @@ export const handlers = [
 
     return res(
       ctx.status(201),
+      // ctx.status(401),
+
       // ctx.status(400, "miss match"),
       ctx.json({
-        accessToken: token.accessToken,
-        message: "로그인에 성공하였습니다.",
+        success: true,
+        code: 0,
+        result: {
+          data: {
+            accessToken: `Bearer ${token.accessToken}`,
+            refreshToken: "httponly",
+            userInfo: {
+              userEmail: usersData[0].email,
+              userNickName: usersData[0].nickName,
+              userRegion: usersData[0].region,
+              userProfileImage: usersData[0].profileImage,
+            },
+            message: "로그인에 성공하였습니다.",
+          },
+        },
       })
     );
   }),
@@ -133,8 +150,9 @@ export const handlers = [
     // console.log(data);
 
     return res(
-      ctx.status(201),
-      // ctx.status(400, "miss match"),
+      // ctx.status(201),
+      ctx.status(401, "accessToken timeout !"),
+      // ctx.status(403, "logout !"),
       ctx.json({
         accessToken: token.refreshToken,
         message: "Access Token이 재발급 되었습니다.",
