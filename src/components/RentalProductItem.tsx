@@ -3,11 +3,16 @@ import { Link } from "react-router-dom";
 
 type ProductItemProps = {
   isSeller?: boolean;
+  test: string;
 };
 RentalProductItem.defaultProps = {
   isSeller: false,
+  test: "",
 };
-export default function RentalProductItem({ isSeller }: ProductItemProps) {
+export default function RentalProductItem({
+  isSeller,
+  test,
+}: ProductItemProps) {
   const CheckDelete = () => {
     if (confirm("렌탈 상품을 정말로 삭제하시겠습니까?")) {
       //submit delete id
@@ -44,7 +49,7 @@ export default function RentalProductItem({ isSeller }: ProductItemProps) {
           <div className="text-accent text-sm">가구/인테리어</div>
 
           <h2 className="card-title">
-            <Link to="/product/detail">진로 두꺼비 인형</Link>
+            <Link to="/product/detail">{test}진로 두꺼비 인형</Link>
           </h2>
           <p className="line-clamp-2 leading-5">
             소중한 두꺼비 인형을 렌트해 드려요~ 진로 두꺼비 인형의 효능 효과-

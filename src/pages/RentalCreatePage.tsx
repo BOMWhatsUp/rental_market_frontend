@@ -64,6 +64,7 @@ export default function RentalCreatePage() {
     } = userInputs;
 
     let newProduct: RentalProduct = {
+      id: "0",
       title: title,
       content: content,
       unitPrice: isNaN(parseInt(unitPrice)) ? 0 : parseInt(unitPrice),
