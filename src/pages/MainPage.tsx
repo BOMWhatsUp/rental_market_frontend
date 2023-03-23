@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import RentalProductItem from "../components/RentalProductItem";
 import { Bars3Icon } from "@heroicons/react/24/outline";
+import RentalProductList from "../components/RentalProductList";
 export default function MainPage() {
   const [filter, setFilter] = useState({
     category: "all",
@@ -189,9 +190,7 @@ export default function MainPage() {
           </div>
         </div>
         <div className="px-5 md:px-28 lg:px-40">
-          <RentalProductItem />
-          <RentalProductItem />
-          <RentalProductItem />
+          <RentalProductList />
         </div>
       </div>
     </>
