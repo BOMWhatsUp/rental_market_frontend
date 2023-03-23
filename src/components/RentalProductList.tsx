@@ -2,26 +2,36 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery } from "react-query";
 import { useInView } from "react-intersection-observer";
 import RentalProductItem from "../components/RentalProductItem";
-import InfiniteScroll from "./InfiniteScroll";
+import InfiniteScroll2 from "../components/InfiniteScroll2";
 import { RentalProduct } from "../types/product";
-
+import InfiniteScrollTest from "../components/InfiniteScrollTest";
+import {
+  currentPageState,
+  hasNextState,
+  isInViewState,
+  pageItemsState,
+} from "../atoms/currentPageAtom";
+import { useRecoilState, useRecoilValue } from "recoil";
+//import useInfiniteScroll from "../hooks/useInfiniteScroll";
 const RentalProductList = () => {
-  const [products, setProducts] = useState<RentalProduct[]>([]);
-  const getScrollItems = (productItems: any) => {
-    setProducts([...products, ...productItems]);
-  };
+  //   const { posts } = useInfiniteScroll<RentalProduct>({
+  //     limit: 5,
+  //     page: 1,
+  //     inView: true,
+  //   });
+  const func = () => {};
+  const products = useRecoilValue(pageItemsState);
   console.log(products);
   return (
     <>
-      <InfiniteScroll getScrollItems={getScrollItems} limit={5}>
+      <InfiniteScrollTest>
         <div>
-          {products?.map((product) => (
-            <RentalProductItem key={product.id} test={product.id} />
+          {products?.map((pd: RentalProduct) => (
+            <RentalProductItem key={pd.id} test={pd.id} />
           ))}
         </div>
-      </InfiniteScroll>
+      </InfiniteScrollTest>
     </>
   );
 };
-
 export default RentalProductList;

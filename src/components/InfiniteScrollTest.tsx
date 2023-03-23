@@ -1,14 +1,28 @@
 import axios from "axios";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { RentalProduct } from "../types/product";
 import RentalProductItem from "../components/RentalProductItem";
-
-function ScrollTest() {
-  const [posts, setPosts] = useState<RentalProduct[]>([]);
-  const [hasNext, setHasNext] = useState<boolean>(true);
+import {
+  currentPageState,
+  hasNextState,
+  isInViewState,
+  pageItemsState,
+} from "../atoms/currentPageAtom";
+import { useRecoilState, useSetRecoilState } from "recoil";
+type Props = {
+  children: React.ReactNode;
+};
+function InfiniteScrollTest({ children }: Props) {
+  //const [posts, setPosts] = useState<RentalProduct[]>([]);
+  const [posts, setPosts] = useRecoilState(pageItemsState);
+  //const [hasNext, setHasNext] = useState<boolean>(true);
+  const [hasNext, setHasNext] = useRecoilState(hasNextState);
   const page = useRef<number>(1);
-  console.log(page.current);
+  const pageNumber = page.current;
+
+  const [currentPage, setCurrentPage] = useRecoilState(currentPageState);
+
   const [ref, inView] = useInView({ rootMargin: "0px" });
 
   const fetch = useCallback(async () => {
@@ -19,12 +33,16 @@ function ScrollTest() {
       }>("/api/products", {
         params: {
           _limit: 6,
-          _page: page.current,
+          //_page: page.current,
+          _page: pageNumber,
         },
       });
+      setCurrentPage(() => pageNumber);
       const { data, hasNextPage } = res.data;
       console.log(data, hasNextPage);
-      setPosts((prevPosts) => [...prevPosts, ...data]);
+      setHasNext(() => hasNextPage);
+      setPosts((prevPosts) => [...prevPosts, ...data]); //으으으음..
+
       //setHasNextPage(data.length > 0);
       setHasNext(hasNextPage);
       if (data.length) {
@@ -47,26 +65,15 @@ function ScrollTest() {
         Infinite Scrolling Example
       </h1>
       <div className=" bg-purple-300" style={{ position: "relative" }}>
-        {posts?.map((post) => (
+        {/* {posts?.map((post) => (
           <RentalProductItem key={post.id} test={post.id} />
-          // <div
-          //   key={post.id}
-          //   style={{
-          //     marginBottom: "1rem",
-          //     border: "1px solid #000",
-          //     padding: "8px",
-          //   }}
-          // >
-          //   <div>userId: {post.nickname}</div>
-          //   <div>id: {post.id}</div>
-          //   <div>title: {post.title}</div>
-          //   <div>body: {post.content}</div>
-          // </div>
-        ))}
+
+        ))} */}
+        {children}
         {hasNext && (
           <div
             ref={ref}
-            className="left-0 absolute bottom-0 bg-pink-500 w-32 h-5"
+            className="left-0 absolute bottom-0 w-32 h-5"
             style={{ bottom: "-20px" }}
           />
         )}
@@ -75,4 +82,4 @@ function ScrollTest() {
   );
 }
 
-export default ScrollTest;
+export default InfiniteScrollTest;

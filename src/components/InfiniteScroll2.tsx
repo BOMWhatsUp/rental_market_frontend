@@ -1,30 +1,58 @@
 import axios from "axios";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  MutableRefObject,
+} from "react";
 import { useInView } from "react-intersection-observer";
 import { RentalProduct } from "../types/product";
 import RentalProductItem from "../components/RentalProductItem";
+import {
+  currentPageState,
+  hasNextState,
+  isInViewState,
+  pageItemsState,
+} from "../atoms/currentPageAtom";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
-function ScrollTest() {
-  const [posts, setPosts] = useState<RentalProduct[]>([]);
-  const [hasNext, setHasNext] = useState<boolean>(true);
+type ScrollProps = {
+  //getCurrent(page: MutableRefObject<number>, inView: boolean): void;
+  //children: (items: T[]) => JSX.Element;
+  children: JSX.Element;
+};
+function InfiniteScroll2({ children }: ScrollProps) {
+  const [posts, setPosts] = useState([]);
+  //const [posts, setPosts] = useRecoilState(pageItemsState);
+  const setPageItems = useSetRecoilState(pageItemsState);
+  const [hasNext, setHasNext] = useRecoilState(hasNextState);
+  const [currentPage, setCurrentPage] = useRecoilState(currentPageState);
   const page = useRef<number>(1);
-  console.log(page.current);
+  setCurrentPage(page.current);
+  //console.log(page.current);
   const [ref, inView] = useInView({ rootMargin: "0px" });
-
+  // const [isInView, setIsInView] = useRecoilState(isInViewState);
+  //setIsInView(inView);
   const fetch = useCallback(async () => {
     try {
       const res = await axios.get<{
-        data: RentalProduct[];
+        //data: T[];
+        data: any;
         hasNextPage: boolean;
       }>("/api/products", {
         params: {
           _limit: 6,
-          _page: page.current,
+          _page: currentPage,
+          //_page: page.current,
         },
       });
       const { data, hasNextPage } = res.data;
       console.log(data, hasNextPage);
-      setPosts((prevPosts) => [...prevPosts, ...data]);
+
+      const newList = () => [...posts, ...data];
+      //setPosts(newList);
+      //setPageItems(newList);
       //setHasNextPage(data.length > 0);
       setHasNext(hasNextPage);
       if (data.length) {
@@ -47,22 +75,6 @@ function ScrollTest() {
         Infinite Scrolling Example
       </h1>
       <div className=" bg-purple-300" style={{ position: "relative" }}>
-        {posts?.map((post) => (
-          <RentalProductItem key={post.id} test={post.id} />
-          // <div
-          //   key={post.id}
-          //   style={{
-          //     marginBottom: "1rem",
-          //     border: "1px solid #000",
-          //     padding: "8px",
-          //   }}
-          // >
-          //   <div>userId: {post.nickname}</div>
-          //   <div>id: {post.id}</div>
-          //   <div>title: {post.title}</div>
-          //   <div>body: {post.content}</div>
-          // </div>
-        ))}
         {hasNext && (
           <div
             ref={ref}
@@ -75,4 +87,4 @@ function ScrollTest() {
   );
 }
 
-export default ScrollTest;
+export default InfiniteScroll2;
