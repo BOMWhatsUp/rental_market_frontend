@@ -7,6 +7,7 @@ import { worker } from "./mocks/browsers";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { RecoilRoot } from "recoil";
+
 async function prepare() {
   if (import.meta.env.DEV) {
     return worker.start({
