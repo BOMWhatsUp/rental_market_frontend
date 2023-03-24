@@ -52,12 +52,31 @@ const usersData = [
 ];
 const rentalProducts = [];
 
+
+for (let i = 1; i <= 20; i++) {
+  const product = {
+    id: `id${i}`,
+    title: `title${i}`,
+    content: `content${i}`,
+    unitPrice: 1300,
+    maxRentalPeriod: "90",
+    categoryId: "FURNITURE",
+    wishRegion: "서울 종로구",
+    sellerId: `nick${i}@gmail.com`,
+    nickname: `닉네임${i}`,
+    thumbnailSrc:
+      "https://user-images.githubusercontent.com/37766175/62363267-f219ba80-b559-11e9-9943-855d42b2fc11.png",
+  };
+  rentalProducts.push(product);
+}
+
 const token = {
   accessToken:
     "x89hm89hxnhg.wuiehdgksh3948a987sdhfj9249ejdr9iefir9.8q789aikfhkhiu",
   refreshToken:
     "cvhbxjkcfn.huihesricrniou98nsdhkjfhdskhgi4yj3f.hdsguh49re4se9ydk",
 };
+
 
 export const handlers = [
   // // 할일 목록
@@ -167,9 +186,50 @@ export const handlers = [
     return res(ctx.status(201), ctx.json(rentalProducts));
   }),
 
-  //jylee: rental create
+  //jylee: rental get
   rest.get("/api/product", async (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(rentalProducts));
+  }),
+  //jylee: rental get
+  rest.get("/api/products2", (req, res, ctx) => {
+    const _limit = req.url.searchParams.get("_limit");
+    const _page = req.url.searchParams.get("_page");
+    const _categoryName = req.url.searchParams.get("_category");
+    const _wishRegion = req.url.searchParams.get("_region");
+    const _status = req.url.searchParams.get("_status");
+    const limit = parseInt(_limit || "3"); // Use a default value of 3 if _limit is not provided
+    const page = parseInt(_page || "1"); // Use a default value of 1 if _page is not provided
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedProducts = rentalProducts.slice(
+      startIndex,
+      startIndex + limit
+    );
+
+    return res(
+      ctx.json({
+        data: rentalProducts.slice(startIndex, endIndex),
+        hasNextPage: endIndex < rentalProducts.length,
+        // data: rentalProducts.slice(startIndex, endIndex),
+        // hasNextPage: endIndex < rentalProducts.length,
+      })
+      //ctx.json(paginatedProducts), // Return only the paginated products
+      //ctx.delay(1000) // simulate delay in response
+    );
+  }),
+
+  //jylee: rental get-react-query
+  rest.get("/api/products", (req, res, ctx) => {
+    const _size = req.url.searchParams.get("size");
+    const _page = req.url.searchParams.get("page");
+    //console.log("test", _size, _page);
+    const size = parseInt(_size || "10");
+    const page = parseInt(_page || "1");
+    const startIndex = (page - 1) * size;
+    const endIndex = startIndex + size;
+    const paginatedProducts = rentalProducts.slice(startIndex, endIndex);
+
+    return res(ctx.json(paginatedProducts));
   }),
 
   //jylee: rental image files

@@ -13,6 +13,7 @@ import RentalDetailPage from "./pages/RentalDetailPage";
 import RentalReturnPage from "./pages/RentalReturnPage";
 import RentalPayPage from "./pages/RentalPayPage";
 import Test from "./Test";
+import ScrollTest from "./pages/ScrollTest";
 import axios from "axios";
 
 // axios에 withCredentials를 true로 설정해줘야 refreshToken cookie를 주고받을 수 있다.
@@ -33,6 +34,7 @@ function App() {
         <Route path="/signup/*" element={<SignUpPage />} />
         <Route path="/my/*" element={<MyPage />} />
         <Route path="/my/products/*" element={<MyRentalPage />} />
+        <Route path="/test/*" element={<ScrollTest />} />
         <Route path="/mock/test/*" element={<Test />} />
         <Route path="/" element={<Navigate replace to="/main" />} />
       </Routes>

@@ -1,4 +1,5 @@
 export type RentalProduct = {
+  id: string;
   title: string;
   content: string;
   unitPrice: number;
