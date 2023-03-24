@@ -10,6 +10,7 @@ import {
   pageItemsState,
 } from "../atoms/currentPageAtom";
 import { useRecoilState, useSetRecoilState } from "recoil";
+import { useQuery } from "react-query";
 type Props = {
   children: React.ReactNode;
 };
@@ -25,6 +26,21 @@ function InfiniteScrollTest({ children }: Props) {
 
   const [ref, inView] = useInView({ rootMargin: "0px" });
 
+  const getProducts = async () => {};
+  //   const { status, data, error } = useQuery(
+  //     [
+  //       "/api/products",
+  //       {
+  //         _limit: 6,
+  //         //_page: page.current,
+  //         _page: pageNumber,
+  //         _category: "ALL",
+  //         _region: "ALL",
+  //         _status: "ALL",
+  //       },
+  //     ],
+  //     getProducts
+  //   );
   const fetch = useCallback(async () => {
     try {
       const res = await axios.get<{
@@ -35,6 +51,9 @@ function InfiniteScrollTest({ children }: Props) {
           _limit: 6,
           //_page: page.current,
           _page: pageNumber,
+          _category: "ALL",
+          _region: "ALL",
+          _status: "ALL",
         },
       });
       setCurrentPage(() => pageNumber);

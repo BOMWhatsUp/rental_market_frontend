@@ -98,6 +98,9 @@ export const handlers = [
   rest.get("/api/products", (req, res, ctx) => {
     const _limit = req.url.searchParams.get("_limit");
     const _page = req.url.searchParams.get("_page");
+    const _categoryName = req.url.searchParams.get("_category");
+    const _wishRegion = req.url.searchParams.get("_region");
+    const _status = req.url.searchParams.get("_status");
     const limit = parseInt(_limit || "3"); // Use a default value of 3 if _limit is not provided
     const page = parseInt(_page || "1"); // Use a default value of 1 if _page is not provided
     const startIndex = (page - 1) * limit;
@@ -117,6 +120,20 @@ export const handlers = [
       //ctx.json(paginatedProducts), // Return only the paginated products
       //ctx.delay(1000) // simulate delay in response
     );
+  }),
+
+  //jylee: rental get-react-query
+  rest.get("/api/productss", (req, res, ctx) => {
+    const _size = req.url.searchParams.get("size");
+    const _page = req.url.searchParams.get("page");
+    //console.log("test", _size, _page);
+    const size = parseInt(_size || "10");
+    const page = parseInt(_page || "1");
+    const startIndex = (page - 1) * size;
+    const endIndex = startIndex + size;
+    const paginatedProducts = rentalProducts.slice(startIndex, endIndex);
+
+    return res(ctx.json(paginatedProducts));
   }),
 
   //jylee: rental image files
