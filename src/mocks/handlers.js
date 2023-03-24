@@ -95,7 +95,7 @@ export const handlers = [
     return res(ctx.status(200), ctx.json(rentalProducts));
   }),
   //jylee: rental get
-  rest.get("/api/products", (req, res, ctx) => {
+  rest.get("/api/products2", (req, res, ctx) => {
     const _limit = req.url.searchParams.get("_limit");
     const _page = req.url.searchParams.get("_page");
     const _categoryName = req.url.searchParams.get("_category");
@@ -123,7 +123,7 @@ export const handlers = [
   }),
 
   //jylee: rental get-react-query
-  rest.get("/api/productss", (req, res, ctx) => {
+  rest.get("/api/products", (req, res, ctx) => {
     const _size = req.url.searchParams.get("size");
     const _page = req.url.searchParams.get("page");
     //console.log("test", _size, _page);

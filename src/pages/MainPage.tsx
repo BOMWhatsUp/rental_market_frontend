@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import RentalProductItem from "../components/RentalProductItem";
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import RentalProductList from "../components/RentalProductList";
 import ProductList from "../components/ProductList";
 export default function MainPage() {
   const [filter, setFilter] = useState({

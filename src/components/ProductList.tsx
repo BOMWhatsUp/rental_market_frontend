@@ -2,24 +2,27 @@ import { useState, useEffect } from "react";
 import { RentalProduct } from "../types/product";
 import { useInfiniteQuery } from "react-query";
 import { fetchMore } from "../api/fetch";
+//import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
+import RentalProductItem from "./RentalProductItem";
 
 // type ResponseData<T> = {
 //   data: T[];
 //   hasNextPage: boolean;
 // };
 
-type RentalProducts = {
-  items: RentalProduct[];
-};
+// type RentalProducts = {
+//   items: RentalProduct[];
+// };
 
 const ProductList: React.FC = () => {
-  const LIMIT = 5;
+  const SIZE = 5;
   const fetchRentalProducts = async (page: number) => {
     return fetchMore<RentalProduct[]>(
-      `/api/productss?page=${page}&size=${LIMIT}`
+      `/api/products?page=${page}&size=${SIZE}&category-name=${"ALL"}`
     );
   };
 
+  //infinite scroll 재사용할 부분 (return 전까지)
   const { data, isSuccess, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery(
       "rentalProducts",
@@ -53,11 +56,7 @@ const ProductList: React.FC = () => {
     <div className="app">
       {isSuccess &&
         data!.pages.map((page, index) =>
-          page.map((pd) => (
-            <div className="h-24 bg-purple-400 my-2" key={pd.id}>
-              {pd.title}
-            </div>
-          ))
+          page.map((pd) => <RentalProductItem test={pd.id} key={pd.id} />)
         )}
     </div>
   );
