@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { RentalProduct } from "../types/product";
 import { useInfiniteQuery } from "react-query";
-import { fetchMore } from "../api/fetch";
+import { fetchMore } from "../api/api";
 //import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 import RentalProductItem from "./RentalProductItem";
 
