@@ -21,23 +21,11 @@ export const axiosFormInstance = axios.create({
   withCredentials: true,
 });
 
-// async function fetchCall<T>(url: string, data: any): Promise<T> {
-//   try {
-//     const response = await axiosInstance.post<T>(url, data);
-//     return response.data;
-//   } catch (error) {
-//     const axiosError = error as AxiosError;
-//     // Handle errors here
-//     throw axiosError;
-//   }
+// export async function fetchMore<T>(
+//   url: string,
+//   options?: AxiosRequestConfig
+// ): Promise<T> {
+//   const response: AxiosResponse<T> = await axios.get(url, options);
+//   //console.log(response.data.data);
+//   return response.data;
 // }
-
-//fetch 공통...
-export async function fetchMore<T>(
-  url: string,
-  options?: AxiosRequestConfig
-): Promise<T> {
-  const response: AxiosResponse<T> = await axios.get(url, options);
-  //console.log(response.data.data);
-  return response.data;
-}

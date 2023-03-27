@@ -3,7 +3,7 @@ import { AxiosError } from "axios";
 import { getRentalProducts } from "../api/rentalCreate";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useProduct } from "../hooks/useProduct";
-import { RentalProduct } from "../types/product";
+import { RentalProduct, RentalProductForm } from "../types/product";
 import DaumAddressInput from "../components/DaumAddressButton";
 export default function RentalCreatePage() {
   //test data, 실제로는 server에서 온 user data atom 이 될것
@@ -13,12 +13,6 @@ export default function RentalCreatePage() {
   };
 
   const { rentalProductFormMutation } = useProduct();
-
-  //post test용 Get
-  // const { data, error } = useQuery<RentalProduct[], AxiosError>(
-  //   ["rentalProducts"],
-  //   getRentalProducts
-  // );
 
   const [userInputs, setUserInputs] = useState({
     title: "",
@@ -63,29 +57,18 @@ export default function RentalCreatePage() {
       categoryId,
     } = userInputs;
 
-    let newProduct: RentalProduct = {
-      id: "0",
+    let newProduct: RentalProductForm = {
       title: title,
       content: content,
       unitPrice: isNaN(parseInt(unitPrice)) ? 0 : parseInt(unitPrice),
       maxRentalPeriod: maxRentalPeriod,
-      categoryId: categoryId,
+      categoryName: categoryId,
       wishRegion: wishRegion,
       sellerId: userInfo.userId, //로그인 유저정보
       nickname: userInfo.nickname, //로그인 유저정보
-      //thumbnailIndex: currentThumbnailIndex,
     };
 
-    //submit product only
-    // rentalProductMutation.mutate(newProduct, {
-    //   onSuccess: (res) => {
-    //     console.log(res);
-    //   },
-    // });
-
-    //rentalProductMutation.mutate(newProduct);
-
-    let formData = new FormData();
+    const formData = new FormData();
     for (let i = 0; i < showImages.length; i++) {
       formData.append("file[]", showImages[i].file);
     }
@@ -271,7 +254,10 @@ export default function RentalCreatePage() {
               />
             </div>
 
-            <DaumAddressInput onSelectAddress={handleSelectAddress} />
+            <DaumAddressInput
+              onSelectAddress={handleSelectAddress}
+              isFullAddress={true}
+            />
           </div>
 
           <div className="form-control w-full max-w-sm">

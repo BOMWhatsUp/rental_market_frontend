@@ -59,14 +59,30 @@ for (let i = 1; i <= 20; i++) {
     content: `content${i}`,
     unitPrice: 1300,
     maxRentalPeriod: "90",
-    categoryId: "FURNITURE",
+    categoryName: "FURNITURE",
     wishRegion: "서울 종로구",
     sellerId: `nick${i}@gmail.com`,
     nickname: `닉네임${i}`,
-    thumbnailSrc:
+    mainImageUrl:
       "https://user-images.githubusercontent.com/37766175/62363267-f219ba80-b559-11e9-9943-855d42b2fc11.png",
   };
+  const product2 = {
+    id: `id${i + 100}`,
+    title: `엘사 공주드레스${i + 100}`,
+    content: `엘사공주드레스 고급스러워요 우리딸 몰래 빌려드립니다... ${
+      i + 100
+    }`,
+    unitPrice: 5000,
+    maxRentalPeriod: "90",
+    categoryName: "CLOTHING",
+    wishRegion: "성남시 분당구",
+    sellerId: `whatsup@naver.com`,
+    nickname: `봄이와썹`,
+    mainImageUrl:
+      "https://dnvefa72aowie.cloudfront.net/origin/article/202301/EC146E3A1E533D4A8BBAB4560932F7167E7D5D28FE0F91B56BAC5F0742125F09.jpg?q=95&s=1440x1440&t=inside",
+  };
   rentalProducts.push(product);
+  rentalProducts.push(product2);
 }
 
 const token = {
@@ -178,45 +194,22 @@ export const handlers = [
   }),
 
   //jylee: rental create
-  rest.post("/api/product", async (req, res, ctx) => {
-    const data = await req.json();
-    rentalProducts.push(data);
-    return res(ctx.status(201), ctx.json(rentalProducts));
-  }),
 
-  //jylee: rental get
+  rest.post("/api/product", async (req, res, ctx) => {
+    return res(ctx.status(201));
+  }),
+  // rest.post("/api/product2", async (req, res, ctx) => {
+  //   const data = await req.json();
+  //   rentalProducts.push(data);
+  //   return res(ctx.status(201), ctx.json(rentalProducts));
+  // }),
+
+  //jylee: rental detail get
   rest.get("/api/product", async (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(rentalProducts));
   }),
-  //jylee: rental get
-  rest.get("/api/products2", (req, res, ctx) => {
-    const _limit = req.url.searchParams.get("_limit");
-    const _page = req.url.searchParams.get("_page");
-    const _categoryName = req.url.searchParams.get("_category");
-    const _wishRegion = req.url.searchParams.get("_region");
-    const _status = req.url.searchParams.get("_status");
-    const limit = parseInt(_limit || "3"); // Use a default value of 3 if _limit is not provided
-    const page = parseInt(_page || "1"); // Use a default value of 1 if _page is not provided
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedProducts = rentalProducts.slice(
-      startIndex,
-      startIndex + limit
-    );
 
-    return res(
-      ctx.json({
-        data: rentalProducts.slice(startIndex, endIndex),
-        hasNextPage: endIndex < rentalProducts.length,
-        // data: rentalProducts.slice(startIndex, endIndex),
-        // hasNextPage: endIndex < rentalProducts.length,
-      })
-      //ctx.json(paginatedProducts), // Return only the paginated products
-      //ctx.delay(1000) // simulate delay in response
-    );
-  }),
-
-  //jylee: rental get-react-query
+  //jylee: rental list w get-react-query
   rest.get("/api/products", (req, res, ctx) => {
     const _size = req.url.searchParams.get("size");
     const _page = req.url.searchParams.get("page");
@@ -240,10 +233,5 @@ export const handlers = [
       _status
     );
     return res(ctx.json(paginatedProducts));
-  }),
-
-  //jylee: rental image files
-  rest.post("/api/product2", async (req, res, ctx) => {
-    return res(ctx.status(201));
   }),
 ];

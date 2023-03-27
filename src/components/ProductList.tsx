@@ -48,7 +48,9 @@ const ProductList: React.FC = () => {
       {isSuccess &&
         data &&
         data!.pages.map((page, index) =>
-          page.map((pd) => <RentalProductItem test={pd.id} key={pd.id} />)
+          page.map((pd) => (
+            <RentalProductItem test={pd.id} key={pd.id} product={pd} />
+          ))
         )}
     </div>
   );

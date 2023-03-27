@@ -1,9 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { RentalProduct } from "../types/product";
 
 type ProductItemProps = {
   isSeller?: boolean;
   test: string;
+  product: RentalProduct;
 };
 RentalProductItem.defaultProps = {
   isSeller: false,
@@ -12,6 +14,7 @@ RentalProductItem.defaultProps = {
 export default function RentalProductItem({
   isSeller,
   test,
+  product,
 }: ProductItemProps) {
   const CheckDelete = () => {
     if (confirm("렌탈 상품을 정말로 삭제하시겠습니까?")) {
@@ -36,7 +39,11 @@ export default function RentalProductItem({
         <figure className="min-w-[30%] w-1/3 relative">
           <Link to="/product/detail">
             <img
-              src="http://m.ezendolls.com/web/product/big/202103/2252d8e72c6cf7983f5d18e41d3f3213.jpg"
+              src={
+                product.mainImageUrl
+                  ? product.mainImageUrl
+                  : "http://m.ezendolls.com/web/product/big/202103/2252d8e72c6cf7983f5d18e41d3f3213.jpg"
+              }
               alt="Movie"
               className="w-full h-full object-cover"
             />
@@ -46,18 +53,16 @@ export default function RentalProductItem({
           </Link>
         </figure>
         <div className="card-body">
-          <div className="text-accent text-sm">가구/인테리어</div>
+          <div className="text-accent text-sm">{product.categoryName}</div>
 
           <h2 className="card-title">
-            <Link to="/product/detail">{test}진로 두꺼비 인형</Link>
+            <Link to="/product/detail">{product.title}</Link>
           </h2>
-          <p className="line-clamp-2 leading-5">
-            소중한 두꺼비 인형을 렌트해 드려요~ 진로 두꺼비 인형의 효능 효과-
-            혈액순환, 암예방, 머머머머, 피부정화, 체질개선, 다이어트, 체중감량,
-            근육 증가 등등등등 좋습니다.
-          </p>
+          <p className="line-clamp-2 leading-5">{product.content}</p>
           <div className="card-actions justify-between items-center">
-            <div>1300원 / 일 ∙ 최대 60 일</div>
+            <div>
+              {product.unitPrice}원 / 일 ∙ 최대 {product.maxRentalPeriod} 일
+            </div>
             {isSeller ? (
               <div>
                 <button

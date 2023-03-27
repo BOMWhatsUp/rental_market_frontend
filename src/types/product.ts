@@ -4,9 +4,19 @@ export type RentalProduct = {
   content: string;
   unitPrice: number;
   maxRentalPeriod: string;
-  categoryId: string;
+  categoryName: string;
   wishRegion: string;
   sellerId: string;
   nickname: string;
-  //thumbnailIndex: number;
+  mainImageUrl: string;
+};
+export type RentalProductForm = {
+  title: string;
+  content: string;
+  unitPrice: number;
+  maxRentalPeriod: string;
+  categoryName: string;
+  wishRegion: string;
+  sellerId: string;
+  nickname: string;
 };

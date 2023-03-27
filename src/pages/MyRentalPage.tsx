@@ -218,15 +218,15 @@ export default function MyRentalPage() {
 
         {currentTab === "seller" ? (
           <div className="px-5 md:px-28 lg:px-40">
+            {/* <RentalProductItem isSeller={true} />
             <RentalProductItem isSeller={true} />
-            <RentalProductItem isSeller={true} />
-            <RentalProductItem isSeller={true} />
+            <RentalProductItem isSeller={true} /> */}
           </div>
         ) : (
           <div className="px-5 md:px-28 lg:px-40">
+            {/* <RentalProductItem />
             <RentalProductItem />
-            <RentalProductItem />
-            <RentalProductItem />
+            <RentalProductItem /> */}
           </div>
         )}
       </div>

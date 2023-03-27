@@ -15,3 +15,11 @@ export const getProducts = async (
   );
   return res.data;
 };
+
+export const addProduct = async (formData: FormData) => {
+  return await axiosInstance.post("/api/product", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
