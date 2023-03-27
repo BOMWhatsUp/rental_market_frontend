@@ -189,6 +189,7 @@ export default function MainPage() {
             </ul>
           </div>
         </div>
+        <div className="px-5 md:px-28 lg:px-40">대여가능 대여중 반납대기</div>
         <div className="px-5 md:px-28 lg:px-40">
           {/* <RentalProductList /> */}
           <ProductList />

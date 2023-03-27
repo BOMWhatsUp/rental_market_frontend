@@ -20,6 +20,7 @@ export const axiosFormInstance = axios.create({
   },
   withCredentials: true,
 });
+
 // async function fetchCall<T>(url: string, data: any): Promise<T> {
 //   try {
 //     const response = await axiosInstance.post<T>(url, data);

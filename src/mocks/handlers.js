@@ -52,7 +52,6 @@ const usersData = [
 ];
 const rentalProducts = [];
 
-
 for (let i = 1; i <= 20; i++) {
   const product = {
     id: `id${i}`,
@@ -76,7 +75,6 @@ const token = {
   refreshToken:
     "cvhbxjkcfn.huihesricrniou98nsdhkjfhdskhgi4yj3f.hdsguh49re4se9ydk",
 };
-
 
 export const handlers = [
   // // 할일 목록
@@ -222,13 +220,25 @@ export const handlers = [
   rest.get("/api/products", (req, res, ctx) => {
     const _size = req.url.searchParams.get("size");
     const _page = req.url.searchParams.get("page");
-    //console.log("test", _size, _page);
+    const _categoryName = req.url.searchParams.get("categoryName");
+    const _wishRegion = req.url.searchParams.get("wishRegion");
+    const _keyword = req.url.searchParams.get("keyword");
+    const _status = req.url.searchParams.get("status");
+    //console.log("test", _size, _page, _categoryName, _wishRegion, _keyword);
     const size = parseInt(_size || "10");
     const page = parseInt(_page || "1");
     const startIndex = (page - 1) * size;
     const endIndex = startIndex + size;
     const paginatedProducts = rentalProducts.slice(startIndex, endIndex);
-
+    console.log(
+      "test",
+      _size,
+      _page,
+      _categoryName,
+      _wishRegion,
+      _keyword,
+      _status
+    );
     return res(ctx.json(paginatedProducts));
   }),
 
