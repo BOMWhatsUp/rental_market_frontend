@@ -9,6 +9,8 @@ export type RentalProduct = {
   sellerId: string;
   nickname: string;
   mainImageUrl: string;
+  status: string;
+  returnDate: Date;
 };
 export type RentalProductForm = {
   title: string;

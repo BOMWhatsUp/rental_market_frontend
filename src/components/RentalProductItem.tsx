@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { RentalProduct } from "../types/product";
+import Badge from "./Badge";
+import moment from "moment";
 
 type ProductItemProps = {
   isSeller?: boolean;
@@ -32,11 +34,20 @@ export default function RentalProductItem({
       console.log("반납완료 처리함");
     }
   };
-
+  const maxRentalPeriod = (value: string) => {
+    switch (value) {
+      case "ONEMONTH":
+        return "30";
+      case "TWOMONTH":
+        return "60";
+      case "THREEMONTH":
+        return "90";
+    }
+  };
   return (
     <>
-      <div className="card card-side bg-base-100 shadow-xl my-5">
-        <figure className="min-w-[30%] w-1/3 relative">
+      <div className="card card-side bg-base-100 shadow-xl my-5 max-h-60">
+        <figure className="min-w-[30%] w-1/3 relative overflow-hidden">
           <Link to="/product/detail">
             <img
               src={
@@ -47,9 +58,7 @@ export default function RentalProductItem({
               alt="Movie"
               className="w-full h-full object-cover"
             />
-            <div className="badge badge-success border-base-100 gap-2 p-3 absolute left-2 top-2 ">
-              대여가능
-            </div>
+            <Badge value={product.status} />
           </Link>
         </figure>
         <div className="card-body">
@@ -60,8 +69,19 @@ export default function RentalProductItem({
           </h2>
           <p className="line-clamp-2 leading-5">{product.content}</p>
           <div className="card-actions justify-between items-center">
-            <div>
-              {product.unitPrice}원 / 일 ∙ 최대 {product.maxRentalPeriod} 일
+            <div className="flex items-center">
+              <span>
+                {product.unitPrice}원 / 일 ∙ 최대{" "}
+                {maxRentalPeriod(product.maxRentalPeriod)} 일
+              </span>
+              {product.returnDate ? (
+                <span className="text-xs text-error ml-3">
+                  * 반납 까지
+                  {moment(product.returnDate).from(Date.now(), true)} 남음
+                </span>
+              ) : (
+                ""
+              )}
             </div>
             {isSeller ? (
               <div>

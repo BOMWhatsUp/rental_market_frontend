@@ -233,9 +233,9 @@ export default function RentalCreatePage() {
               <option value="" disabled>
                 -- 최대 렌탈 기간 선택--
               </option>
-              <option value="1">1개월(30일)</option>
-              <option value="2">2개월(60일)</option>
-              <option value="3">3개월(90일)</option>
+              <option value="ONEMONTH">1개월(30일)</option>
+              <option value="TWOMONTH">2개월(60일)</option>
+              <option value="THREEMONTH">3개월(90일)</option>
             </select>
           </div>
           <div className="flex items-end w-full max-w-sm">

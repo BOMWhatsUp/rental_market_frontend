@@ -58,11 +58,13 @@ for (let i = 1; i <= 20; i++) {
     title: `title${i}`,
     content: `content${i}`,
     unitPrice: 1300,
-    maxRentalPeriod: "90",
+    maxRentalPeriod: "ONEMONTH",
     categoryName: "FURNITURE",
     wishRegion: "서울 종로구",
     sellerId: `nick${i}@gmail.com`,
     nickname: `닉네임${i}`,
+    status: "RENTED",
+    returnDate: new Date("2023-4-6"),
     mainImageUrl:
       "https://user-images.githubusercontent.com/37766175/62363267-f219ba80-b559-11e9-9943-855d42b2fc11.png",
   };
@@ -73,11 +75,13 @@ for (let i = 1; i <= 20; i++) {
       i + 100
     }`,
     unitPrice: 5000,
-    maxRentalPeriod: "90",
+    maxRentalPeriod: "TWOMONTH",
     categoryName: "CLOTHING",
     wishRegion: "성남시 분당구",
     sellerId: `whatsup@naver.com`,
     nickname: `봄이와썹`,
+    status: "AVAILABLE",
+    returnDate: null,
     mainImageUrl:
       "https://dnvefa72aowie.cloudfront.net/origin/article/202301/EC146E3A1E533D4A8BBAB4560932F7167E7D5D28FE0F91B56BAC5F0742125F09.jpg?q=95&s=1440x1440&t=inside",
   };

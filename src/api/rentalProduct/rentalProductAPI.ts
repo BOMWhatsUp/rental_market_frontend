@@ -11,7 +11,7 @@ export const getProducts = async (
 ) => {
   const res = await axiosInstance.get<RentalProduct[]>(
     `/api/products?page=${page}&size=${size}&categoryName=${categoryName}&wishRegion=${wishRegion}&keyword=${keyword}&status=${status}`,
-    { params: { page, size, categoryName, wishRegion, keyword } }
+    { params: { page, size, categoryName, wishRegion, keyword, status } }
   );
   return res.data;
 };
