@@ -70,14 +70,22 @@ export default function RentalCreatePage() {
 
     const formData = new FormData();
     for (let i = 0; i < showImages.length; i++) {
-      formData.append("file[]", showImages[i].file);
+      formData.append("imageFiles", showImages[i].file);
     }
     const thumbnailIndex = { thumbnailIndex: currentThumbnailIndex };
 
-    formData.append("thumbnailIndex", `${currentThumbnailIndex}`);
+    formData.append("mainImageIndex", `${currentThumbnailIndex}`);
 
     if (newProduct) {
-      formData.append("product", JSON.stringify(newProduct));
+      //formData.append("product", JSON.stringify(newProduct));
+      formData.append("title", newProduct.title);
+      formData.append("content", newProduct.content);
+      formData.append("unitPrice", newProduct.unitPrice.toString());
+      formData.append("maxRentalPeriod", newProduct.maxRentalPeriod.toString());
+      formData.append("categoryName", newProduct.categoryName);
+      formData.append("wishRegion", newProduct.wishRegion);
+      formData.append("sellerId", newProduct.sellerId.toString());
+      formData.append("nickname", newProduct.nickname);
     }
 
     for (let value of formData.values()) {

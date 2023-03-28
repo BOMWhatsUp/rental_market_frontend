@@ -17,9 +17,18 @@ export const getProducts = async (
 };
 
 export const addProduct = async (formData: FormData) => {
-  return await axiosInstance.post("/api/product", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  // return await axiosInstance.post("/api/product", formData, {
+  //   headers: {
+  //     "Content-Type": "multipart/form-data",
+  //   },
+  // });
+  return await axiosInstance.post(
+    "http://3.37.196.93:8080/products/create",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 };
