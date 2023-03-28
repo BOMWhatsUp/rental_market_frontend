@@ -44,5 +44,6 @@
   },
   "msw": {
     "workerDirectory": "public"
-  }
+  },
+  "main": "dist/axios.js"
 }
