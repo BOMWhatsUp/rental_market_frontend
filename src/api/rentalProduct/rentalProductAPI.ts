@@ -16,6 +16,14 @@ export const getProducts = async (
   return res.data;
 };
 
+export const getProduct = async (id: string) => {
+  const res = await axiosInstance.get<RentalProduct>(
+    `/api/products/detail?id=${id}`,
+    { params: { id } }
+  );
+  return res.data;
+};
+
 export const addProduct = async (formData: FormData) => {
   // return await axiosInstance.post("/api/product", formData, {
   //   headers: {

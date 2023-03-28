@@ -1,8 +1,15 @@
 import React from "react";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
+import { getProduct } from "../api/rentalProduct/rentalProductAPI";
+import { useQuery } from "react-query";
 
 export default function RentalDetailPage() {
+  const { isLoading, isError, data, error }: any = useQuery(
+    "productDetail",
+    () => getProduct("sample")
+  );
+  console.log(data);
   return (
     <>
       <div className="container flex justify-center px-5 md:px-28 lg:px-40">

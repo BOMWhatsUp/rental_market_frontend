@@ -44,10 +44,26 @@ export default function RentalProductItem({
         return "90";
     }
   };
+  const categoryName = (value: string) => {
+    switch (value) {
+      case "CLOTHING":
+        return "의류";
+      case "HOME":
+        return "생활가전";
+      case "FURNITURE":
+        return "가구/인테리어";
+      case "DIGITAL":
+        return "디지털기기";
+      case "BOOK":
+        return "도서";
+      case "GAMEANDRECORD":
+        return "게임/음반";
+    }
+  };
   return (
     <>
       <div className="card card-side bg-base-100 shadow-xl my-5 max-h-60">
-        <figure className="min-w-[30%] w-1/3 relative overflow-hidden">
+        <figure className="min-w-[30%] w-[30%] max-w-[30%] relative overflow-hidden">
           <Link to="/product/detail">
             <img
               src={
@@ -62,12 +78,16 @@ export default function RentalProductItem({
           </Link>
         </figure>
         <div className="card-body">
-          <div className="text-accent text-sm">{product.categoryName}</div>
+          <div className="text-accent text-sm">
+            {categoryName(product.categoryName)}
+          </div>
 
           <h2 className="card-title">
             <Link to="/product/detail">{product.title}</Link>
           </h2>
-          <p className="line-clamp-2 leading-5">{product.content}</p>
+          <p className="line-clamp-2 leading-5 min-h-[2.5rem]">
+            {product.content}
+          </p>
           <div className="card-actions justify-between items-center">
             <div className="flex items-center">
               <span>

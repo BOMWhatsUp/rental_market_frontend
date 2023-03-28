@@ -51,6 +51,21 @@ const usersData = [
   },
 ];
 const rentalProducts = [];
+const sampleProduct = {
+  id: `sample`,
+  title: `샘플상품입니다`,
+  content: `샘플상품입니다 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세`,
+  unitPrice: 1300,
+  maxRentalPeriod: "ONEMONTH",
+  categoryName: "FURNITURE",
+  wishRegion: "서울 종로구",
+  sellerId: `nick@gmail.com`,
+  nickname: `닉네임`,
+  status: "RENTED",
+  returnDate: new Date("2023-4-6"),
+  mainImageUrl:
+    "https://user-images.githubusercontent.com/37766175/62363267-f219ba80-b559-11e9-9943-855d42b2fc11.png",
+};
 
 for (let i = 1; i <= 20; i++) {
   const product = {
@@ -209,8 +224,8 @@ export const handlers = [
   // }),
 
   //jylee: rental detail get
-  rest.get("/api/product", async (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(rentalProducts));
+  rest.get("/api/products/detail", async (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(sampleProduct));
   }),
 
   //jylee: rental list w get-react-query
