@@ -199,7 +199,7 @@ export default function RentalDetailPage() {
               <section>
                 <Link
                   to={`/product/pay/${productDetail.id}`}
-                  className="btn btn-primary sm:btn-sm lg:btn-md w-full mt-3 "
+                  className="btn btn-primary sm:btn-sm lg:btn-md w-full mt-3"
                 >
                   렌탈하기
                 </Link>

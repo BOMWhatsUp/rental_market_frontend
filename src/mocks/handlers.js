@@ -51,6 +51,7 @@ const usersData = [
   },
 ];
 const rentalProducts = [];
+
 const sampleProduct = {
   id: `id1`,
   title: `샘플상품입니다`,
