@@ -59,7 +59,7 @@ const sampleProduct = {
   maxRentalPeriod: "ONEMONTH",
   categoryName: "FURNITURE",
   wishRegion: "서울 종로구 삼청로 12길 34",
-  sellerId: `nick@gmail.com`,
+  sellerId: `pepe@gmail.com`,
   nickname: `개구리페페`,
   status: "RENTED",
   returnDate: new Date("2023-4-6"),
@@ -260,5 +260,10 @@ export const handlers = [
       _status
     );
     return res(ctx.json(paginatedProducts));
+  }),
+
+  //jylee: rental detail get
+  rest.delete("/api/products/delete/id1", async (req, res, ctx) => {
+    return res(ctx.status(200));
   }),
 ];

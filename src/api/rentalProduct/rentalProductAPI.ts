@@ -1,6 +1,25 @@
 import { axiosInstance, axiosFormInstance } from "../axiosInstance";
 import { RentalProduct, RentalProductDetail } from "../../types/product";
 
+//create
+export const addProduct = async (formData: FormData) => {
+  // return await axiosInstance.post("/api/product", formData, {
+  //   headers: {
+  //     "Content-Type": "multipart/form-data",
+  //   },
+  // });
+  return await axiosInstance.post(
+    "http://3.37.196.93:8080/products/create",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
+
+//read
 export const getProducts = async (
   categoryName: string = "",
   wishRegion: string = "",
@@ -26,19 +45,10 @@ export const getProduct = async (id: string) => {
   return res.data;
 };
 
-export const addProduct = async (formData: FormData) => {
-  // return await axiosInstance.post("/api/product", formData, {
-  //   headers: {
-  //     "Content-Type": "multipart/form-data",
-  //   },
-  // });
-  return await axiosInstance.post(
-    "http://3.37.196.93:8080/products/create",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+//update
+
+//delete
+export const deleteProduct = async (id: string) => {
+  const res = await axiosInstance.delete(`/api/products/delete/${id}`);
+  return res;
 };

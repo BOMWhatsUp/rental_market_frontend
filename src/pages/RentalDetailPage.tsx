@@ -1,14 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { Link, useParams } from "react-router-dom";
-import { getProduct } from "../api/rentalProduct/rentalProductAPI";
-import { useQuery } from "react-query";
+import {
+  deleteProduct,
+  getProduct,
+} from "../api/rentalProduct/rentalProductAPI";
+import { useMutation, useQuery } from "react-query";
 import Badge from "../components/Badge";
 import sample404 from "../assets/404sample.png";
 import profileSample from "../assets/profile_sample.png";
 import { maxRentalPeriod, categoryName } from "../utils/converter";
 import { RentalProductDetail } from "../types/product";
 import moment from "moment";
+import ReactDOM from "react-dom";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+import { userInfo } from "../atoms/userInfo";
+import { useRecoilState } from "recoil";
+
+// const deleteMutation = (productId: string) => {
+//   //useMutation("deleteProduct", () => deleteProduct(productId), {
+//   useMutation("deleteProduct", async () => await deleteProduct(productId), {
+//     onSuccess: (res) => {
+//       console.log("response test", res);
+//       // Invalidate and refetch
+//       //queryClient.invalidateQueries("todos");
+//     },
+//   });
+// };
 
 export default function RentalDetailPage() {
   const productId = useParams().id;
@@ -17,6 +36,9 @@ export default function RentalDetailPage() {
     "productDetail",
     () => getProduct(productId)
   );
+
+  //TODO: 로그인 없이 임시 테스트를 위한 유저 info - 유저정보로 바꿔야
+  const [user, setUser] = useRecoilState(userInfo);
 
   const productDetail: RentalProductDetail | undefined = data as
     | RentalProductDetail
@@ -28,14 +50,66 @@ export default function RentalDetailPage() {
   const onErrorProfile = (e: any) => {
     e.target.src = profileSample;
   };
+
+  // const [deleteMutation] = useMutation(deletePost, {
+  //   onSuccess: () => {
+  //     // 콜백 함수에서 적절한 값을 반환하도록 수정
+  //     return true;
+  //   },
+  // });
+
+  const deleteMutation = useMutation(
+    "deleteProduct",
+    async (productId: string) => {
+      const res = await deleteProduct(productId);
+      return res;
+    },
+    {
+      onSuccess: (res) => {
+        console.log("response test", res);
+      },
+    }
+  );
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id);
+  };
+  useEffect(() => {
+    setUser({
+      userEmail: "pepe@gmail.com",
+      userNickName: "개구리페페",
+      userRegion: "서울시 도봉구",
+      userProfileImage:
+        "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
+    });
+  }, []);
   return (
     <>
       {isLoading && <div>Loading...</div>}
       {productDetail && (
-        <div className="container flex justify-center px-5 md:px-28 lg:px-40">
+        <div className="container flex justify-center px-5 md:px-40 lg:px-56">
           <div className="flex flex-col">
             <div className="w-full min-w-[33rem] h-96 overflow-hidden rounded relative">
-              <img
+              <Carousel autoPlay>
+                <div className="w-full h-96">
+                  <img
+                    src="https://t1.daumcdn.net/cfile/tistory/992755335A157ED62B"
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                <div className="w-full h-96">
+                  <img
+                    src="https://cphoto.asiae.co.kr/listimglink/1/2022011117124595734_1641888765.jpg"
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                <div className="w-full h-96">
+                  <img
+                    src="https://cdn.kmecnews.co.kr/news/photo/202205/25744_14783_941.jpg"
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              </Carousel>
+              {/* <img
                 src={
                   productDetail.imageUrls.length > 0
                     ? `https://dj8fgxzkrerlh.cloudfront.net/${productDetail.imageUrls[0]}`
@@ -43,7 +117,7 @@ export default function RentalDetailPage() {
                 }
                 onError={onErrorImg}
                 className="object-cover w-full h-full"
-              ></img>
+              ></img> */}
               <Badge value={productDetail.status} isFull={true} />
             </div>
             <div className="flex flex-col">
@@ -67,13 +141,22 @@ export default function RentalDetailPage() {
                   </div>
                 </div>
                 <div>
-                  <Link
-                    to="/chat/room/roomid"
-                    className="btn btn-sm btn-outline btn-primary"
-                  >
-                    <ChatBubbleBottomCenterTextIcon className="h-3 w-3 mr-0.5" />
-                    상품문의
-                  </Link>
+                  {user.userEmail === productDetail.sellerId ? (
+                    <button
+                      className="btn btn-sm btn-outline btn-error py-0"
+                      onClick={() => handleDelete(productDetail.id)}
+                    >
+                      상품삭제
+                    </button>
+                  ) : (
+                    <Link
+                      to="/chat/room/roomid"
+                      className="btn btn-sm btn-outline btn-primary"
+                    >
+                      <ChatBubbleBottomCenterTextIcon className="h-3 w-3 mr-0.5" />
+                      상품문의
+                    </Link>
+                  )}
                 </div>
               </section>
               <div className="divider my-0"></div>
@@ -115,7 +198,7 @@ export default function RentalDetailPage() {
               </section>
               <section>
                 <Link
-                  to="/chat/room/roomid"
+                  to={`/product/pay/${productDetail.id}`}
                   className="btn btn-primary sm:btn-sm lg:btn-md w-full mt-3 "
                 >
                   렌탈하기
