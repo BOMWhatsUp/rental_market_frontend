@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { RentalProduct } from "../types/product";
 import Badge from "./Badge";
 import moment from "moment";
-
+import sample404 from "../assets/404sample.png";
 type ProductItemProps = {
   isSeller?: boolean;
   test: string;
@@ -60,6 +60,9 @@ export default function RentalProductItem({
         return "게임/음반";
     }
   };
+  const onErrorImg = (e: any) => {
+    e.target.src = sample404;
+  };
   return (
     <>
       <div className="card card-side bg-base-100 shadow-xl my-5 max-h-60">
@@ -68,9 +71,10 @@ export default function RentalProductItem({
             <img
               src={
                 product.mainImageUrl
-                  ? product.mainImageUrl
-                  : "http://m.ezendolls.com/web/product/big/202103/2252d8e72c6cf7983f5d18e41d3f3213.jpg"
+                  ? `https://dj8fgxzkrerlh.cloudfront.net/${product.mainImageUrl}`
+                  : sample404
               }
+              onError={onErrorImg}
               alt="Movie"
               className="w-full h-full object-cover"
             />
@@ -121,7 +125,7 @@ export default function RentalProductItem({
             ) : (
               <div>
                 <Link
-                  to="/product/detail/productid"
+                  to={`/product/detail/${product.id}`}
                   className="btn btn-primary btn-outline sm:btn-xs md:btn-sm mr-2"
                 >
                   상세보기

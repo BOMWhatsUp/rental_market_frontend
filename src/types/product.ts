@@ -1,4 +1,4 @@
-export type RentalProduct = {
+export interface RentalProduct {
   id: string;
   title: string;
   content: string;
@@ -11,7 +11,15 @@ export type RentalProduct = {
   mainImageUrl: string;
   status: string;
   returnDate: Date;
-};
+}
+
+export interface RentalProductDetail extends RentalProduct {
+  modifiedAt: Date;
+  sellerProfile: string;
+  sellerRegion: string;
+  imageUrls: string[];
+}
+
 export type RentalProductForm = {
   title: string;
   content: string;

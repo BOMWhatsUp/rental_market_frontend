@@ -8,7 +8,7 @@ type ProductListProps = {
   data: InfiniteData<RentalProduct[]>;
   isSuccess: boolean;
 };
-const ProductList2 = ({ data, isSuccess }: ProductListProps) => {
+const ProductList = ({ data, isSuccess }: ProductListProps) => {
   return (
     <div>
       {data === null && <div>데이터 없음 테스트</div>}
@@ -22,4 +22,4 @@ const ProductList2 = ({ data, isSuccess }: ProductListProps) => {
     </div>
   );
 };
-export default ProductList2;
+export default ProductList;

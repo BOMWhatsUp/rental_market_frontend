@@ -3,7 +3,7 @@ import RentalProductItem from "../components/RentalProductItem";
 import { Bars3Icon, MapIcon, FlagIcon } from "@heroicons/react/24/outline";
 import ProductList from "../components/ProductList";
 import { RentalProduct } from "../types/product";
-import { useInfiniteQuery, useQueryClient } from "react-query";
+import { InfiniteData, useInfiniteQuery, useQueryClient } from "react-query";
 import { getProducts } from "../api/rentalProduct/rentalProductAPI";
 import Badge from "../components/Badge";
 import { productStatus } from "../utils/converter";
@@ -21,6 +21,13 @@ export default function MainPage() {
     keyword: "",
     status: "",
   });
+
+  //request query param- 바로 적용 안되는 문제 해결
+  // let categoryName = "";
+  let wishRegion = "";
+  // let keyword = "";
+  // let status = "";
+
   const queryClient = useQueryClient();
   //const queryClient = useQueryClient();
   // const [filter, setFilter] = useState({
@@ -35,31 +42,52 @@ export default function MainPage() {
   //     [`${target.dataset.title}`]: target.dataset.value,
   //   }));
   // };
+
+  const regionDisplay = (value: string) => {
+    if (value === "user") {
+      //TODO: 유저의 정보값 넣어야
+      return "성남시 분당구";
+    } else {
+      return "전체";
+    }
+  };
   const handleChangeDropdown = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLAnchorElement;
     setFilter((prevFilter) => ({
       ...prevFilter,
       [`${target.dataset.title}`]: target.dataset.value,
     }));
+
+    // if (target.dataset.title === "region") {
+    //   wishRegion = regionDisplay(target.dataset.value);
+    // }
+
+    // console.log(target.dataset.title, target.dataset.value);
+    // switch (target.dataset.title) {
+    //   case "category":
+    //     categoryName = target.dataset.value;
+    //     break;
+    //   case "region":
+    //     wishRegion = target.dataset.value;
+    //     break;
+    //   case "status":
+    //     status = target.dataset.value;
+    //     break;
+    // }
+    //console.log(categoryName, "dddd");
+    //queryClient.invalidateQueries("rentalProducts");
   };
 
-  useEffect(() => {
-    console.log(filter);
-    queryClient.resetQueries("rentalProducts");
-    refetch();
-  }, [filter.category]);
-
   const handleChangeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter({
-      ...filter,
-      [`${e.target.name}`]: e.target.value,
-    });
-    //setDropDown(false);
+    const target = e.target as HTMLInputElement;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      [`${target.name}`]: target.value,
+    }));
   };
 
   const handleSearch = () => {
-    //TODO submit filter
-
+    console.log(filter);
     setFilter({
       ...filter,
       ["keyword"]: "",
@@ -86,10 +114,6 @@ export default function MainPage() {
   };
 
   const size = 6;
-  const categoryName = "CLOTHING";
-  const wishRegion = "서울 종로구";
-  const keyword = "분홍색";
-  const status = "RENTED";
 
   const {
     data,
@@ -98,13 +122,16 @@ export default function MainPage() {
     fetchNextPage,
     isFetchingNextPage,
     refetch,
+    isError,
+    isLoading,
   } = useInfiniteQuery(
-    "rentalProducts",
+    ["rentalProducts", filter],
+
     ({ pageParam = 1 }) =>
-      //getProducts(categoryName, wishRegion, keyword, status, pageParam, size),
       getProducts(
         filter.category,
         filter.region,
+        //wishRegion,
         filter.keyword,
         filter.status,
         pageParam,
@@ -115,10 +142,16 @@ export default function MainPage() {
         const nextPage = allPages.length + 1;
         return nextPage;
       },
+      onSuccess(data) {
+        //console.log("success", data);
+        //setPageData((prev) => ({ ...prev, ...data }));
+      },
+
+      refetchIntervalInBackground: true,
     }
   );
 
-  console.log(data);
+  //console.log(data);
   useEffect(() => {
     let fetching = false;
     const handleScroll = async (e: any) => {
@@ -126,7 +159,9 @@ export default function MainPage() {
         e.target.scrollingElement;
       if (!fetching && scrollHeight - scrollTop <= clientHeight * 1.2) {
         fetching = true;
+        //console.log("fetching is true");
         if (hasNextPage) await fetchNextPage();
+        //setPageData({ ...data });
         fetching = false;
       }
     };
@@ -136,6 +171,24 @@ export default function MainPage() {
     };
   }, [fetchNextPage, hasNextPage]);
 
+  const [test, setTest] = useState(true);
+  const [pageData, setPageData] = useState<InfiniteData<RentalProduct[]>>();
+  // useEffect(() => {
+  //   // setPageData((prev) => ({
+  //   //   ...data,
+  //   // }));
+  //   console.log("filterchanged");
+  //   console.log(filter);
+  //   console.log(isSuccess, data, isError);
+  //   //queryClient.invalidateQueries("rentalProducts");
+  //   //refetch();
+  //   //queryClient.resetQueries("rentalProducts");
+
+  //   //fetchNextPage({ pageParam: 1 });
+  //   //setTest((prev) => !prev);
+  // }, [filter]);
+  //console.log("test확인", data);
+  //console.log(isSuccess, data, isError);
   return (
     <>
       <div className="flex flex-col">
@@ -225,7 +278,7 @@ export default function MainPage() {
             <li tabIndex={0}>
               <span>
                 <MapIcon className="h-5 w-5 " />
-                <p>전체</p>
+                <p>{regionDisplay(filter.region)}</p>
               </span>
 
               <ul className={`bg-base-100 rounded-box drop-shadow z-50`}>
@@ -296,17 +349,19 @@ export default function MainPage() {
                     반납대기
                   </a>
                 </li>
-                <li
-                  className={
-                    filter.status === "RENTED"
-                      ? "text-error active"
-                      : "text-error"
-                  }
-                  data-title="status"
-                  data-value="RENTED"
-                  onClick={handleChangeDropdown}
-                >
-                  <a>대여중</a>
+                <li>
+                  <a
+                    className={
+                      filter.status === "RENTED"
+                        ? "text-error active"
+                        : "text-error"
+                    }
+                    data-title="status"
+                    data-value="RENTED"
+                    onClick={handleChangeDropdown}
+                  >
+                    대여중
+                  </a>
                 </li>
               </ul>
             </li>
@@ -344,6 +399,17 @@ export default function MainPage() {
           </div>
         </div>
         <div className="px-5 md:px-28 lg:px-40">
+          {isLoading && (
+            <div className="h-full flex items-center justify-center">
+              <p>Loading...</p>
+              <progress className="progress w-56"></progress>
+            </div>
+          )}
+          {isError && (
+            <div className="h-full flex items-center justify-center">
+              <p>Error...</p>
+            </div>
+          )}
           <ProductList data={data} isSuccess={isSuccess} />
         </div>
       </div>

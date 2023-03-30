@@ -52,19 +52,24 @@ const usersData = [
 ];
 const rentalProducts = [];
 const sampleProduct = {
-  id: `sample`,
+  id: `id1`,
   title: `샘플상품입니다`,
   content: `샘플상품입니다 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세`,
   unitPrice: 1300,
   maxRentalPeriod: "ONEMONTH",
   categoryName: "FURNITURE",
-  wishRegion: "서울 종로구",
+  wishRegion: "서울 종로구 삼청로 12길 34",
   sellerId: `nick@gmail.com`,
-  nickname: `닉네임`,
+  nickname: `개구리페페`,
   status: "RENTED",
   returnDate: new Date("2023-4-6"),
-  mainImageUrl:
-    "https://user-images.githubusercontent.com/37766175/62363267-f219ba80-b559-11e9-9943-855d42b2fc11.png",
+  imageUrls: [
+    "https://dnvefa72aowie.cloudfront.net/origin/article/202301/EC146E3A1E533D4A8BBAB4560932F7167E7D5D28FE0F91B56BAC5F0742125F09.jpg?q=95&s=1440x1440&t=inside",
+  ],
+  modifiedAt: new Date("2023-3-29"),
+  sellerProfile:
+    "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
+  sellerRegion: "서울시 도봉구",
 };
 
 for (let i = 1; i <= 20; i++) {
@@ -224,7 +229,7 @@ export const handlers = [
   // }),
 
   //jylee: rental detail get
-  rest.get("/api/products/detail", async (req, res, ctx) => {
+  rest.get("/api/products/detail/id1", async (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(sampleProduct));
   }),
 
@@ -241,6 +246,9 @@ export const handlers = [
     const page = parseInt(_page || "1");
     const startIndex = (page - 1) * size;
     const endIndex = startIndex + size;
+    const filteredProducts = rentalProducts.filter(
+      (pd) => pd.categoryName === _categoryName
+    );
     const paginatedProducts = rentalProducts.slice(startIndex, endIndex);
     console.log(
       "test",

@@ -1,5 +1,5 @@
 import { axiosInstance, axiosFormInstance } from "../axiosInstance";
-import { RentalProduct } from "../../types/product";
+import { RentalProduct, RentalProductDetail } from "../../types/product";
 
 export const getProducts = async (
   categoryName: string = "",
@@ -11,15 +11,17 @@ export const getProducts = async (
 ) => {
   const res = await axiosInstance.get<RentalProduct[]>(
     `/api/products?page=${page}&size=${size}&categoryName=${categoryName}&wishRegion=${wishRegion}&keyword=${keyword}&status=${status}`,
+    //`http://3.37.196.93:8080/products?page=${page}&size=${size}&category-name=${categoryName}&wishRegion=${wishRegion}&keyword=${keyword}&status=${status}`,
+    //`http://3.37.196.93:8080/products?page=${page}&size=${size}&category-name=${categoryName}&status=${status}`,
     { params: { page, size, categoryName, wishRegion, keyword, status } }
   );
   return res.data;
 };
 
 export const getProduct = async (id: string) => {
-  const res = await axiosInstance.get<RentalProduct>(
-    `/api/products/detail?id=${id}`,
-    { params: { id } }
+  const res = await axiosInstance.get<RentalProductDetail>(
+    `/api/products/detail/${id}`
+    // `http://3.37.196.93:8080/products/${id}/detail`
   );
   return res.data;
 };
