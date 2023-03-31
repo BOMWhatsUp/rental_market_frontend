@@ -7,7 +7,7 @@ export const isExistInfoCheck = async (checkInfo: {
   if (checkInfo.value === String(checkInfo.value)) {
     return await axios({
       method: "post",
-      url: "/users/signup/check",
+      url: `http://52.78.150.154:8080/signup`,
       headers: {
         "content-type": "application/json",
       },
@@ -22,7 +22,7 @@ export const postSignUp = async (values: any) => {
   if (values === Object(values)) {
     return await axios({
       method: "post",
-      url: "/users/signup",
+      url: "http://52.78.150.154:8080/signup",
       headers: {
         "content-type": "application/json",
       },
