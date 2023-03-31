@@ -4,6 +4,22 @@ import { Link } from "react-router-dom";
 type ProductItemProps = {
   isSeller?: boolean;
   test: string;
+  productInfo: {
+    categoryName: string;
+    content: string;
+    createdAt: string;
+    id: number;
+    imageUrls: [];
+    mainImageUrl: string;
+    maxRentalPeriod: string;
+    modifiedAt: string;
+    nickname: string;
+    sellerId: string;
+    status: string;
+    title: string;
+    unitPrice: number;
+    wishRegion: string;
+  };
 };
 RentalProductItem.defaultProps = {
   isSeller: false,
@@ -12,6 +28,7 @@ RentalProductItem.defaultProps = {
 export default function RentalProductItem({
   isSeller,
   test,
+  productInfo,
 }: ProductItemProps) {
   const CheckDelete = () => {
     if (confirm("렌탈 상품을 정말로 삭제하시겠습니까?")) {
@@ -49,15 +66,18 @@ export default function RentalProductItem({
           <div className="text-accent text-sm">가구/인테리어</div>
 
           <h2 className="card-title">
-            <Link to="/product/detail">{test}진로 두꺼비 인형</Link>
+            <Link to="/product/detail">
+              {test}
+              "진로 두꺼비 인형"
+            </Link>
           </h2>
           <p className="line-clamp-2 leading-5">
-            소중한 두꺼비 인형을 렌트해 드려요~ 진로 두꺼비 인형의 효능 효과-
-            혈액순환, 암예방, 머머머머, 피부정화, 체질개선, 다이어트, 체중감량,
-            근육 증가 등등등등 좋습니다.
+            소중한 두꺼비 인형을 렌트해 드려요~ 진로 두꺼비 인형의 효능
+            효과-혈액순환, 암예방, 머머머머, 피부정화, 체질개선, 다이어트,
+            체중감량,근육 증가 등등등등 좋습니다.
           </p>
           <div className="card-actions justify-between items-center">
-            <div>1300원 / 일 ∙ 최대 60 일</div>
+            <div>1300원" / 일 ∙ 최대 60 일</div>
             {isSeller ? (
               <div>
                 <button
