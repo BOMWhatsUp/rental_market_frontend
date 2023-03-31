@@ -27,7 +27,12 @@ const PopupPostCode = (props: any) => {
     // console.log(fullAddress);
     // console.log(data.zonecode);
     // console.log(data.sigungu);
-    props.onComplete(`${data.sido} ${data.sigungu}`);
+    if (props.isFullAddress) {
+      props.onComplete(`${data.address}`);
+    } else {
+      props.onComplete(`${data.sido} ${data.sigungu}`);
+    }
+
     //props.onComplete(`${data.sigungu}`);
     props.onClose();
   };
@@ -57,7 +62,15 @@ const PopupPostCode = (props: any) => {
   );
 };
 
-const DaumPostcodeInput = (props: any) => {
+type InputProps = {
+  onSelectAddress: (value: string) => void;
+  isFullAddress: boolean;
+};
+
+const DaumPostcodeInput = ({
+  onSelectAddress,
+  isFullAddress = false,
+}: InputProps) => {
   // 팝업창 상태 관리
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -72,7 +85,7 @@ const DaumPostcodeInput = (props: any) => {
   };
 
   const handleSelectPostCode = (address: string) => {
-    props.onSelectAddress(address);
+    onSelectAddress(address);
   };
   return (
     <div>
@@ -89,6 +102,7 @@ const DaumPostcodeInput = (props: any) => {
           <PopupDom>
             <PopupPostCode
               onClose={closePostCode}
+              isFullAddress={isFullAddress}
               onComplete={handleSelectPostCode}
             />
           </PopupDom>

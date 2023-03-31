@@ -3,7 +3,7 @@ import { AxiosError } from "axios";
 import { getRentalProducts } from "../api/rentalCreate";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useProduct } from "../hooks/useProduct";
-import { RentalProduct } from "../types/product";
+import { RentalProduct, RentalProductForm } from "../types/product";
 import DaumAddressInput from "../components/DaumAddressButton";
 export default function RentalCreatePage() {
   //test data, 실제로는 server에서 온 user data atom 이 될것
@@ -13,12 +13,6 @@ export default function RentalCreatePage() {
   };
 
   const { rentalProductFormMutation } = useProduct();
-
-  //post test용 Get
-  // const { data, error } = useQuery<RentalProduct[], AxiosError>(
-  //   ["rentalProducts"],
-  //   getRentalProducts
-  // );
 
   const [userInputs, setUserInputs] = useState({
     title: "",
@@ -63,38 +57,35 @@ export default function RentalCreatePage() {
       categoryId,
     } = userInputs;
 
-    let newProduct: RentalProduct = {
-      id: "0",
+    let newProduct: RentalProductForm = {
       title: title,
       content: content,
       unitPrice: isNaN(parseInt(unitPrice)) ? 0 : parseInt(unitPrice),
       maxRentalPeriod: maxRentalPeriod,
-      categoryId: categoryId,
+      categoryName: categoryId,
       wishRegion: wishRegion,
       sellerId: userInfo.userId, //로그인 유저정보
       nickname: userInfo.nickname, //로그인 유저정보
-      //thumbnailIndex: currentThumbnailIndex,
     };
 
-    //submit product only
-    // rentalProductMutation.mutate(newProduct, {
-    //   onSuccess: (res) => {
-    //     console.log(res);
-    //   },
-    // });
-
-    //rentalProductMutation.mutate(newProduct);
-
-    let formData = new FormData();
+    const formData = new FormData();
     for (let i = 0; i < showImages.length; i++) {
-      formData.append("file[]", showImages[i].file);
+      formData.append("imageFiles", showImages[i].file);
     }
     const thumbnailIndex = { thumbnailIndex: currentThumbnailIndex };
 
-    formData.append("thumbnailIndex", `${currentThumbnailIndex}`);
+    formData.append("mainImageIndex", `${currentThumbnailIndex}`);
 
     if (newProduct) {
-      formData.append("product", JSON.stringify(newProduct));
+      //formData.append("product", JSON.stringify(newProduct));
+      formData.append("title", newProduct.title);
+      formData.append("content", newProduct.content);
+      formData.append("unitPrice", newProduct.unitPrice.toString());
+      formData.append("maxRentalPeriod", newProduct.maxRentalPeriod.toString());
+      formData.append("categoryName", newProduct.categoryName);
+      formData.append("wishRegion", newProduct.wishRegion);
+      formData.append("sellerId", newProduct.sellerId.toString());
+      formData.append("nickname", newProduct.nickname);
     }
 
     for (let value of formData.values()) {
@@ -250,9 +241,9 @@ export default function RentalCreatePage() {
               <option value="" disabled>
                 -- 최대 렌탈 기간 선택--
               </option>
-              <option value="1">1개월(30일)</option>
-              <option value="2">2개월(60일)</option>
-              <option value="3">3개월(90일)</option>
+              <option value="ONEMONTH">1개월(30일)</option>
+              <option value="TWOMONTH">2개월(60일)</option>
+              <option value="THREEMONTH">3개월(90일)</option>
             </select>
           </div>
           <div className="flex items-end w-full max-w-sm">
@@ -271,7 +262,10 @@ export default function RentalCreatePage() {
               />
             </div>
 
-            <DaumAddressInput onSelectAddress={handleSelectAddress} />
+            <DaumAddressInput
+              onSelectAddress={handleSelectAddress}
+              isFullAddress={true}
+            />
           </div>
 
           <div className="form-control w-full max-w-sm">
