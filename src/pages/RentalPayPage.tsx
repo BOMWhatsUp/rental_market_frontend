@@ -35,7 +35,7 @@ export default function RentalPayPage() {
 
   const totalrentalPay = (rentalday * rentalPay)
     .toString()
-    .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   const countRentalDay = (type: string) => {
     if (type === "increase") {

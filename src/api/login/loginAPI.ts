@@ -8,7 +8,7 @@ export const onLogin = async (loginValues: {
   try {
     const response = await axios({
       method: "post",
-      url: "/users/login",
+      url: "http://52.78.150.154:8080/login",
       headers: {
         "content-type": "application/json",
       },
@@ -16,20 +16,23 @@ export const onLogin = async (loginValues: {
     });
 
     // 로그인 성공한 경우
-    const { accessToken } = response.data.result.data.accessToken.split("")[1];
-    console.log(accessToken);
+    // const { accessToken } = response.data.result.data.accessToken.split("")[1];
+    const authToken = response.headers["x-auth-token"];
+    console.log(response);
 
     // accessToken 설정
-    axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+    // axios.defaults.headers.common["Authorization"] = `${accessToken}`;
+    axios.defaults.headers.common["Authorization"] = `${authToken}`;
 
-    return response.data.result.data;
+    return response;
   } catch (error: any) {
-    if (error.response.status === 400) {
+    console.log(error);
+    if (error.status === 400) {
       // 아이디, 비밀번호가 틀렸을 경우
       console.log("아이디, 비밀번호 불일치!");
+
       throw error;
     }
-
     throw error;
   }
 };
@@ -45,8 +48,8 @@ export const onSilentRefresh = async (retryCount = 0): Promise<any> => {
       },
     });
 
-    const accessToken = response.data.result.data.accessToken.split("")[1];
-    axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+    const token = response.data.token;
+    axios.defaults.headers.common["Authorization"] = `${token}`;
     return response.data;
   } catch (error: any) {
     if (error.response?.status === 401) {

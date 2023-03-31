@@ -1,44 +1,5 @@
 import { rest } from "msw";
 
-// /** JWT  */
-// const crypto = require("crypto");
-
-// function base64(json) {
-//   const stringified = JSON.stringify(json);
-//   // JSON을 문자열화
-//   const base64Encoded = Buffer.from(stringified).toString("base64");
-//   // 문자열화 된 JSON 을 Base64 로 인코딩
-//   const paddingRemoved = base64Encoded.replaceAll("=", "");
-//   // Base 64 의 Padding(= or ==) 을 제거
-
-//   return paddingRemoved;
-// }
-
-// const header = {
-//   alg: "HS256",
-//   typ: "JWT",
-// };
-
-// const encodedHeader = base64(header);
-
-// const payload = {
-//   email: "devhudi@gmail.com",
-//   name: "Hudi",
-//   isAdmin: true,
-// };
-
-// const encodedPayload = base64(payload);
-
-// const signature = crypto
-//   .createHmac("sha256", "secret_key")
-//   .update(`${encodedHeader}.${encodedPayload}`)
-//   .digest("base64")
-//   .replaceAll("=", "");
-
-// const jwt = `${encodedHeader}.${encodedPayload}.${signature}`;
-// console.log(jwt);
-// /** JWT  */
-
 const usersData = [
   {
     email: "aa123@gmail.com",
@@ -49,8 +10,36 @@ const usersData = [
     password: "12341234",
     passwordCheck: "12341234",
   },
+  {
+    email: "bb123@gmail.com",
+    nickName: "개구리페페",
+    region: "서울시 종로구",
+    profileImage:
+      "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
+    password: "12341234",
+    passwordCheck: "12341234",
+  },
 ];
 const rentalProducts = [];
+
+
+const chatRoomList = [
+  {
+    id: "1",
+    productId: "1",
+    lastChatMsg: "안녕하세요~",
+  },
+  {
+    id: "2",
+    productId: "2",
+    lastChatMsg: "상품 문의드립니다!",
+  },
+  {
+    id: "3",
+    productId: "3",
+    lastChatMsg: "안녕하세요^^",
+  },
+];
 
 const sampleProduct = {
   id: `id1`,
@@ -72,6 +61,7 @@ const sampleProduct = {
     "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
   sellerRegion: "서울시 도봉구",
 };
+
 
 for (let i = 1; i <= 20; i++) {
   const product = {
@@ -176,30 +166,49 @@ export const handlers = [
   rest.post("/users/login", async (req, res, ctx) => {
     const data = await req.json();
     console.log(data);
+    const isValidUser = usersData.filter((user) => user.email === data.email);
+    console.log(isValidUser);
 
-    return res(
-      ctx.status(201),
-      // ctx.status(401),
+    if (isValidUser.length > 0) {
+      return res(
+        ctx.status(201),
+        // ctx.status(401),
 
-      // ctx.status(400, "miss match"),
-      ctx.json({
-        success: true,
-        code: 0,
-        result: {
-          data: {
-            accessToken: `Bearer ${token.accessToken}`,
-            refreshToken: "httponly",
-            userInfo: {
-              userEmail: usersData[0].email,
-              userNickName: usersData[0].nickName,
-              userRegion: usersData[0].region,
-              userProfileImage: usersData[0].profileImage,
+        // ctx.status(400, "miss match"),
+
+        ctx.json({
+          success: true,
+          code: 0,
+          result: {
+            data: {
+              accessToken: `Bearer ${token.accessToken}`,
+              refreshToken: "httponly",
+              userInfo: {
+                userEmail: isValidUser[0].email,
+                userNickName: isValidUser[0].nickName,
+                userRegion: isValidUser[0].region,
+                userProfileImage: isValidUser[0].profileImage,
+              },
+              message: "로그인에 성공하였습니다.",
             },
-            message: "로그인에 성공하였습니다.",
           },
-        },
-      })
-    );
+        })
+      );
+    } else {
+      return res(
+        // ctx.status(401),
+
+        ctx.status(400, "miss match"),
+
+        ctx.json({
+          success: false,
+          code: 0,
+          result: {
+            message: "존재하지 않은 회원입니다.",
+          },
+        })
+      );
+    }
   }),
 
   // 박정후: 로그인 - 토큰 갱신
@@ -214,6 +223,16 @@ export const handlers = [
       ctx.json({
         accessToken: token.refreshToken,
         message: "Access Token이 재발급 되었습니다.",
+      })
+    );
+  }),
+
+  // 박정후: 채팅 - 리스트
+  rest.get("/chat/list", async (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        list: chatRoomList,
       })
     );
   }),

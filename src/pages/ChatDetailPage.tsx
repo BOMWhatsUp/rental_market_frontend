@@ -5,7 +5,7 @@ import RentalProductItem from "../components/RentalProductItem";
 export default function ChatDetailPage() {
   return (
     <div className="divide-y px-5 md:px-28 lg:px-40">
-      <RentalProductItem />
+      {/* <RentalProductItem /> */}
       <div>
         <div className="h-96 py-3.5 overflow-y-scroll scrollbar-hide">
           <div className="chat chat-end">
