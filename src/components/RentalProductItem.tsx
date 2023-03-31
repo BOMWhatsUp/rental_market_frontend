@@ -5,14 +5,13 @@ import Badge from "./Badge";
 import moment from "moment";
 import sample404 from "../assets/404sample.png";
 type ProductItemProps = {
-
   isSeller?: boolean; //my rental 에서 구분값
   simpleMode?: boolean; //chat 정보 등 버튼 중복 막기 위함
-  product: RentalProduct;
-
+  product?: RentalProduct; //TODO: null 허용 임시로 했음
 };
 RentalProductItem.defaultProps = {
   isSeller: false,
+  simpleMode: false,
 };
 export default function RentalProductItem({
   isSeller,
@@ -65,82 +64,86 @@ export default function RentalProductItem({
   };
   return (
     <>
-      <div className="card card-side bg-base-100 shadow-xl my-5 max-h-60">
-        <figure className="min-w-[30%] w-[30%] max-w-[30%] relative overflow-hidden">
-          <Link to="/product/detail">
-            <img
-              src={
-                product.mainImageUrl
-                  ? `https://dj8fgxzkrerlh.cloudfront.net/${product.mainImageUrl}`
-                  : sample404
-              }
-              onError={onErrorImg}
-              alt="Movie"
-              className="w-full h-full object-cover"
-            />
-            <Badge value={product.status} />
-          </Link>
-        </figure>
-        <div className="card-body">
-          <div className="text-accent text-sm">
-            {categoryName(product.categoryName)}
-          </div>
+      {product ? (
+        <div className="card card-side bg-base-100 shadow-xl my-5 max-h-60">
+          <figure className="min-w-[30%] w-[30%] max-w-[30%] relative overflow-hidden">
+            <Link to="/product/detail">
+              <img
+                src={
+                  product.mainImageUrl
+                    ? `https://dj8fgxzkrerlh.cloudfront.net/${product.mainImageUrl}`
+                    : sample404
+                }
+                onError={onErrorImg}
+                alt="Movie"
+                className="w-full h-full object-cover"
+              />
+              <Badge value={product.status} />
+            </Link>
+          </figure>
+          <div className="card-body">
+            <div className="text-accent text-sm">
+              {categoryName(product.categoryName)}
+            </div>
 
-          <h2 className="card-title">
-            <Link to="/product/detail">{product.title}</Link>
-          </h2>
-          <p className="line-clamp-2 leading-5 min-h-[2.5rem]">
-            {product.content}
-          </p>
-          <div className="card-actions justify-between items-center">
-            <div className="flex items-center">
-              <span>
-                {product.unitPrice}원 / 일 ∙ 최대{" "}
-                {maxRentalPeriod(product.maxRentalPeriod)} 일
-              </span>
-              {product.returnDate ? (
-                <span className="text-xs text-error ml-3">
-                  * 반납 까지
-                  {moment(product.returnDate).from(Date.now(), true)} 남음
+            <h2 className="card-title">
+              <Link to="/product/detail">{product.title}</Link>
+            </h2>
+            <p className="line-clamp-2 leading-5 min-h-[2.5rem]">
+              {product.content}
+            </p>
+            <div className="card-actions justify-between items-center">
+              <div className="flex items-center">
+                <span>
+                  {product.unitPrice}원 / 일 ∙ 최대{" "}
+                  {maxRentalPeriod(product.maxRentalPeriod)} 일
                 </span>
+                {product.returnDate ? (
+                  <span className="text-xs text-error ml-3">
+                    * 반납 까지
+                    {moment(product.returnDate).from(Date.now(), true)} 남음
+                  </span>
+                ) : (
+                  ""
+                )}
+              </div>
+              {isSeller ? (
+                <div>
+                  <button
+                    className="btn btn-outline btn-success sm:btn-xs md:btn-sm mr-2 "
+                    onClick={CheckReturn}
+                  >
+                    반납완료
+                  </button>
+                  <button
+                    className="btn btn-outline btn-error sm:btn-xs md:btn-sm"
+                    onClick={CheckDelete}
+                  >
+                    삭제
+                  </button>
+                </div>
               ) : (
-                ""
+                <div>
+                  <Link
+                    to={`/product/detail/${product.id}`}
+                    className="btn btn-primary btn-outline sm:btn-xs md:btn-sm mr-2"
+                  >
+                    상세보기
+                  </Link>
+                  <Link
+                    to="/product/pay/productid"
+                    className="btn btn-primary sm:btn-xs md:btn-sm"
+                  >
+                    렌탈하기
+                  </Link>
+                </div>
               )}
             </div>
-            {isSeller ? (
-              <div>
-                <button
-                  className="btn btn-outline btn-success sm:btn-xs md:btn-sm mr-2 "
-                  onClick={CheckReturn}
-                >
-                  반납완료
-                </button>
-                <button
-                  className="btn btn-outline btn-error sm:btn-xs md:btn-sm"
-                  onClick={CheckDelete}
-                >
-                  삭제
-                </button>
-              </div>
-            ) : (
-              <div>
-                <Link
-                  to={`/product/detail/${product.id}`}
-                  className="btn btn-primary btn-outline sm:btn-xs md:btn-sm mr-2"
-                >
-                  상세보기
-                </Link>
-                <Link
-                  to="/product/pay/productid"
-                  className="btn btn-primary sm:btn-xs md:btn-sm"
-                >
-                  렌탈하기
-                </Link>
-              </div>
-            )}
           </div>
         </div>
-      </div>
+      ) : (
+        <div>product null(test)</div>
+      )}
     </>
   );
 }

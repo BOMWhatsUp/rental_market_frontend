@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-export const ChatListItem = ({ roomId, productId, lastChatMsg }) => {
+export const ChatListItem = ({ roomId, productId, lastChatMsg }: any) => {
   return (
     <li className="card w-fit bg-base-100  rounded-none hover:bg-neutral-100 ease-out duration-100 cursor-pointer">
       <Link to={`/chat/room/:${roomId}`}>
