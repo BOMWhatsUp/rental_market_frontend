@@ -8,19 +8,16 @@ type ProductItemProps = {
   isSeller?: boolean; //my rental 에서 구분값
   simpleMode?: boolean; //chat 정보 등 버튼 중복 막기 위함
   //product?: RentalProduct | RentalProductHistory;
-  product?: RentalProduct; //TODO: null 허용 임시로 했음
-  //isHistory?: boolean;
+  product?: RentalProductHistory; //TODO: null 허용 임시로 했음
 };
 RentalProductItem.defaultProps = {
   isSeller: false,
   simpleMode: false,
-  //isHistory: false,
 };
 export default function RentalProductItem({
   isSeller,
   product,
-}: //isHistory,
-ProductItemProps) {
+}: ProductItemProps) {
   const CheckDelete = () => {
     if (confirm("렌탈 상품을 정말로 삭제하시겠습니까?")) {
       //submit delete id
@@ -97,21 +94,23 @@ ProductItemProps) {
             <p className="line-clamp-2 leading-5 min-h-[2.5rem]">
               {product.content}
             </p>
+            {/* TODO: 다른 부분 */}
+            {product.status === "RENTED" && (
+              <p className="text-xs text-error">
+                * 반납 까지
+                {moment(product.returnDate).from(Date.now(), true)} 남음
+              </p>
+            )}
             <div className="card-actions justify-between items-center">
               <div className="flex items-center">
-                <span>
-                  {product.unitPrice}원 / 일 ∙ 최대{" "}
-                  {maxRentalPeriod(product.maxRentalPeriod)} 일
+                {/* TODO: 다른 부분 */}
+                <span>결제금액 {product.totalPrice}원 | </span>
+                <span className="ml-2">
+                  {moment(product.rentalDate).format("YYYY-MM-DD")}~
+                  {moment(product.returnDate).format("YYYY-MM-DD")}
                 </span>
-                {product.returnDate ? (
-                  <span className="text-xs text-error ml-3">
-                    * 반납 까지
-                    {moment(product.returnDate).from(Date.now(), true)} 남음
-                  </span>
-                ) : (
-                  ""
-                )}
               </div>
+
               {isSeller ? (
                 <div>
                   {product.status === "RENTED" ? (
@@ -145,14 +144,15 @@ ProductItemProps) {
                   >
                     상세보기
                   </Link>
-                  {/* {isHistory && (
+                  {product.status === "RENTED" && (
                     <Link
                       to={`/product/return/${product.id}`}
                       className="btn btn-primary sm:btn-xs md:btn-sm mr-2"
                     >
                       반납하기
                     </Link>
-                  )} */}
+                  )}
+
                   {isSeller || product.status === "RENTED" ? (
                     <button
                       disabled
@@ -161,11 +161,12 @@ ProductItemProps) {
                       렌탈하기
                     </button>
                   ) : (
+                    //TODO: 다른 부분
                     <Link
                       to="/product/pay/productid"
                       className="btn btn-primary sm:btn-xs md:btn-sm"
                     >
-                      렌탈하기
+                      다시 렌탈하기
                     </Link>
                   )}
                 </div>

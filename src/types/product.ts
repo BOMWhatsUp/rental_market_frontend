@@ -2,12 +2,12 @@ export interface RentalProduct {
   id: string;
   title: string;
   content: string;
-  unitPrice: number;
+  unitPrice?: number;
   maxRentalPeriod: string;
   categoryName: string;
   wishRegion?: string;
   sellerId: string;
-  nickname: string;
+  nickname?: string;
   mainImageUrl?: string;
   status: string;
   returnDate?: Date;
@@ -18,6 +18,12 @@ export interface RentalProductDetail extends RentalProduct {
   sellerProfile: string;
   sellerRegion: string;
   imageUrls: string[];
+}
+export interface RentalProductHistory extends RentalProduct {
+  totalPrice: number;
+  sellerNickName?: string;
+  rentalDate: Date;
+  returnDate: Date;
 }
 
 export type RentalProductForm = {

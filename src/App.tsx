@@ -7,7 +7,7 @@ import ChatDetailPage from "./pages/ChatDetailPage";
 import ChatListPage from "./pages/ChatListPage";
 import MainPage from "./pages/MainPage";
 import MyPage from "./pages/MyPage";
-import MyRentalPage from "./pages/MyRentalPage";
+import MyRentalHistoryPage from "./pages/MyRentalHistoryPage";
 import RentalCreatePage from "./pages/RentalCreatePage";
 import RentalDetailPage from "./pages/RentalDetailPage";
 import RentalReturnPage from "./pages/RentalReturnPage";
@@ -36,7 +36,7 @@ function App() {
         <Route path="/login/*" element={<LoginPage />} />
         <Route path="/signup/*" element={<SignUpPage />} />
         <Route path="/my/*" element={<MyPage />} />
-        <Route path="/my/products/*" element={<MyRentalPage />} />
+        <Route path="/my/products/*" element={<MyRentalHistoryPage />} />
         {/* <Route path="/test/*" element={<ScrollTest />} /> */}
         {/* <Route path="/mock/test/*" element={<Test />} /> */}
         <Route path="/chat/room/:roomId" element={<Chat />} />

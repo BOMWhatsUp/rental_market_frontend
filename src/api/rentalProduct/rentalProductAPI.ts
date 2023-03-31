@@ -1,5 +1,9 @@
 import { axiosInstance, axiosFormInstance } from "../axiosInstance";
-import { RentalProduct, RentalProductDetail } from "../../types/product";
+import {
+  RentalProduct,
+  RentalProductDetail,
+  RentalProductHistory,
+} from "../../types/product";
 
 //create
 export const addProduct = async (formData: FormData) => {
@@ -52,6 +56,27 @@ export const getPayProduct = async (id: string) => {
     `/api/products/pay/${id}`
     // `http://3.37.196.93:8080/products/${id}/detail`
   );
+  return res.data;
+};
+
+export const getSellerHistoryProducts = async (
+  isSeller: boolean = false,
+  userId: string = "",
+  page: number = 1,
+  size: number = 5
+) => {
+  let res;
+  if (isSeller) {
+    res = await axiosInstance.get<RentalProductHistory[]>(
+      `/api/seller/history?page=${page}&size=${size}&userId=${userId}`
+      // `http://3.37.196.93:8080/products/${id}/detail`
+    );
+  } else {
+    res = await axiosInstance.get<RentalProductHistory[]>(
+      `/api/buyer/history?page=${page}&size=${size}&userId=${userId}`
+      // `http://3.37.196.93:8080/products/${id}/detail`
+    );
+  }
   return res.data;
 };
 
