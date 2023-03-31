@@ -136,7 +136,7 @@ const Chat: React.FC = () => {
   const loginUserInfo = useRecoilValue(userInfo);
   return (
     <div className="divide-y px-5 md:px-28 lg:px-40">
-      <RentalProductItem productInfo={data?.product} />
+      <RentalProductItem />
       <div>
         <div className="h-96 py-3.5 overflow-y-scroll scrollbar-hide">
           {/* 실시간 채팅 주고 받기 이전에 채팅내역들 화면에 보여주어야함. */}
