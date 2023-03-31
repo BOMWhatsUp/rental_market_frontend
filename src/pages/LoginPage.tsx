@@ -15,7 +15,7 @@ export default function LoginPage() {
   console.log(accessToken);
   // 서버로부터 전달 받는 로그인한 유저정보
   const [loginUserInfo, setLoginUserInfo] = useRecoilState(userInfo);
-  console.log(loginUserInfo);
+  // console.log(loginUserInfo);
   const navigate = useNavigate();
   const { loginMutation, silentRefreshMutation } = useLogin();
   const [userInputs, setUserInputs] = useState({
@@ -24,7 +24,10 @@ export default function LoginPage() {
   });
 
   // 아이디, 비밀번호가 틀렸을 경우 true
-  const [loginError, setLoginError] = useState(false);
+  const [loginError, setLoginError] = useState({
+    errorMessage: "",
+    status: false,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInputs({ ...userInputs, [e.target.name]: e.target.value });
@@ -34,25 +37,24 @@ export default function LoginPage() {
     e.preventDefault();
     // const { email, password } = userInputs;
     console.log("이메일로 로그인 submit");
-    setUserInputs({
-      email: "",
-      password: "",
-    });
 
     // Server로 submit 기능 구현
     loginMutation.mutate(userInputs, {
       onSuccess: (response) => {
         console.log(response);
         if (response === undefined) return;
-        if (response?.response?.status === 400) {
-          return setLoginError(!loginError);
-        }
-        const { accessToken, refreshToken, userInfo } = response;
+        // if (response?.response?.status === 400) {
+        //   return setLoginError(!loginError);
+        // }
+
+        // 23.03.31
+        // token값이랑, userInfo 값 수정하셔서 다시 받기로 함 (효진님)
+        const { token, userInfo } = response.data;
 
         // Recoil 전역 상태로 accessToken, 유저정보 관리 해야함
         // 프로필 사진은 어떻게..??
         //  ===>  https://dj8fgxzkrerlh.cloudfront.net/이미지파일명
-        setAccessToken(accessToken.split(" ")[1]);
+        setAccessToken(response.data);
         setLoginUserInfo(userInfo);
         // 토큰 만료 ??시간 전에 토큰 재갱신 => 유저가 인지하지 못하게 자동으로 토큰 재갱신
         // setTimeout(
@@ -67,16 +69,26 @@ export default function LoginPage() {
         //   5000 // 테스트하기 전에 임의로 시간 5초로 설정
         // );
 
+        setUserInputs({
+          email: "",
+          password: "",
+        });
+
         navigate("/main");
       },
       onError: (res: any) => {
         // 실패하는 경우는..
         // 1. 아이디, 비밀번호가 틀렸을 때
-
         // 2. 아이디가 존재하지 않을 때
 
         console.log("로그인 실패!");
         console.log(res);
+        if (res?.response?.status === 400) {
+          setLoginError({
+            errorMessage: res?.response?.data,
+            status: true,
+          });
+        }
       },
     });
   };
@@ -115,7 +127,9 @@ export default function LoginPage() {
               value={userInputs.password}
             />
           </div>
-          <div>{loginError ? "아이디, 비밀번호를 다시 확인해주세요." : ""}</div>
+          <div className="text-error">
+            {loginError.status && loginError.errorMessage}
+          </div>
           <button type="submit" className="btn btn-primary btn-wide mt-5">
             로그인
           </button>

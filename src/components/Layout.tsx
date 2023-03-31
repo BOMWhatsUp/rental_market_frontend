@@ -64,7 +64,13 @@ const Layout = ({ children }: Props) => {
                     className="w-10 rounded-full"
                     onClick={(prev) => setDropDown(!prev)}
                   >
-                    <img src={loginUserInfo.userProfileImage} />
+                    <img
+                      src={
+                        loginUserInfo?.userProfileImage
+                          ? `${loginUserInfo.userProfileImage}`
+                          : "https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
+                      }
+                    />
                   </div>
                 </label>
                 <ul
