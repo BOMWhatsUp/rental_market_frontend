@@ -163,22 +163,27 @@ export default function MyPage() {
             <Link to="/my/products">
               <div className="stats stats-vertical sm:stats-horizontal shadow w-full">
                 <div className="stat p-3">
-                  <div className="stat-title text-base">빌린 상품</div>
+                  <div className="stat-title text-base">빌린 내역</div>
                   <div className="stat-value text-3xl">12</div>
                   <div className="stat-desc">Jan 1st - Feb 1st</div>
                 </div>
 
                 <div className="stat p-3">
-                  <div className="stat-title text-base">빌려준 상품</div>
+                  <div className="stat-title text-base">빌려준 내역</div>
+                  <div className="stat-value text-3xl">34</div>
+                  <div className="stat-desc">Jan 1st - Feb 1st</div>
+                </div>
+                <div className="stat p-3">
+                  <div className="stat-title text-base">내 상품</div>
                   <div className="stat-value text-3xl">34</div>
                   <div className="stat-desc">Jan 1st - Feb 1st</div>
                 </div>
 
-                <div className="stat p-3">
+                {/* <div className="stat p-3">
                   <div className="stat-title text-base">수익</div>
                   <div className="stat-value text-3xl">123,958</div>
                   <div className="stat-desc">Jan 1st - Feb 1st</div>
-                </div>
+                </div> */}
               </div>
             </Link>
           </section>

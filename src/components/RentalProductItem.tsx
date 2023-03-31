@@ -1,34 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import { RentalProduct } from "../types/product";
+import Badge from "./Badge";
+import moment from "moment";
+import sample404 from "../assets/404sample.png";
 type ProductItemProps = {
-  isSeller?: boolean;
-  test: string;
-  productInfo: {
-    categoryName: string;
-    content: string;
-    createdAt: string;
-    id: number;
-    imageUrls: [];
-    mainImageUrl: string;
-    maxRentalPeriod: string;
-    modifiedAt: string;
-    nickname: string;
-    sellerId: string;
-    status: string;
-    title: string;
-    unitPrice: number;
-    wishRegion: string;
-  };
+
+  isSeller?: boolean; //my rental 에서 구분값
+  simpleMode?: boolean; //chat 정보 등 버튼 중복 막기 위함
+  product: RentalProduct;
+
 };
 RentalProductItem.defaultProps = {
   isSeller: false,
-  test: "",
 };
 export default function RentalProductItem({
   isSeller,
-  test,
-  productInfo,
+  product,
 }: ProductItemProps) {
   const CheckDelete = () => {
     if (confirm("렌탈 상품을 정말로 삭제하시겠습니까?")) {
@@ -46,38 +34,79 @@ export default function RentalProductItem({
       console.log("반납완료 처리함");
     }
   };
-
+  const maxRentalPeriod = (value: string) => {
+    switch (value) {
+      case "ONEMONTH":
+        return "30";
+      case "TWOMONTH":
+        return "60";
+      case "THREEMONTH":
+        return "90";
+    }
+  };
+  const categoryName = (value: string) => {
+    switch (value) {
+      case "CLOTHING":
+        return "의류";
+      case "HOME":
+        return "생활가전";
+      case "FURNITURE":
+        return "가구/인테리어";
+      case "DIGITAL":
+        return "디지털기기";
+      case "BOOK":
+        return "도서";
+      case "GAMEANDRECORD":
+        return "게임/음반";
+    }
+  };
+  const onErrorImg = (e: any) => {
+    e.target.src = sample404;
+  };
   return (
     <>
-      <div className="card card-side bg-base-100 shadow-xl my-5">
-        <figure className="min-w-[30%] w-1/3 relative">
+      <div className="card card-side bg-base-100 shadow-xl my-5 max-h-60">
+        <figure className="min-w-[30%] w-[30%] max-w-[30%] relative overflow-hidden">
           <Link to="/product/detail">
             <img
-              src="http://m.ezendolls.com/web/product/big/202103/2252d8e72c6cf7983f5d18e41d3f3213.jpg"
+              src={
+                product.mainImageUrl
+                  ? `https://dj8fgxzkrerlh.cloudfront.net/${product.mainImageUrl}`
+                  : sample404
+              }
+              onError={onErrorImg}
               alt="Movie"
               className="w-full h-full object-cover"
             />
-            <div className="badge badge-success border-base-100 gap-2 p-3 absolute left-2 top-2 ">
-              대여가능
-            </div>
+            <Badge value={product.status} />
           </Link>
         </figure>
         <div className="card-body">
-          <div className="text-accent text-sm">가구/인테리어</div>
+          <div className="text-accent text-sm">
+            {categoryName(product.categoryName)}
+          </div>
 
           <h2 className="card-title">
-            <Link to="/product/detail">
-              {test}
-              "진로 두꺼비 인형"
-            </Link>
+            <Link to="/product/detail">{product.title}</Link>
           </h2>
-          <p className="line-clamp-2 leading-5">
-            소중한 두꺼비 인형을 렌트해 드려요~ 진로 두꺼비 인형의 효능
-            효과-혈액순환, 암예방, 머머머머, 피부정화, 체질개선, 다이어트,
-            체중감량,근육 증가 등등등등 좋습니다.
+          <p className="line-clamp-2 leading-5 min-h-[2.5rem]">
+            {product.content}
           </p>
           <div className="card-actions justify-between items-center">
-            <div>1300원" / 일 ∙ 최대 60 일</div>
+            <div className="flex items-center">
+              <span>
+                {product.unitPrice}원 / 일 ∙ 최대{" "}
+                {maxRentalPeriod(product.maxRentalPeriod)} 일
+              </span>
+              {product.returnDate ? (
+                <span className="text-xs text-error ml-3">
+                  * 반납 까지
+                  {moment(product.returnDate).from(Date.now(), true)} 남음
+                </span>
+              ) : (
+                ""
+              )}
+            </div>
             {isSeller ? (
               <div>
                 <button
@@ -96,7 +125,7 @@ export default function RentalProductItem({
             ) : (
               <div>
                 <Link
-                  to="/product/detail/productid"
+                  to={`/product/detail/${product.id}`}
                   className="btn btn-primary btn-outline sm:btn-xs md:btn-sm mr-2"
                 >
                   상세보기
