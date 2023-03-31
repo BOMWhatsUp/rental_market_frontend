@@ -5,17 +5,15 @@ import Badge from "./Badge";
 import moment from "moment";
 import sample404 from "../assets/404sample.png";
 type ProductItemProps = {
-  isSeller?: boolean;
-  test: string;
+  isSeller?: boolean; //my rental 에서 구분값
+  simpleMode?: boolean; //chat 정보 등 버튼 중복 막기 위함
   product: RentalProduct;
 };
 RentalProductItem.defaultProps = {
   isSeller: false,
-  test: "",
 };
 export default function RentalProductItem({
   isSeller,
-  test,
   product,
 }: ProductItemProps) {
   const CheckDelete = () => {

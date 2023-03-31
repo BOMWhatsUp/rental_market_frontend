@@ -82,6 +82,14 @@ export default function RentalDetailPage() {
         "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
     });
   }, []);
+
+  // react carousel map 관련 문제 해결 테스트
+  const testUrls = [
+    "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
+    "https://t1.daumcdn.net/cfile/tistory/992755335A157ED62B",
+    "https://img1.daumcdn.net/thumb/C176x176/?fname=https://blog.kakaocdn.net/dn/cv7UPT/btrSm0BDg2h/bigd2G5zkOERd0S1KEq3Ek/img.jpg",
+  ];
+
   return (
     <>
       {isLoading && <div>Loading...</div>}
@@ -89,35 +97,45 @@ export default function RentalDetailPage() {
         <div className="container flex justify-center px-5 md:px-40 lg:px-56">
           <div className="flex flex-col">
             <div className="w-full min-w-[33rem] h-96 overflow-hidden rounded relative">
-              <Carousel autoPlay>
-                <div className="w-full h-96">
-                  <img
-                    src="https://t1.daumcdn.net/cfile/tistory/992755335A157ED62B"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <div className="w-full h-96">
-                  <img
-                    src="https://cphoto.asiae.co.kr/listimglink/1/2022011117124595734_1641888765.jpg"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <div className="w-full h-96">
-                  <img
-                    src="https://cdn.kmecnews.co.kr/news/photo/202205/25744_14783_941.jpg"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-              </Carousel>
-              {/* <img
-                src={
-                  productDetail.imageUrls.length > 0
-                    ? `https://dj8fgxzkrerlh.cloudfront.net/${productDetail.imageUrls[0]}`
-                    : sample404
-                }
-                onError={onErrorImg}
-                className="object-cover w-full h-full"
-              ></img> */}
+              <div className="carousel w-full">
+                {/* {productDetail.imageUrls.map((url, index) => (   */}
+                {testUrls.map((url, index) => (
+                  <div
+                    id={`slide${index}`}
+                    key={`slide${index}`}
+                    className="carousel-item relative w-full h-96"
+                  >
+                    <img
+                      //로컬
+                      src={url}
+                      //src={`https://dj8fgxzkrerlh.cloudfront.net/${url}`}
+                      className="object-cover w-full h-full"
+                    />
+                    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                      <a
+                        // href={`#slide${productDetail.imageUrls.length - 1}`}
+                        href={`#slide${
+                          index === 0 ? testUrls.length - 1 : index - 1
+                        }`}
+                        onClick={() => console.log(testUrls.length - 1)}
+                        className="btn btn-circle"
+                      >
+                        ❮
+                      </a>
+                      <a
+                        href={`#slide${
+                          index === testUrls.length - 1 ? index - 1 : index + 1
+                        }`}
+                        className="btn btn-circle"
+                        onClick={() => console.log(index + 1)}
+                      >
+                        ❯
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               <Badge value={productDetail.status} isFull={true} />
             </div>
             <div className="flex flex-col">
@@ -197,12 +215,21 @@ export default function RentalDetailPage() {
                 <p>여건이 되면 이곳에 지도</p>
               </section>
               <section>
-                <Link
-                  to={`/product/pay/${productDetail.id}`}
-                  className="btn btn-primary sm:btn-sm lg:btn-md w-full mt-3"
-                >
-                  렌탈하기
-                </Link>
+                {user.userEmail === productDetail.sellerId ? (
+                  <button
+                    disabled
+                    className="btn btn-primary sm:btn-sm lg:btn-md w-full mt-3"
+                  >
+                    렌탈하기
+                  </button>
+                ) : (
+                  <Link
+                    to={`/product/pay/${productDetail.id}`}
+                    className="btn btn-primary sm:btn-sm lg:btn-md w-full mt-3"
+                  >
+                    렌탈하기
+                  </Link>
+                )}
               </section>
             </div>
           </div>

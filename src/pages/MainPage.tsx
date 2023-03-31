@@ -7,6 +7,8 @@ import { InfiniteData, useInfiniteQuery, useQueryClient } from "react-query";
 import { getProducts } from "../api/rentalProduct/rentalProductAPI";
 import Badge from "../components/Badge";
 import { productStatus } from "../utils/converter";
+import { userInfo } from "../atoms/userInfo";
+import { useRecoilState } from "recoil";
 
 type ProductsFilter = {
   category: string;
@@ -21,7 +23,17 @@ export default function MainPage() {
     keyword: "",
     status: "",
   });
-
+  //TODO: 로그인 없이 임시 테스트를 위한 유저 info - 유저정보로 바꿔야
+  const [user, setUser] = useRecoilState(userInfo);
+  useEffect(() => {
+    setUser({
+      userEmail: "pepe@gmail.com",
+      userNickName: "개구리페페",
+      userRegion: "서울시 도봉구",
+      userProfileImage:
+        "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
+    });
+  }, []);
   //request query param- 바로 적용 안되는 문제 해결
   // let categoryName = "";
   let wishRegion = "";
@@ -46,7 +58,7 @@ export default function MainPage() {
   const regionDisplay = (value: string) => {
     if (value === "user") {
       //TODO: 유저의 정보값 넣어야
-      return "성남시 분당구";
+      return user.userRegion;
     } else {
       return "전체";
     }
@@ -143,6 +155,7 @@ export default function MainPage() {
         return nextPage;
       },
       onSuccess(data) {
+        console.log(filter);
         //console.log("success", data);
         //setPageData((prev) => ({ ...prev, ...data }));
       },
@@ -294,12 +307,14 @@ export default function MainPage() {
                 </li>
                 <li>
                   <a
-                    className={filter.region === "user" ? " active" : ""}
+                    className={
+                      filter.region === user.userRegion ? " active" : ""
+                    }
                     data-title="region"
-                    data-value="user"
+                    data-value={user.userRegion}
                     onClick={handleChangeDropdown}
                   >
-                    성남시 분당구
+                    {user.userRegion}
                   </a>
                 </li>
               </ul>

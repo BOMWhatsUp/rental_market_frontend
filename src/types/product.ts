@@ -5,12 +5,12 @@ export interface RentalProduct {
   unitPrice: number;
   maxRentalPeriod: string;
   categoryName: string;
-  wishRegion: string;
+  wishRegion?: string;
   sellerId: string;
   nickname: string;
-  mainImageUrl: string;
+  mainImageUrl?: string;
   status: string;
-  returnDate: Date;
+  returnDate?: Date;
 }
 
 export interface RentalProductDetail extends RentalProduct {

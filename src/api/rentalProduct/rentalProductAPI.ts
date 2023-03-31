@@ -22,17 +22,19 @@ export const addProduct = async (formData: FormData) => {
 //read
 export const getProducts = async (
   categoryName: string = "",
-  wishRegion: string = "",
+  userRegion: string = "",
   keyword: string = "",
   status: string = "",
   page: number = 1,
   size: number = 5
 ) => {
   const res = await axiosInstance.get<RentalProduct[]>(
-    `/api/products?page=${page}&size=${size}&categoryName=${categoryName}&wishRegion=${wishRegion}&keyword=${keyword}&status=${status}`,
+    //`/api/products?page=${page}&size=${size}&categoryName=${categoryName}&wishRegion=${wishRegion}&keyword=${keyword}&status=${status}`,
     //`http://3.37.196.93:8080/products?page=${page}&size=${size}&category-name=${categoryName}&wishRegion=${wishRegion}&keyword=${keyword}&status=${status}`,
-    //`http://3.37.196.93:8080/products?page=${page}&size=${size}&category-name=${categoryName}&status=${status}`,
-    { params: { page, size, categoryName, wishRegion, keyword, status } }
+    `http://3.37.196.93:8080/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`
+    //`http://3.37.196.93:8080/products`,
+    //{ params: { page, size, categoryName } }
+    // keyword, status, userRegion
   );
   return res.data;
 };
@@ -40,6 +42,14 @@ export const getProducts = async (
 export const getProduct = async (id: string) => {
   const res = await axiosInstance.get<RentalProductDetail>(
     `/api/products/detail/${id}`
+    // `http://3.37.196.93:8080/products/${id}/detail`
+  );
+  return res.data;
+};
+
+export const getPayProduct = async (id: string) => {
+  const res = await axiosInstance.get<RentalProductDetail>(
+    `/api/products/pay/${id}`
     // `http://3.37.196.93:8080/products/${id}/detail`
   );
   return res.data;

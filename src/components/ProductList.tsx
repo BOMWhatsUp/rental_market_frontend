@@ -7,17 +7,20 @@ import { getProducts } from "../api/rentalProduct/rentalProductAPI";
 type ProductListProps = {
   data: InfiniteData<RentalProduct[]>;
   isSuccess: boolean;
+  isSeller?: boolean; //로그인 유저가 올린 아이템인지 여부
 };
-const ProductList = ({ data, isSuccess }: ProductListProps) => {
+
+// ProductList.defaultProps = {
+//   isSeller: false,
+// };
+const ProductList = ({ data, isSuccess, isSeller }: ProductListProps) => {
   return (
     <div>
       {data === null && <div>데이터 없음 테스트</div>}
       {isSuccess &&
         data &&
         data!.pages.map((page, index) =>
-          page.map((pd) => (
-            <RentalProductItem test={pd.id} key={pd.id} product={pd} />
-          ))
+          page.map((pd) => <RentalProductItem key={pd.id} product={pd} />)
         )}
     </div>
   );

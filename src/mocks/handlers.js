@@ -234,6 +234,10 @@ export const handlers = [
     return res(ctx.status(200), ctx.json(sampleProduct));
   }),
 
+  rest.get("/api/products/pay/id1", async (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(sampleProduct));
+  }),
+
   //jylee: rental list w get-react-query
   rest.get("/api/products", (req, res, ctx) => {
     const _size = req.url.searchParams.get("size");
