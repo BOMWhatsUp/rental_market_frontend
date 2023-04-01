@@ -29,7 +29,7 @@ export default function MainPage() {
     setUser({
       userEmail: "pepe@gmail.com",
       userNickName: "개구리페페",
-      userRegion: "서울시 도봉구",
+      userRegion: "서울 도봉구",
       userProfileImage:
         "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
     });
@@ -206,7 +206,7 @@ export default function MainPage() {
     <>
       <div className="flex flex-col">
         {/* <div className="flex justify-between px-5 md:px-28 lg:px-40"></div> */}
-        <div className="flex items-center justify-between px-5 md:px-28 lg:px-40">
+        <div className="flex items-center justify-between px-5 md:px-16 lg:px-32">
           <ul className="menu menu-horizontal bg-base-100 z-50 text-sm">
             <li tabIndex={0}>
               <span className="whitespace-nowrap">
@@ -413,7 +413,7 @@ export default function MainPage() {
             </div>
           </div>
         </div>
-        <div className="px-5 md:px-28 lg:px-40">
+        <div className="px-5 md:px-16 lg:px-32">
           {isLoading && (
             <div className="h-full flex items-center justify-center">
               <p>Loading...</p>

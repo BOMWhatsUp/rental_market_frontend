@@ -21,8 +21,17 @@ const usersData = [
   },
 ];
 const rentalProducts = [];
-
-
+const rentalProductHistories = [];
+const rentalPayProduct = {
+  id: 6,
+  sellerId: "test20@naver.com",
+  nickname: "test20",
+  title: "test20",
+  imageUrls: ["e7b27759-2eed-49ed-9", "7f2ec183-dd8f-4db3-9"],
+  maxRentalPeriod: "ONEMONTH",
+  categoryName: "BOOK",
+  unitPrice: 600,
+};
 const chatRoomList = [
   {
     id: "1",
@@ -62,7 +71,6 @@ const sampleProduct = {
   sellerRegion: "서울시 도봉구",
 };
 
-
 for (let i = 1; i <= 20; i++) {
   const product = {
     id: `id${i}`,
@@ -98,6 +106,48 @@ for (let i = 1; i <= 20; i++) {
   };
   rentalProducts.push(product);
   rentalProducts.push(product2);
+}
+
+//history
+for (let i = 1; i <= 20; i++) {
+  const product = {
+    id: `id${i}`,
+    title: `title${i}`,
+    content: `content${i}`,
+    totalPrice: 30000,
+    maxRentalPeriod: "ONEMONTH",
+    categoryName: "FURNITURE",
+    wishRegion: "서울 종로구",
+    sellerId: `nick${i}@gmail.com`,
+    sellerNickName: `닉네임${i}`,
+    status: "AVAILABLE",
+    rentalDate: new Date("2023-2-6"),
+    returnDate: new Date("2023-3-6"),
+    returnYn: true,
+    mainImageUrl:
+      "https://user-images.githubusercontent.com/37766175/62363267-f219ba80-b559-11e9-9943-855d42b2fc11.png",
+  };
+  const product2 = {
+    id: `id${i + 100}`,
+    title: `엘사 공주드레스${i + 100}`,
+    content: `엘사공주드레스 고급스러워요 우리딸 몰래 빌려드립니다... ${
+      i + 100
+    }`,
+    totalPrice: 24900,
+    maxRentalPeriod: "TWOMONTH",
+    categoryName: "CLOTHING",
+    wishRegion: "성남시 분당구",
+    sellerId: `whatsup@naver.com`,
+    sellerNickName: `봄이와썹`,
+    status: "RENTED",
+    rentalDate: new Date("2023-3-6"),
+    returnDate: new Date("2023-5-6"),
+    returnYn: false,
+    mainImageUrl:
+      "https://dnvefa72aowie.cloudfront.net/origin/article/202301/EC146E3A1E533D4A8BBAB4560932F7167E7D5D28FE0F91B56BAC5F0742125F09.jpg?q=95&s=1440x1440&t=inside",
+  };
+  rentalProductHistories.push(product);
+  rentalProductHistories.push(product2);
 }
 
 const token = {
@@ -283,6 +333,39 @@ export const handlers = [
       _keyword,
       _status
     );
+    return res(ctx.json(paginatedProducts));
+  }),
+  //jylee: rental history list -seller w get-react-query
+  rest.get(`/api/seller/history`, (req, res, ctx) => {
+    const _size = req.url.searchParams.get("size");
+    const _page = req.url.searchParams.get("page");
+    const _userId = req.url.searchParams.get("userId");
+    const size = parseInt(_size || "10");
+    const page = parseInt(_page || "1");
+    const startIndex = (page - 1) * size;
+    const endIndex = startIndex + size;
+    const paginatedProducts = rentalProductHistories.slice(
+      startIndex,
+      endIndex
+    );
+    console.log("history test", _size, _page, _userId);
+    return res(ctx.json(paginatedProducts));
+  }),
+
+  //jylee: rental history list- buyer w get-react-query
+  rest.get(`/api/buyer/history`, (req, res, ctx) => {
+    const _size = req.url.searchParams.get("size");
+    const _page = req.url.searchParams.get("page");
+    const _userId = req.url.searchParams.get("userId");
+    const size = parseInt(_size || "10");
+    const page = parseInt(_page || "1");
+    const startIndex = (page - 1) * size;
+    const endIndex = startIndex + size;
+    const paginatedProducts = rentalProductHistories.slice(
+      startIndex,
+      endIndex
+    );
+    console.log("history test", _size, _page, _userId);
     return res(ctx.json(paginatedProducts));
   }),
 
