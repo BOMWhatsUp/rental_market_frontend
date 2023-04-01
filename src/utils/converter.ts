@@ -36,6 +36,8 @@ export const productStatus = (value: string) => {
       return "반납대기";
     case "AVAILABLE":
       return "대여가능";
+    case "RETURNED":
+      return "반납완료";
     default:
       return "전체";
   }
