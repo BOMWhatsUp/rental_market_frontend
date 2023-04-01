@@ -17,11 +17,13 @@ export default defineConfig(
         global: "globalThis",
       },
       // proxy 속성 추가
-      proxy: {
-        "/api": {
-          target: "http://3.37.196.93:8080",
-          changeOrigin: true,
-          secure: false,
+      server: {
+        proxy: {
+          "/api": {
+            target: "http://3.37.196.93:8080",
+            changeOrigin: true,
+            secure: false,
+          },
         },
       },
     };
