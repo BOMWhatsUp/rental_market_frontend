@@ -52,8 +52,8 @@ export const getProducts = async (
 
 export const getProduct = async (id: string) => {
   const res = await axiosInstance.get<RentalProductDetail>(
-    `/api/products/detail/${id}`
-    //`http://3.37.196.93:8080/product/${id}`
+    //`/api/products/detail/${id}`
+    `http://3.37.196.93:8080/product/${id}`
   );
   return res.data;
 };
