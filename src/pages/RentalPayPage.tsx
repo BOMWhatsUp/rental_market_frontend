@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { Link, useParams } from "react-router-dom";
-import { getPayProduct } from "../api/rentalProduct/rentalProductAPI";
+import {
+  addTransaction,
+  getPayProduct,
+} from "../api/rentalProduct/rentalProductAPI";
 import { RentalProductDetail } from "../types/product";
 import { categoryName, maxRentalPeriod } from "../utils/converter";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import Badge from "../components/Badge";
-
+import { useRecoilState } from "recoil";
+import { userInfo } from "../atoms/userInfo";
+import sample404 from "../assets/404sample.png";
 // 최대 랜탈 기간
 const maxRentalDay: number = 30;
 
@@ -15,10 +20,41 @@ const maxRentalDay: number = 30;
 //let rentalPay: number = 300;
 
 export default function RentalPayPage() {
+  //TODO: 로그인 없이 임시 테스트를 위한 유저 info - 유저정보로 바꿔야
+  const [user, setUser] = useRecoilState(userInfo);
+
+  useEffect(() => {
+    setUser((prev) => ({
+      ...prev,
+      userEmail: "pepe@gmail.com",
+      userNickName: "개구리페페",
+      userRegion: "서울 도봉구",
+      userProfileImage:
+        "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
+    }));
+  }, []);
+
+  //TODO: 리팩토링
+  const productTransactionMutation = useMutation({
+    mutationFn: (form: {
+      productId: string;
+      userId: string;
+      days: number;
+      totalPrice: number;
+    }) => addTransaction(form),
+    onSuccess: (data) => {
+      console.log(data, "성공성공");
+    },
+  });
+
   const productId = useParams().id;
   const [rentalday, setRentalDay] = useState(1);
   const [rentalPay, setRentalPay] = useState(0);
-
+  const [form, setForm] = useState({
+    userId: user.userEmail,
+    totalPrice: 0,
+    days: 0,
+  });
   const { isLoading, isSuccess, isError, data, error }: any = useQuery(
     "productPay",
     () => getPayProduct(productId),
@@ -45,7 +81,9 @@ export default function RentalPayPage() {
       setRentalDay((prev) => (prev <= 1 ? prev : prev - 1));
     }
   };
-
+  const onErrorImg = (e: any) => {
+    e.target.src = sample404;
+  };
   // 렌탈 일수 INPUT 입력
   const rentaldayOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -62,50 +100,76 @@ export default function RentalPayPage() {
   };
 
   useEffect(() => {
-    //console.log(totalrentalPay, rentalday);
+    console.log(totalrentalPay, rentalday);
+    const total = rentalday * rentalPay;
+    setForm((prevForm) => ({ ...prevForm, userId: user.userEmail }));
+    setForm((prevForm) => ({
+      ...prevForm,
+      totalPrice: total,
+    }));
+    setForm((prevForm) => ({ ...prevForm, days: rentalday }));
   }, [rentalday]);
+  //console.log(form);
 
   const handleSubmitTransaction = () => {
-    const payInfo = {
-      productId: "",
-      sellerId: "",
-      totalPrice: "",
-      buyerId: "",
-      totalRentalDays: "",
+    const formData = {
+      productId: productPay.id,
+      userId: user.userEmail,
+      days: form.days,
+      totalPrice: form.totalPrice,
     };
+    productTransactionMutation.mutate(formData);
   };
   return (
     <>
       {data && isSuccess && (
         <div className="container flex justify-center px-5 md:px-28 lg:px-40">
           <div className="flex flex-col">
-            {/* <div className="w-full h-96 overflow-hidden rounded">
-              <img
-                src="http://m.ezendolls.com/web/product/big/202103/2252d8e72c6cf7983f5d18e41d3f3213.jpg"
-                className="object-cover w-full h-full"
-              ></img>
-            </div> */}
             <div className="w-full min-w-[33rem] h-96 overflow-hidden rounded relative">
-              <Carousel autoPlay>
-                <div className="w-full h-96">
-                  <img
-                    src="https://t1.daumcdn.net/cfile/tistory/992755335A157ED62B"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <div className="w-full h-96">
-                  <img
-                    src="https://cphoto.asiae.co.kr/listimglink/1/2022011117124595734_1641888765.jpg"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <div className="w-full h-96">
-                  <img
-                    src="https://cdn.kmecnews.co.kr/news/photo/202205/25744_14783_941.jpg"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-              </Carousel>
+              <div className="carousel w-full">
+                {productPay.imageUrls.map((url, index) => (
+                  <div
+                    id={`slide${index}`}
+                    key={`slide${index}`}
+                    className="carousel-item relative w-full h-96"
+                  >
+                    <img
+                      //로컬
+                      //src={url}
+                      src={`https://dj8fgxzkrerlh.cloudfront.net/${url}`}
+                      className="object-cover w-full h-full"
+                      onError={onErrorImg}
+                    />
+                    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                      <a
+                        // href={`#slide${productDetail.imageUrls.length - 1}`}
+                        href={`#slide${
+                          index === 0
+                            ? productPay.imageUrls.length - 1
+                            : index - 1
+                        }`}
+                        onClick={() =>
+                          console.log(productPay.imageUrls.length - 1)
+                        }
+                        className="btn btn-circle"
+                      >
+                        ❮
+                      </a>
+                      <a
+                        href={`#slide${
+                          index === productPay.imageUrls.length - 1
+                            ? index - 1
+                            : index + 1
+                        }`}
+                        className="btn btn-circle"
+                        onClick={() => console.log(index + 1)}
+                      >
+                        ❯
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
               <Badge value={productPay.status} isFull={true} />
             </div>
             <div className="py-3.5 px-5">

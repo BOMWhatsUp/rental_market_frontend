@@ -1,7 +1,7 @@
 export interface RentalProduct {
   id: string;
   title: string;
-  content: string;
+  content?: string;
   unitPrice?: number;
   maxRentalPeriod: string;
   categoryName: string;
@@ -24,6 +24,7 @@ export interface RentalProductHistory extends RentalProduct {
   sellerNickName?: string;
   rentalDate: Date;
   returnDate: Date;
+  returnYn: boolean;
 }
 
 export type RentalProductForm = {
