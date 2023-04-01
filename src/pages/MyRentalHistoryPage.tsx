@@ -110,8 +110,8 @@ export default function MyRentalHistoryPage() {
       getSellerHistoryProducts(
         isSellerHistory,
         //TODO: 유저 정보 바로 잘 들어가는지 확인해야함
-        user.userEmail,
-        //"pepe@gmail.com",
+        //user.userEmail,
+        "pepe@gmail.com",
         pageParam,
         size
       ),
