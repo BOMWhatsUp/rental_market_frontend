@@ -43,7 +43,8 @@ export default function RentalPayPage() {
       totalPrice: number;
     }) => addTransaction(form),
     onSuccess: (data) => {
-      console.log(data, "성공성공");
+      console.log(data);
+      //TODO: 여기에 채팅 기능 연결 - 방있는지 없는지 확인, 있으면 채팅방 입장 없으면 생성, buyer-> seller 메세지 전달
     },
   });
 
