@@ -22,7 +22,16 @@ const usersData = [
 ];
 const rentalProducts = [];
 const rentalProductHistories = [];
-
+const rentalPayProduct = {
+  id: 6,
+  sellerId: "test20@naver.com",
+  nickname: "test20",
+  title: "test20",
+  imageUrls: ["e7b27759-2eed-49ed-9", "7f2ec183-dd8f-4db3-9"],
+  maxRentalPeriod: "ONEMONTH",
+  categoryName: "BOOK",
+  unitPrice: 600,
+};
 const chatRoomList = [
   {
     id: "1",
@@ -114,6 +123,7 @@ for (let i = 1; i <= 20; i++) {
     status: "AVAILABLE",
     rentalDate: new Date("2023-2-6"),
     returnDate: new Date("2023-3-6"),
+    returnYn: true,
     mainImageUrl:
       "https://user-images.githubusercontent.com/37766175/62363267-f219ba80-b559-11e9-9943-855d42b2fc11.png",
   };
@@ -132,6 +142,7 @@ for (let i = 1; i <= 20; i++) {
     status: "RENTED",
     rentalDate: new Date("2023-3-6"),
     returnDate: new Date("2023-5-6"),
+    returnYn: false,
     mainImageUrl:
       "https://dnvefa72aowie.cloudfront.net/origin/article/202301/EC146E3A1E533D4A8BBAB4560932F7167E7D5D28FE0F91B56BAC5F0742125F09.jpg?q=95&s=1440x1440&t=inside",
   };

@@ -9,6 +9,8 @@ type ProductHistoryListProps = {
   data: InfiniteData<RentalProductHistory[]>;
   isSuccess: boolean;
   isSeller?: boolean; //로그인 유저가 올린 아이템인지 여부
+  onDeleteHistory: (historyId: string) => void;
+  onUpdateHistory: (historyId: string) => void;
 };
 ProductHistoryList.defaultProps = {
   isSeller: false,
@@ -19,6 +21,8 @@ export default function ProductHistoryList({
   data,
   isSuccess,
   isSeller,
+  onDeleteHistory,
+  onUpdateHistory,
 }: ProductHistoryListProps) {
   return (
     <div>
@@ -31,6 +35,8 @@ export default function ProductHistoryList({
               key={pd.id}
               product={pd}
               isSeller={isSeller}
+              onDeleteHistory={onDeleteHistory}
+              onUpdateHistory={onUpdateHistory}
             />
           ))
         )}

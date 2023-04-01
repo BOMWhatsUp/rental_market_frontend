@@ -12,7 +12,6 @@ type ProductListProps = {
 };
 ProductList.defaultProps = {
   isSeller: false,
-  simpleMode: false,
   //isHistory: false,
 };
 
