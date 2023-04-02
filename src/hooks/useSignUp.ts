@@ -4,7 +4,7 @@ import { signUpInfo } from "../pages/SignUpPage";
 
 export const useSignUp = () => {
   const checkMutation = useMutation({
-    mutationFn: (data: { type: string; value: string }) =>
+    mutationFn: (data: { key: string; value: string }) =>
       isExistInfoCheck(data),
   });
 

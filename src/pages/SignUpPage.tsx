@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { Children, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DaumAddressInput from "../components/DaumAddressButton";
 import { useSignUp } from "../hooks/useSignUp";
 
 // 정규식 로직
 const initialErrorData: any = {
   email: "",
   nickName: "",
-  region: "",
+  // region: "",
   password: "",
   passwordCheck: "",
 };
@@ -53,25 +54,22 @@ export default function SignUpPage() {
 
   // 정규식 로직
   const [errorData, setErrorData] = useState(initialErrorData);
-
   const [signUpInfoCheck, setSignUpInfoCheck]: any = useState({
     email: "",
     nickName: "",
   });
-
   const { checkMutation, createMutation } = useSignUp();
 
-  const onClickHandler = (key: string) => {
+  const onClickHandler = ({ key, value }: { key: string; value: string }) => {
     checkMutation.mutate(
-      { type: key, value: signUpInfo[key] },
+      { key, value },
       {
         onSuccess: (response, data) => {
-          const { result } = response;
-          const { type } = data;
-
+          // 성공(중복이 안되면) 200, 실패(중복이 있는거) 400
           setSignUpInfoCheck({
             ...signUpInfoCheck,
-            [type]: result,
+            [key]: response,
+            // [key]: response.status === 200 ?  false : true
           });
         },
       }
@@ -94,7 +92,7 @@ export default function SignUpPage() {
           result = NICKNAME_REGEX.test(value) ? true : "invalidNickName";
           break;
         case "region":
-          result = value.length > 6 ? true : "invalidRegion";
+          result = signUpInfo.region !== "" ? true : "invalidRegion";
           break;
         case "password":
           result = PASSWORD_REGEX.test(value) ? true : "invalidPw";
@@ -130,6 +128,11 @@ export default function SignUpPage() {
   const isValidCheck = Object.values(signUpInfoCheck).every(
     (value) => value === false
   );
+
+  const handleSelectAddress = (address: string) => {
+    setSignUpInfo({ ...signUpInfo, ["region"]: address });
+    // 주소 부분이 state 값을 사용해서 한박자 느리게 체크됨
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -170,7 +173,11 @@ export default function SignUpPage() {
                   errorData["email"] === true ? "" : "btn-disabled"
                 }`}
                 type="button"
-                onClick={() => onClickHandler("email")}
+                onClick={
+                  () =>
+                    onClickHandler({ key: "email", value: signUpInfo["email"] })
+                  // setSignUpInfoCheck({ email: false, nickName: "" })
+                }
               >
                 중복확인
               </button>
@@ -225,7 +232,14 @@ export default function SignUpPage() {
                   errorData["nickName"] === true ? "" : "btn-disabled"
                 }`}
                 type="button"
-                onClick={() => onClickHandler("nickName")}
+                onClick={
+                  () =>
+                    onClickHandler({
+                      key: "nickName",
+                      value: signUpInfo["nickName"],
+                    })
+                  // setSignUpInfoCheck({ email: false, nickName: false })
+                }
               >
                 중복확인
               </button>
@@ -254,7 +268,7 @@ export default function SignUpPage() {
               </span>
             </label>
           </div>
-          <div className="form-control h-28">
+          {/* <div className="form-control h-28">
             <label className="label">
               <span className="label-text">주요 거래 장소</span>
             </label>
@@ -274,6 +288,7 @@ export default function SignUpPage() {
                 onBlur={onChangeHandler}
                 onChange={onChangeHandler}
                 autoComplete="off"
+                readOnly={true}
               />
               <button className="btn btn-square" type="button">
                 <svg
@@ -297,7 +312,31 @@ export default function SignUpPage() {
                 {errorData !== true ? ERROR_MSG[errorData["region"]] : ""}
               </span>
             </label>
+          </div> */}
+
+          {/* 테스트 */}
+          <div className="flex items-end w-full max-w-sm mb-6">
+            <div className="w-full">
+              <label className="label">
+                <span className="label-text">주요 거래 장소</span>
+              </label>
+              <input
+                type="text"
+                placeholder="ex. 서울시 종로구"
+                className="mr-1 input input-bordered w-[294px] max-w-xs focus:outline-none shrink-0"
+                name="region"
+                // onChange={() => }
+                value={signUpInfo.region}
+                // disabled
+                readOnly={true}
+              />
+            </div>
+            <DaumAddressInput
+              onSelectAddress={handleSelectAddress}
+              isFullAddress={false}
+            />
           </div>
+          {/* 테스트 */}
           <div className="form-control w-full max-w-xs h-28">
             <label className="label">
               <span className="label-text">비밀번호</span>

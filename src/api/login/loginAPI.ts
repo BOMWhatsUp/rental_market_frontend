@@ -9,6 +9,7 @@ export const onLogin = async (loginValues: {
     const response = await axios({
       method: "post",
       url: "http://52.78.150.154:8080/login",
+      // url: "http://43.200.141.247:8080/login",
       headers: {
         "content-type": "application/json",
       },
@@ -17,7 +18,8 @@ export const onLogin = async (loginValues: {
 
     // 로그인 성공한 경우
     // const { accessToken } = response.data.result.data.accessToken.split("")[1];
-    const authToken = response.headers["x-auth-token"];
+    const authToken = response.data;
+    console.log(`토큰!!! ----> ${authToken}`);
     console.log(response);
 
     // accessToken 설정

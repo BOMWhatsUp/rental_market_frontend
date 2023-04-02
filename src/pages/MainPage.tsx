@@ -26,13 +26,13 @@ export default function MainPage() {
   //TODO: 로그인 없이 임시 테스트를 위한 유저 info - 유저정보로 바꿔야
   const [user, setUser] = useRecoilState(userInfo);
   useEffect(() => {
-    setUser({
-      userEmail: "pepe@gmail.com",
-      userNickName: "개구리페페",
-      userRegion: "서울 도봉구",
-      userProfileImage:
-        "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
-    });
+    // setUser({
+    //   userEmail: "pepe@gmail.com",
+    //   userNickName: "개구리페페",
+    //   userRegion: "서울시 도봉구",
+    //   userProfileImage:
+    //     "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
+    // });
   }, []);
   //request query param- 바로 적용 안되는 문제 해결
   // let categoryName = "";

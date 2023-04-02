@@ -1,9 +1,14 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { userInfo } from "../atoms/userInfo";
 
 export const ChatListItem = ({ roomId, productId, lastChatMsg }: any) => {
+  const loginUserInfo = useRecoilValue(userInfo);
   return (
     <li className="card w-fit bg-base-100  rounded-none hover:bg-neutral-100 ease-out duration-100 cursor-pointer">
-      <Link to={`/chat/room/:${roomId}`}>
+      <Link
+        to={`/chat/room?roomId=${roomId}&senderId=${loginUserInfo.userNickName}`}
+      >
         <div className="card-actions flex items-center flex-nowrap p-6 h-28">
           <div className="avatar">
             <div className="w-10 rounded-full">

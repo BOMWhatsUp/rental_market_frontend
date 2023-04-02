@@ -38,7 +38,7 @@ function App() {
         <Route path="/my/*" element={<MyPage />} />
         <Route path="/my/products/*" element={<MyRentalHistoryPage />} />
         {/* <Route path="/test/*" element={<ScrollTest />} /> */}
-        {/* <Route path="/mock/test/*" element={<Test />} /> */}
+        {/* <Route path="/mock/test/*" element={<Test />} /> */}``
         <Route path="/chat/room/:roomId" element={<Chat />} />
         {/* <Route path="/chat/list" element={<ChatList />} /> */}
         <Route path="/" element={<Navigate replace to="/main" />} />

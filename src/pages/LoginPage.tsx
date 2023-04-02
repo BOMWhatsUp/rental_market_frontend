@@ -8,6 +8,7 @@ import cookies from "react-cookies";
 import { useNavigate } from "react-router-dom";
 import { onSilentRefresh } from "../api/login/loginAPI";
 import { userInfo } from "../atoms/userInfo";
+import jwtDecode from "jwt-decode";
 
 export default function LoginPage() {
   // Access Token 전역 상태로 관리
@@ -47,15 +48,30 @@ export default function LoginPage() {
         //   return setLoginError(!loginError);
         // }
 
+        const decodedToken = jwtDecode(response.data);
+        console.log(decodedToken); // 디코딩된 토큰 값 출력
+
         // 23.03.31
         // token값이랑, userInfo 값 수정하셔서 다시 받기로 함 (효진님)
-        const { token, userInfo } = response.data;
+        // const { token, userInfo } = response.data;
 
         // Recoil 전역 상태로 accessToken, 유저정보 관리 해야함
         // 프로필 사진은 어떻게..??
         //  ===>  https://dj8fgxzkrerlh.cloudfront.net/이미지파일명
         setAccessToken(response.data);
-        setLoginUserInfo(userInfo);
+
+        // !!!!!!!!!!!!!!!! ----------------------test----------------------- !!!!!!!!!!!!!!!!!
+        // (23.03.31) oken decode 후 프로퍼티 이름 다시 확인 후 수정
+        setLoginUserInfo({
+          userEmail: decodedToken["sub"],
+          userNickName: decodedToken["nickName"],
+          userRegion: decodedToken["region"],
+          userProfileImage: decodedToken["userProfileImage"]
+            ? `https://dj8fgxzkrerlh.cloudfront.net/${decodedToken["userProfileImage"]}`
+            : "https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg",
+        });
+        // !!!!!!!!!!!!!!!! ----------------------test----------------------- !!!!!!!!!!!!!!!!!
+
         // 토큰 만료 ??시간 전에 토큰 재갱신 => 유저가 인지하지 못하게 자동으로 토큰 재갱신
         // setTimeout(
         //   () =>
@@ -80,6 +96,12 @@ export default function LoginPage() {
         // 실패하는 경우는..
         // 1. 아이디, 비밀번호가 틀렸을 때
         // 2. 아이디가 존재하지 않을 때
+        // token decode
+        const decodedToken = jwtDecode(
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtdW4yMkB0ZXN0LmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJuaWNrTmFtZSI6Iu2aqOynhDIyIiwicmVnaW9uIjoi7ISc7Jq4IOqwleu2geq1rCIsInByb2ZpbGVJbWciOiIiLCJpYXQiOjE2ODAyNTAyNTYsImV4cCI6MTY4MDI1MjA1Nn0.o0MvJjs_InylNto3Oy_geP-bzu61sp2KJEqOtcFvX34"
+        );
+
+        console.log(decodedToken); // 디코딩된 토큰 값 출력
 
         console.log("로그인 실패!");
         console.log(res);
@@ -112,6 +134,7 @@ export default function LoginPage() {
               name="email"
               onChange={handleChange}
               value={userInputs.email}
+              autoComplete="email"
             />
           </div>
           <div className="form-control w-full max-w-xs">
@@ -125,6 +148,7 @@ export default function LoginPage() {
               name="password"
               onChange={handleChange}
               value={userInputs.password}
+              autoComplete="current-password"
             />
           </div>
           <div className="text-error">
