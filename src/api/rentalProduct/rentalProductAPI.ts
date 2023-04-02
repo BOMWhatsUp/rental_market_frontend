@@ -44,8 +44,13 @@ export const getProducts = async (
   size: number = 5
 ) => {
   const res = await axiosInstance.get<RentalProduct[]>(
+    //mocking
     //`/api/products?page=${page}&size=${size}&categoryName=${categoryName}&wishRegion=${userRegion}&keyword=${keyword}&status=${status}`
-    `http://3.37.196.93:8080/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`
+    //local http server
+    //`http://3.37.196.93:8080/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`
+    //vercel https server
+    `https://rentalmarket.monster/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`
+    //proxy
     //`/api/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`
   );
   return res.data;
@@ -53,8 +58,12 @@ export const getProducts = async (
 
 export const getProduct = async (id: string) => {
   const res = await axiosInstance.get<RentalProductDetail>(
+    //mocking
     //`/api/products/detail/${id}`
-    `http://3.37.196.93:8080/product/${id}`
+    //local http server
+    // `http://3.37.196.93:8080/product/${id}`
+    //vercel https server
+    `https://rentalmarket.monster/product/${id}`
   );
   return res.data;
 };
