@@ -8,11 +8,15 @@ import { useMutation } from "react-query";
 
 //create
 export const addProduct = async (formData: FormData) => {
-  return await axiosInstance.post("http://3.37.196.93:8080/product", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return await axiosInstance.post(
+    "https://rentalmarket.monster/product",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 };
 
 //create
@@ -29,7 +33,7 @@ export const addTransaction = async (form: {
   };
   console.log(data, form.productId);
   return await axiosInstance.post(
-    `http://3.37.196.93:8080/payment/product/${form.productId}`,
+    `https://rentalmarket.monster/payment/product/${form.productId}`,
     data
   );
 };
@@ -71,7 +75,7 @@ export const getProduct = async (id: string) => {
 export const getPayProduct = async (id: string) => {
   const res = await axiosInstance.get<RentalProductDetail>(
     //`/api/products/pay/${id}`
-    `http://3.37.196.93:8080/payment/product/${id}`
+    `https://rentalmarket.monster/payment/product/${id}`
   );
   return res.data;
 };
@@ -86,12 +90,12 @@ export const getSellerHistoryProducts = async (
   if (isSeller) {
     res = await axiosInstance.get<RentalProductHistory[]>(
       //`/api/seller/history?page=${page}&size=${size}&userId=${userId}`
-      `http://3.37.196.93:8080/history/${userId}/seller?page=${page}&size=${size}`
+      `https://rentalmarket.monster/history/${userId}/seller?page=${page}&size=${size}`
     );
   } else {
     res = await axiosInstance.get<RentalProductHistory[]>(
       //`/api/buyer/history?page=${page}&size=${size}&userId=${userId}`
-      `http://3.37.196.93:8080/history/${userId}/buyer?page=${page}&size=${size}`
+      `https://rentalmarket.monster/history/${userId}/buyer?page=${page}&size=${size}`
     );
   }
   console.log(isSeller, userId, page, size);
@@ -102,7 +106,7 @@ export const getSellerHistoryProducts = async (
 //update product status seller의 반납완료 처리
 export const updateProductHistory = async (productId: string) => {
   const res = await axiosInstance.put(
-    `http://3.37.196.93:8080/rental/${productId}`
+    `https://rentalmarket.monster/rental/${productId}`
   );
   return res;
 };
@@ -114,7 +118,7 @@ export const updateProductHistory = async (productId: string) => {
 // };
 export const deleteProductHistory = async (id: string) => {
   const res = await axiosInstance.delete(
-    `http://3.37.196.93:8080/history/${id}`
+    `https://rentalmarket.monster/history/${id}`
   );
   return res;
 };
