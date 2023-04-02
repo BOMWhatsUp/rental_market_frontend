@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { token } from "../atoms/token";
 import { userInfo } from "../atoms/userInfo";
-
+import logo from "../assets/logo_sm.png";
 interface Props {
   children: ReactNode;
 }
@@ -29,9 +29,12 @@ const Layout = ({ children }: Props) => {
   return (
     <div className="flex flex-col justify-between min-h-screen">
       {/* nav bar */}
-      <div className="navbar bg-base-100 shrink-0 sticky top-0 z-[9999]">
+      <div className="navbar bg-base-100 shrink-0 sticky top-0 z-[9999] border-b-2">
         <div className="flex-1">
-          <a className="btn btn-ghost normal-case text-xl">렌탈마켓</a>
+          <img src={logo} className="w-12 mx-2" />
+          <Link to="main" className="normal-case text-2xl font-semibold">
+            RENTAL MARKET
+          </Link>
         </div>
         <div className="flex-none">
           <ul className="menu menu-horizontal px-1">
@@ -47,10 +50,17 @@ const Layout = ({ children }: Props) => {
             {!accessToken && (
               <>
                 <li>
-                  <Link to="/login">로그인</Link>
+                  <Link
+                    to="/login"
+                    className="btn btn-primary btn-outline mx-2"
+                  >
+                    로그인
+                  </Link>
                 </li>
                 <li>
-                  <Link to="/signup">회원가입</Link>
+                  <Link to="/signup" className="btn btn-primary text-white">
+                    회원가입
+                  </Link>
                 </li>
               </>
             )}
