@@ -3,7 +3,7 @@ import axios, { AxiosResponse, AxiosRequestConfig, AxiosInstance } from "axios";
 //TODO : user token, user info 다루는 atom 가져와서, header에 토큰 실어주면 되겠네요!
 //import { token } from "../atoms/token";
 //import { useRecoilValue } from "recoil";
-
+//import * as https from "https";
 //TODO: 서버 주소 입력
 const API_BASE_URL = "";
 //const API_TOKEN = useRecoilValue(token); // 서버에서 받아온 안전한 accountToken 사용
@@ -15,6 +15,9 @@ export const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
   withCredentials: false,
+  // httpsAgent: new https.Agent({
+  //   rejectUnauthorized: false,
+  // }),
 });
 
 export const axiosFormInstance = axios.create({

@@ -3,24 +3,27 @@ import { RentalProduct, RentalProductHistory } from "../types/product";
 import { InfiniteData, useInfiniteQuery } from "react-query";
 import RentalProductItem from "./RentalProductItem";
 import { getProducts } from "../api/rentalProduct/rentalProductAPI";
+import RentalProductHistoryItem from "./RentalProductHistoryItem";
 
-type ProductListProps = {
-  data: InfiniteData<RentalProduct[]>;
+type ProductHistoryListProps = {
+  data: InfiniteData<RentalProductHistory[]>;
   isSuccess: boolean;
   isSeller?: boolean; //로그인 유저가 올린 아이템인지 여부
-  //isHistory?: boolean;
+  onDeleteHistory: (historyId: string) => void;
+  onUpdateHistory: (historyId: string) => void;
 };
-ProductList.defaultProps = {
+ProductHistoryList.defaultProps = {
   isSeller: false,
-  //isHistory: false,
+  simpleMode: false,
 };
 
-export default function ProductList({
+export default function ProductHistoryList({
   data,
   isSuccess,
   isSeller,
-}: //isHistory,
-ProductListProps) {
+  onDeleteHistory,
+  onUpdateHistory,
+}: ProductHistoryListProps) {
   return (
     <div>
       {data === null && <div>데이터 없음 테스트</div>}
@@ -28,11 +31,12 @@ ProductListProps) {
         data &&
         data!.pages.map((page, index) =>
           page.map((pd) => (
-            <RentalProductItem
+            <RentalProductHistoryItem
               key={pd.id}
               product={pd}
               isSeller={isSeller}
-              //isHistory={isHistory}
+              onDeleteHistory={onDeleteHistory}
+              onUpdateHistory={onUpdateHistory}
             />
           ))
         )}

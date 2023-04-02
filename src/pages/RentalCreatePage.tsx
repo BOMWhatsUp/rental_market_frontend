@@ -8,8 +8,11 @@ import DaumAddressInput from "../components/DaumAddressButton";
 export default function RentalCreatePage() {
   //test data, 실제로는 server에서 온 user data atom 이 될것
   const userInfo = {
-    userId: "whatsup@naver.com",
-    nickname: "봄이와썹",
+    userId: "pepe@gmail.com",
+    nickname: "개구리페페",
+    userRegion: "서울 도봉구",
+    userProfileImage:
+      "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
   };
 
   const { rentalProductFormMutation } = useProduct();

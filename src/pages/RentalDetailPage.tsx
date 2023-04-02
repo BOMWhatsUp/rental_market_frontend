@@ -1,10 +1,7 @@
 import React, { useEffect } from "react";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { Link, useParams } from "react-router-dom";
-import {
-  deleteProduct,
-  getProduct,
-} from "../api/rentalProduct/rentalProductAPI";
+import { getProduct } from "../api/rentalProduct/rentalProductAPI";
 import { useMutation, useQuery } from "react-query";
 import Badge from "../components/Badge";
 import sample404 from "../assets/404sample.png";
@@ -58,21 +55,23 @@ export default function RentalDetailPage() {
   //   },
   // });
 
-  const deleteMutation = useMutation(
-    "deleteProduct",
-    async (productId: string) => {
-      const res = await deleteProduct(productId);
-      return res;
-    },
-    {
-      onSuccess: (res) => {
-        console.log("response test", res);
-      },
-    }
-  );
-  const handleDelete = (id: string) => {
-    deleteMutation.mutate(id);
-  };
+  // const deleteMutation = useMutation(
+  //   "deleteProduct",
+  //   async (productId: string) => {
+  //     const res = await deleteProduct(productId);
+  //     return res;
+  //   },
+  //   {
+  //     onSuccess: (res) => {
+  //       console.log("response test", res);
+  //     },
+  //   }
+  // );
+  // const handleDelete = (id: string) => {
+  //   deleteMutation.mutate(id);
+  // };
+
+  //TODO: 유저정보 임시 테스트- 코드 없애고 유저정보로 교체 필요
   useEffect(() => {
     setUser({
       userEmail: "pepe@gmail.com",
@@ -98,8 +97,7 @@ export default function RentalDetailPage() {
           <div className="flex flex-col">
             <div className="w-full min-w-[33rem] h-96 overflow-hidden rounded relative">
               <div className="carousel w-full">
-                {/* {productDetail.imageUrls.map((url, index) => (   */}
-                {testUrls.map((url, index) => (
+                {productDetail.imageUrls.map((url, index) => (
                   <div
                     id={`slide${index}`}
                     key={`slide${index}`}
@@ -107,24 +105,31 @@ export default function RentalDetailPage() {
                   >
                     <img
                       //로컬
-                      src={url}
-                      //src={`https://dj8fgxzkrerlh.cloudfront.net/${url}`}
+                      //src={url}
+                      src={`https://dj8fgxzkrerlh.cloudfront.net/${url}`}
                       className="object-cover w-full h-full"
+                      onError={onErrorImg}
                     />
                     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
                       <a
                         // href={`#slide${productDetail.imageUrls.length - 1}`}
                         href={`#slide${
-                          index === 0 ? testUrls.length - 1 : index - 1
+                          index === 0
+                            ? productDetail.imageUrls.length - 1
+                            : index - 1
                         }`}
-                        onClick={() => console.log(testUrls.length - 1)}
+                        onClick={() =>
+                          console.log(productDetail.imageUrls.length - 1)
+                        }
                         className="btn btn-circle"
                       >
                         ❮
                       </a>
                       <a
                         href={`#slide${
-                          index === testUrls.length - 1 ? index - 1 : index + 1
+                          index === productDetail.imageUrls.length - 1
+                            ? index - 1
+                            : index + 1
                         }`}
                         className="btn btn-circle"
                         onClick={() => console.log(index + 1)}
@@ -161,12 +166,19 @@ export default function RentalDetailPage() {
                 <div>
                   {user.userEmail === productDetail.sellerId ? (
                     <button
-                      className="btn btn-sm btn-outline btn-error py-0"
-                      onClick={() => handleDelete(productDetail.id)}
+                      disabled
+                      className="btn btn-sm btn-outline btn-primary"
                     >
-                      상품삭제
+                      <ChatBubbleBottomCenterTextIcon className="h-3 w-3 mr-0.5" />
+                      상품문의
                     </button>
                   ) : (
+                    // <button
+                    //   className="btn btn-sm btn-outline btn-error py-0"
+                    //   onClick={() => handleDelete(productDetail.id)}
+                    // >
+                    //   상품삭제
+                    // </button>
                     <Link
                       to="/chat/room/roomid"
                       className="btn btn-sm btn-outline btn-primary"
@@ -215,7 +227,9 @@ export default function RentalDetailPage() {
                 <p>여건이 되면 이곳에 지도</p>
               </section>
               <section>
-                {user.userEmail === productDetail.sellerId ? (
+                {user.userEmail === productDetail.sellerId ||
+                productDetail.status === "RENTED" ||
+                productDetail.status === "WAITING" ? (
                   <button
                     disabled
                     className="btn btn-primary sm:btn-sm lg:btn-md w-full mt-3"

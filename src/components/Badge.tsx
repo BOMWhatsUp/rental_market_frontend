@@ -25,6 +25,9 @@ export default function Badge({ value, isFull }: BadgeProps) {
       case "WAITING":
         badgeStyle = "badge-warning";
         return "반납대기";
+      case "RETURNED":
+        badgeStyle = "badge-info";
+        return "반납완료";
       default:
         badgeStyle = "badge-outline";
         return "전체";
