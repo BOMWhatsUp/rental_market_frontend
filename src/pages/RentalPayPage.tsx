@@ -10,29 +10,18 @@ import { categoryName, maxRentalPeriod } from "../utils/converter";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import Badge from "../components/Badge";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { userInfo } from "../atoms/userInfo";
 import sample404 from "../assets/404sample.png";
-// 최대 랜탈 기간
-const maxRentalDay: number = 30;
-
-// 하루 렌탈료
-//let rentalPay: number = 300;
+import { token } from "../atoms/token";
 
 export default function RentalPayPage() {
-  //TODO: 로그인 없이 임시 테스트를 위한 유저 info - 유저정보로 바꿔야
-  const [user, setUser] = useRecoilState(userInfo);
-
-  useEffect(() => {
-    setUser((prev) => ({
-      ...prev,
-      userEmail: "pepe@gmail.com",
-      userNickName: "개구리페페",
-      userRegion: "서울 도봉구",
-      userProfileImage:
-        "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
-    }));
-  }, []);
+  //token
+  const accessToken = useRecoilValue(token);
+  //Login User 정보
+  const userId = useRecoilValue(userInfo).userEmail;
+  // 최대 랜탈 기간
+  let maxRentalDay = 0;
 
   //TODO: 리팩토링
   const productTransactionMutation = useMutation({
@@ -44,7 +33,7 @@ export default function RentalPayPage() {
     }) => addTransaction(form),
     onSuccess: (data) => {
       console.log(data);
-      //TODO: 여기에 채팅 기능 연결 - 방있는지 없는지 확인, 있으면 채팅방 입장 없으면 생성, buyer-> seller 메세지 전달
+      //TODO: 정후님~ 여기에 채팅 기능 연결부탁드려요! - 방있는지 없는지 확인, 있으면 채팅방 입장 없으면 생성, buyer-> seller 메세지 전달
     },
   });
 
@@ -52,7 +41,7 @@ export default function RentalPayPage() {
   const [rentalday, setRentalDay] = useState(1);
   const [rentalPay, setRentalPay] = useState(0);
   const [form, setForm] = useState({
-    userId: user.userEmail,
+    userId: userId,
     totalPrice: 0,
     days: 0,
   });
@@ -60,7 +49,10 @@ export default function RentalPayPage() {
     "productPay",
     () => getPayProduct(productId),
     {
+      //TODO: accessToken 기능 머지 되면, userId, 등등 null check 해야함
+      enabled: !!productId,
       onSuccess(data) {
+        maxRentalDay = parseInt(maxRentalPeriod(data.maxRentalPeriod));
         setRentalPay(data.unitPrice);
       },
     }
@@ -103,7 +95,7 @@ export default function RentalPayPage() {
   useEffect(() => {
     console.log(totalrentalPay, rentalday);
     const total = rentalday * rentalPay;
-    setForm((prevForm) => ({ ...prevForm, userId: user.userEmail }));
+    setForm((prevForm) => ({ ...prevForm, userId: userId }));
     setForm((prevForm) => ({
       ...prevForm,
       totalPrice: total,
@@ -115,7 +107,7 @@ export default function RentalPayPage() {
   const handleSubmitTransaction = () => {
     const formData = {
       productId: productPay.id,
-      userId: user.userEmail,
+      userId: userId,
       days: form.days,
       totalPrice: form.totalPrice,
     };
@@ -141,33 +133,35 @@ export default function RentalPayPage() {
                       className="object-cover w-full h-full"
                       onError={onErrorImg}
                     />
-                    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                      <a
-                        // href={`#slide${productDetail.imageUrls.length - 1}`}
-                        href={`#slide${
-                          index === 0
-                            ? productPay.imageUrls.length - 1
-                            : index - 1
-                        }`}
-                        onClick={() =>
-                          console.log(productPay.imageUrls.length - 1)
-                        }
-                        className="btn btn-circle"
-                      >
-                        ❮
-                      </a>
-                      <a
-                        href={`#slide${
-                          index === productPay.imageUrls.length - 1
-                            ? index - 1
-                            : index + 1
-                        }`}
-                        className="btn btn-circle"
-                        onClick={() => console.log(index + 1)}
-                      >
-                        ❯
-                      </a>
-                    </div>
+                    {productPay.imageUrls.length > 1 && (
+                      <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                        <a
+                          // href={`#slide${productDetail.imageUrls.length - 1}`}
+                          href={`#slide${
+                            index === 0
+                              ? productPay.imageUrls.length - 1
+                              : index - 1
+                          }`}
+                          onClick={() =>
+                            console.log(productPay.imageUrls.length - 1)
+                          }
+                          className="btn btn-circle"
+                        >
+                          ❮
+                        </a>
+                        <a
+                          href={`#slide${
+                            index === productPay.imageUrls.length - 1
+                              ? index - 1
+                              : index + 1
+                          }`}
+                          className="btn btn-circle"
+                          onClick={() => console.log(index + 1)}
+                        >
+                          ❯
+                        </a>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
