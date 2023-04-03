@@ -1,30 +1,31 @@
 import axios, { AxiosResponse, AxiosRequestConfig, AxiosInstance } from "axios";
+import { token } from "../atoms/token";
+import { useRecoilValue } from "recoil";
 
-//TODO : user token, user info 다루는 atom 가져와서, header에 토큰 실어주면 되겠네요!
-//import { token } from "../atoms/token";
-//import { useRecoilValue } from "recoil";
-//import * as https from "https";
-//TODO: 서버 주소 입력
-const API_BASE_URL = "";
-//const API_TOKEN = useRecoilValue(token); // 서버에서 받아온 안전한 accountToken 사용
-const API_TOKEN = "token"; // 임시
-export const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    //Authorization: `${API_TOKEN}`,
-    "Content-Type": "application/json",
-  },
-  withCredentials: false,
-  // httpsAgent: new https.Agent({
-  //   rejectUnauthorized: false,
-  // }),
-});
+//SSL 인증된 서버 주소
+const API_BASE_URL = "https://rentalmarket.monster";
+const USER = "http://52.78.150.154:8080"; //TODO: SSL 확인필요
+const CHAT = "http://43.200.141.247:8080"; //TODO: SSL 확인필요
 
-export const axiosFormInstance = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    //Authorization: `${API_TOKEN}`,
-    "Content-Type": "multipart/form-data",
-  },
-  withCredentials: false,
-});
+export const createAxiosInstance = (baseURL: string = "") => {
+  //const API_TOKEN = useRecoilValue(token);//TODO: hook 에러 나서
+  const axiosInstance = axios.create({
+    baseURL: `${baseURL}`,
+    headers: {
+      //Authorization: `${API_TOKEN}`,//TODO: 정후님 확인 필요
+      "Content-Type": "application/json",
+    },
+    withCredentials: false, //TODO: 정후님 확인 필요
+  });
+
+  return axiosInstance;
+};
+
+const api = {
+  dev: createAxiosInstance(),
+  devChat: createAxiosInstance(CHAT),
+  devUser: createAxiosInstance(USER),
+  prod: createAxiosInstance(API_BASE_URL),
+};
+
+export default api;

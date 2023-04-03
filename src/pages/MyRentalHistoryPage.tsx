@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import RentalProductItem from "../components/RentalProductItem";
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { userInfo } from "../atoms/userInfo";
 import {
   deleteProductHistory,
-  getSellerHistoryProducts,
+  getHistoryProducts,
   updateProductHistory,
 } from "../api/rentalProduct/rentalProductAPI";
 import {
@@ -17,23 +17,15 @@ import {
 import { useParams } from "react-router-dom";
 import ProductList from "../components/ProductList";
 import ProductHistoryList from "../components/ProductHistoryList";
+import { token } from "../atoms/token";
 
 export default function MyRentalHistoryPage() {
-  //const userId = useParams().id || "id1";
-  //TODO: 로그인 없이 임시 테스트를 위한 유저 info - 유저정보로 바꿔야
-  const [user, setUser] = useRecoilState(userInfo);
-  //TODO: 유저정보 임시 테스트- 코드 없애고 유저정보로 교체 필요
-  useEffect(() => {
-    setUser((prev) => ({
-      ...prev,
-      userEmail: "pepe@gmail.com",
-      userNickName: "개구리페페",
-      userRegion: "서울 도봉구",
-      userProfileImage:
-        "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
-    }));
-  }, []);
-  const userId = user.userEmail;
+  //token
+  const accessToken = useRecoilValue(token); //FIXME: hook 에러 나서
+  //Login User 정보
+  const userId = useRecoilValue(userInfo).userEmail;
+
+  //const userId = user.userEmail;//FIXME: 더미데이터 없앤것
   const [currentTab, setCurrentTab] = useState("seller");
   const queryClient = useQueryClient();
   const deleteHistoryMutation = useMutation(
@@ -45,7 +37,6 @@ export default function MyRentalHistoryPage() {
     {
       onSuccess: (res) => {
         console.log("response test", res);
-        //TODO: 페이지로 옮겨서 refetch 동작 시키기
         queryClient.invalidateQueries("sellerHistory");
         alert(res.data);
       },
@@ -60,22 +51,20 @@ export default function MyRentalHistoryPage() {
     {
       onSuccess: (res) => {
         console.log("response test", res);
-        //TODO: 페이지로 옮겨서 refetch 동작 시키기
         queryClient.invalidateQueries("sellerHistory");
         alert(res.data);
       },
     }
   );
-  const onDeleteHistory = (id: string) => {
+  const onDeleteHistory = (historyId: string) => {
     if (confirm("해당 렌탈내역을 정말로 삭제하시겠습니까?")) {
-      //submit delete id
-      //product id 말고 history id 보내면 됨
       console.log("삭제함");
-      deleteHistoryMutation.mutate(id);
+
+      deleteHistoryMutation.mutate(historyId);
     }
   };
 
-  const onUpdateHistory = (id: string) => {
+  const onUpdateHistory = (historyId: string) => {
     if (
       confirm(
         "해당 렌탈내역을 반납완료처리하여 '대여 가능'상태로 바꾸시겠습니까?"
@@ -84,17 +73,13 @@ export default function MyRentalHistoryPage() {
       //submit delete id
       //product id 말고 history id 보내면 됨
       console.log("반납완료 처리");
-      updateHistoryMutation.mutate(id);
+      updateHistoryMutation.mutate(historyId);
     }
   };
-  // const { isLoading, isError, data, error }: any = useQuery(
-  //   "sellerHistory",
-  //   () => getSellerHistoryProducts(userId)
-  // );
 
   const size = 6;
   const [isSellerHistory, setIsSellerHistory] = useState(true);
-  //TODO: 유저정보 atom에서 값이 왜 안나와...
+
   const {
     data,
     isSuccess,
@@ -107,15 +92,11 @@ export default function MyRentalHistoryPage() {
   } = useInfiniteQuery(
     ["sellerHistory", currentTab],
     ({ pageParam = 1 }) =>
-      getSellerHistoryProducts(
-        isSellerHistory,
-        //TODO: 유저 정보 바로 잘 들어가는지 확인해야함
-        //user.userEmail,
-        "pepe@gmail.com",
-        pageParam,
-        size
-      ),
+      getHistoryProducts(accessToken, isSellerHistory, userId, pageParam, size),
     {
+      enabled: !!userId,
+      //TODO: accessToken 기능 머지 되면, null check 해야함
+      //enabled: !!userId && !!accessToken,
       getNextPageParam: (lastPage, allPages) => {
         const nextPage = allPages.length + 1;
         return nextPage;

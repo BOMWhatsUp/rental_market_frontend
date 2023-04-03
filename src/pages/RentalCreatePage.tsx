@@ -3,19 +3,32 @@ import { AxiosError } from "axios";
 import { getRentalProducts } from "../api/rentalCreate";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useProduct } from "../hooks/useProduct";
-import { RentalProduct, RentalProductForm } from "../types/product";
+import {
+  RentalProduct,
+  RentalProductForm,
+  AddProductForm,
+} from "../types/product";
 import DaumAddressInput from "../components/DaumAddressButton";
-export default function RentalCreatePage() {
-  //test data, 실제로는 server에서 온 user data atom 이 될것
-  const userInfo = {
-    userId: "pepe@gmail.com",
-    nickname: "개구리페페",
-    userRegion: "서울 도봉구",
-    userProfileImage:
-      "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
-  };
+import { useRecoilValue } from "recoil";
+import { token } from "../atoms/token";
+import { userInfo } from "../atoms/userInfo";
+import { useNavigate } from "react-router-dom";
+import { addProduct } from "../api/rentalProduct/rentalProductAPI";
 
-  const { rentalProductFormMutation } = useProduct();
+export default function RentalCreatePage() {
+  const navigte = useNavigate();
+  //token
+  const accessToken = useRecoilValue(token);
+  //Login User 정보
+  const userId = useRecoilValue(userInfo).userEmail;
+  const userNickName = useRecoilValue(userInfo).userNickName;
+  //const { rentalProductFormMutation } = useProduct();
+
+  const rentalProductFormMutation = useMutation({
+    //mutationFn: (data: FormData) => addRentalProductForm(data),
+    //mutationFn: (data: FormData) => addProduct(data),
+    mutationFn: (data: AddProductForm) => addProduct(data),
+  });
 
   const [userInputs, setUserInputs] = useState({
     title: "",
@@ -67,8 +80,8 @@ export default function RentalCreatePage() {
       maxRentalPeriod: maxRentalPeriod,
       categoryName: categoryId,
       wishRegion: wishRegion,
-      sellerId: userInfo.userId, //로그인 유저정보
-      nickname: userInfo.nickname, //로그인 유저정보
+      sellerId: userId, //로그인 유저정보
+      nickname: userNickName, //로그인 유저정보
     };
 
     const formData = new FormData();
@@ -94,26 +107,33 @@ export default function RentalCreatePage() {
     for (let value of formData.values()) {
       console.log("formData value", value);
     }
+    const addProductForm: AddProductForm = {
+      formData: formData,
+      accessToken: accessToken,
+    };
     if (formData) {
-      rentalProductFormMutation.mutate(formData, {
+      //rentalProductFormMutation.mutate(formData, {
+      rentalProductFormMutation.mutate(addProductForm, {
         onSuccess: (res) => {
           console.log("formdata!", res);
           //router.push(`/post/${feedId}`);
+          console.log("submit");
+
+          setUserInputs({
+            title: "",
+            content: "",
+            unitPrice: "",
+            maxRentalPeriod: "",
+            wishRegion: "",
+            categoryId: "",
+            //imageUrl: "", //???
+          });
+          navigte("/main");
         },
       });
     }
-    //submit 끝나면
-    console.log("submit");
 
-    setUserInputs({
-      title: "",
-      content: "",
-      unitPrice: "",
-      maxRentalPeriod: "",
-      wishRegion: "",
-      categoryId: "",
-      //imageUrl: "", //???
-    });
+    //submit 끝나면
 
     //window.URL.revokeObjectURL(url);
   };

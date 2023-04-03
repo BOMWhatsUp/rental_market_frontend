@@ -13,29 +13,28 @@ import ReactDOM from "react-dom";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import { userInfo } from "../atoms/userInfo";
-import { useRecoilState } from "recoil";
-
-// const deleteMutation = (productId: string) => {
-//   //useMutation("deleteProduct", () => deleteProduct(productId), {
-//   useMutation("deleteProduct", async () => await deleteProduct(productId), {
-//     onSuccess: (res) => {
-//       console.log("response test", res);
-//       // Invalidate and refetch
-//       //queryClient.invalidateQueries("todos");
-//     },
-//   });
-// };
+import { useRecoilState, useRecoilValue } from "recoil";
+import { token } from "../atoms/token";
 
 export default function RentalDetailPage() {
   const productId = useParams().id;
-  //console.log(id);
+  //token
+  const accessToken = useRecoilValue(token); //FIXME: hook 에러 나서
+  //Login User 정보
+  const userId = useRecoilValue(userInfo).userEmail;
+
   const { isLoading, isError, data, error }: any = useQuery(
     "productDetail",
-    () => getProduct(productId)
+    () => getProduct(productId, accessToken),
+    {
+      //TODO: accessToken 기능 머지 되면, userId, 등등 null check 해야함
+      //enabled: !!productId && !!userId,
+      enabled: !!productId,
+      onError: (error: any) => {
+        console.error(error);
+      },
+    }
   );
-
-  //TODO: 로그인 없이 임시 테스트를 위한 유저 info - 유저정보로 바꿔야
-  const [user, setUser] = useRecoilState(userInfo);
 
   const productDetail: RentalProductDetail | undefined = data as
     | RentalProductDetail
@@ -47,47 +46,6 @@ export default function RentalDetailPage() {
   const onErrorProfile = (e: any) => {
     e.target.src = profileSample;
   };
-
-  // const [deleteMutation] = useMutation(deletePost, {
-  //   onSuccess: () => {
-  //     // 콜백 함수에서 적절한 값을 반환하도록 수정
-  //     return true;
-  //   },
-  // });
-
-  // const deleteMutation = useMutation(
-  //   "deleteProduct",
-  //   async (productId: string) => {
-  //     const res = await deleteProduct(productId);
-  //     return res;
-  //   },
-  //   {
-  //     onSuccess: (res) => {
-  //       console.log("response test", res);
-  //     },
-  //   }
-  // );
-  // const handleDelete = (id: string) => {
-  //   deleteMutation.mutate(id);
-  // };
-
-  //TODO: 유저정보 임시 테스트- 코드 없애고 유저정보로 교체 필요
-  useEffect(() => {
-    setUser({
-      userEmail: "pepe@gmail.com",
-      userNickName: "개구리페페",
-      userRegion: "서울시 도봉구",
-      userProfileImage:
-        "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
-    });
-  }, []);
-
-  // react carousel map 관련 문제 해결 테스트
-  const testUrls = [
-    "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
-    "https://t1.daumcdn.net/cfile/tistory/992755335A157ED62B",
-    "https://img1.daumcdn.net/thumb/C176x176/?fname=https://blog.kakaocdn.net/dn/cv7UPT/btrSm0BDg2h/bigd2G5zkOERd0S1KEq3Ek/img.jpg",
-  ];
 
   return (
     <>
@@ -110,33 +68,35 @@ export default function RentalDetailPage() {
                       className="object-cover w-full h-full"
                       onError={onErrorImg}
                     />
-                    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                      <a
-                        // href={`#slide${productDetail.imageUrls.length - 1}`}
-                        href={`#slide${
-                          index === 0
-                            ? productDetail.imageUrls.length - 1
-                            : index - 1
-                        }`}
-                        onClick={() =>
-                          console.log(productDetail.imageUrls.length - 1)
-                        }
-                        className="btn btn-circle"
-                      >
-                        ❮
-                      </a>
-                      <a
-                        href={`#slide${
-                          index === productDetail.imageUrls.length - 1
-                            ? index - 1
-                            : index + 1
-                        }`}
-                        className="btn btn-circle"
-                        onClick={() => console.log(index + 1)}
-                      >
-                        ❯
-                      </a>
-                    </div>
+                    {productDetail.imageUrls.length > 1 && (
+                      <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                        <a
+                          // href={`#slide${productDetail.imageUrls.length - 1}`}
+                          href={`#slide${
+                            index === 0
+                              ? productDetail.imageUrls.length - 1
+                              : index - 1
+                          }`}
+                          onClick={() =>
+                            console.log(productDetail.imageUrls.length - 1)
+                          }
+                          className="btn btn-circle"
+                        >
+                          ❮
+                        </a>
+                        <a
+                          href={`#slide${
+                            index === productDetail.imageUrls.length - 1
+                              ? index - 1
+                              : index + 1
+                          }`}
+                          className="btn btn-circle"
+                          onClick={() => console.log(index + 1)}
+                        >
+                          ❯
+                        </a>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -164,7 +124,7 @@ export default function RentalDetailPage() {
                   </div>
                 </div>
                 <div>
-                  {user.userEmail === productDetail.sellerId ? (
+                  {userId === productDetail.sellerId ? (
                     <button
                       disabled
                       className="btn btn-sm btn-outline btn-primary"
@@ -224,10 +184,9 @@ export default function RentalDetailPage() {
               <section>
                 <h3 className="text-lg font-semibold">거래 희망지역</h3>
                 <p>{productDetail.wishRegion}</p>
-                <p>여건이 되면 이곳에 지도</p>
               </section>
               <section>
-                {user.userEmail === productDetail.sellerId ||
+                {userId === productDetail.sellerId ||
                 productDetail.status === "RENTED" ||
                 productDetail.status === "WAITING" ? (
                   <button

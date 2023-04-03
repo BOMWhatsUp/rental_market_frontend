@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import RentalProductItem from "../components/RentalProductItem";
 import { Bars3Icon, MapIcon, FlagIcon } from "@heroicons/react/24/outline";
 import ProductList from "../components/ProductList";
 import { RentalProduct } from "../types/product";
 import { InfiniteData, useInfiniteQuery, useQueryClient } from "react-query";
 import { getProducts } from "../api/rentalProduct/rentalProductAPI";
-import Badge from "../components/Badge";
 import { productStatus } from "../utils/converter";
+import { useRecoilValue } from "recoil";
 import { userInfo } from "../atoms/userInfo";
-import { useRecoilState } from "recoil";
+import { token } from "../atoms/token";
 
 type ProductsFilter = {
   category: string;
@@ -16,6 +15,7 @@ type ProductsFilter = {
   keyword: string;
   status: string;
 };
+
 export default function MainPage() {
   const [filter, setFilter] = useState<ProductsFilter>({
     category: "",
@@ -23,42 +23,18 @@ export default function MainPage() {
     keyword: "",
     status: "",
   });
-  //TODO: 로그인 없이 임시 테스트를 위한 유저 info - 유저정보로 바꿔야
-  const [user, setUser] = useRecoilState(userInfo);
-  useEffect(() => {
-    // setUser({
-    //   userEmail: "pepe@gmail.com",
-    //   userNickName: "개구리페페",
-    //   userRegion: "서울시 도봉구",
-    //   userProfileImage:
-    //     "https://blog.kakaocdn.net/dn/wR5bN/btqSxCsIZD8/0g1pTeaqRwXKvBcxPtqQE0/img.jpg",
-    // });
-  }, []);
-  //request query param- 바로 적용 안되는 문제 해결
-  // let categoryName = "";
-  let wishRegion = "";
-  // let keyword = "";
-  // let status = "";
 
-  const queryClient = useQueryClient();
-  //const queryClient = useQueryClient();
-  // const [filter, setFilter] = useState({
-  //   category: "",
-  //   region: "",
-  //   keyword: "",
-  //   status: "",
-  // });
-  // const handleFilterChange = (target: HTMLAnchorElement) => {
-  //   setFilter((prevFilter) => ({
-  //     ...prevFilter,
-  //     [`${target.dataset.title}`]: target.dataset.value,
-  //   }));
-  // };
+  //token
+  const accessToken = useRecoilValue(token); //TODO: hook 에러 나서
+  //Login User 지역 정보
+  const userRegion = useRecoilValue(userInfo).userRegion;
+  console.log(userRegion ? userRegion : "로그인 해주세요");
+  console.log(useRecoilValue(userInfo).userNickName);
+  // const queryClient = useQueryClient();
 
   const regionDisplay = (value: string) => {
     if (value === "user") {
-      //TODO: 유저의 정보값 넣어야
-      return user.userRegion;
+      return userRegion;
     } else {
       return "전체";
     }
@@ -69,27 +45,7 @@ export default function MainPage() {
       ...prevFilter,
       [`${target.dataset.title}`]: target.dataset.value,
     }));
-
-    // if (target.dataset.title === "region") {
-    //   wishRegion = regionDisplay(target.dataset.value);
-    // }
-
-    // console.log(target.dataset.title, target.dataset.value);
-    // switch (target.dataset.title) {
-    //   case "category":
-    //     categoryName = target.dataset.value;
-    //     break;
-    //   case "region":
-    //     wishRegion = target.dataset.value;
-    //     break;
-    //   case "status":
-    //     status = target.dataset.value;
-    //     break;
-    // }
-    //console.log(categoryName, "dddd");
-    //queryClient.invalidateQueries("rentalProducts");
   };
-
   const handleChangeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
     setFilter((prevFilter) => ({
@@ -141,6 +97,7 @@ export default function MainPage() {
 
     ({ pageParam = 1 }) =>
       getProducts(
+        accessToken,
         filter.category,
         filter.region,
         //wishRegion,
@@ -184,24 +141,9 @@ export default function MainPage() {
     };
   }, [fetchNextPage, hasNextPage]);
 
-  const [test, setTest] = useState(true);
-  const [pageData, setPageData] = useState<InfiniteData<RentalProduct[]>>();
-  // useEffect(() => {
-  //   // setPageData((prev) => ({
-  //   //   ...data,
-  //   // }));
-  //   console.log("filterchanged");
-  //   console.log(filter);
-  //   console.log(isSuccess, data, isError);
-  //   //queryClient.invalidateQueries("rentalProducts");
-  //   //refetch();
-  //   //queryClient.resetQueries("rentalProducts");
+  //const [test, setTest] = useState(true);
+  //const [pageData, setPageData] = useState<InfiniteData<RentalProduct[]>>();
 
-  //   //fetchNextPage({ pageParam: 1 });
-  //   //setTest((prev) => !prev);
-  // }, [filter]);
-  //console.log("test확인", data);
-  //console.log(isSuccess, data, isError);
   return (
     <>
       <div className="flex flex-col">
@@ -307,14 +249,12 @@ export default function MainPage() {
                 </li>
                 <li>
                   <a
-                    className={
-                      filter.region === user.userRegion ? " active" : ""
-                    }
+                    className={filter.region === userRegion ? " active" : ""}
                     data-title="region"
-                    data-value={user.userRegion}
+                    data-value={userRegion}
                     onClick={handleChangeDropdown}
                   >
-                    {user.userRegion}
+                    {userRegion}
                   </a>
                 </li>
               </ul>

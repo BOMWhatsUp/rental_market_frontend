@@ -37,3 +37,9 @@ export type RentalProductForm = {
   sellerId: string;
   nickname: string;
 };
+
+//api
+export interface AddProductForm {
+  formData: FormData;
+  accessToken: string;
+}

@@ -30,7 +30,13 @@ const PopupPostCode = (props: any) => {
     if (props.isFullAddress) {
       props.onComplete(`${data.address}`);
     } else {
-      props.onComplete(`${data.sido} ${data.sigungu}`);
+      const isLongSigungu = data.sigungu.split(" ").length >= 2;
+
+      if (isLongSigungu) {
+        props.onComplete(`${data.sigungu}`);
+      } else {
+        props.onComplete(`${data.sido} ${data.sigungu}`);
+      }
     }
 
     //props.onComplete(`${data.sigungu}`);

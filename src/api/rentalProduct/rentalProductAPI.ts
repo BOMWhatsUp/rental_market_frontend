@@ -1,15 +1,20 @@
-import { axiosInstance, axiosFormInstance } from "../axiosInstance";
+import API from "../axiosInstance";
 import {
   RentalProduct,
   RentalProductDetail,
   RentalProductHistory,
+  AddProductForm,
 } from "../../types/product";
 import { useMutation } from "react-query";
 
 //create
-export const addProduct = async (formData: FormData) => {
-  return await axiosInstance.post("http://3.37.196.93:8080/product", formData, {
+//TODO: 연동 확인해야함
+export const addProduct = async ({ formData, accessToken }: AddProductForm) => {
+  console.log(formData, accessToken ? accessToken : "로그인해야됨");
+  return await API.prod.post("/product", formData, {
     headers: {
+      //TODO: mutation에 string 추가가 안되는 문제 해결해야. 안되면 토큰 없으면 그냥 페이지 자체를 막아서...
+      Authorization: accessToken,
       "Content-Type": "multipart/form-data",
     },
   });
@@ -28,14 +33,12 @@ export const addTransaction = async (form: {
     totalPrice: form.totalPrice,
   };
   console.log(data, form.productId);
-  return await axiosInstance.post(
-    `http://3.37.196.93:8080/payment/product/${form.productId}`,
-    data
-  );
+  return await API.prod.post(`/payment/product/${form.productId}`, data);
 };
 
 //read
 export const getProducts = async (
+  accessToken: string = "",
   categoryName: string = "",
   userRegion: string = "",
   keyword: string = "",
@@ -43,40 +46,51 @@ export const getProducts = async (
   page: number = 1,
   size: number = 5
 ) => {
-  const res = await axiosInstance.get<RentalProduct[]>(
+  const res = await API.prod.get<RentalProduct[]>(
     //mocking
     //`/api/products?page=${page}&size=${size}&categoryName=${categoryName}&wishRegion=${userRegion}&keyword=${keyword}&status=${status}`
     //local http server
     //`http://3.37.196.93:8080/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`
     //vercel https server
-    `https://rentalmarket.monster/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`
+    `/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`,
     //proxy
     //`/api/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`
+    {
+      headers: {
+        Authorization: accessToken,
+      },
+    }
   );
   return res.data;
 };
 
-export const getProduct = async (id: string) => {
-  const res = await axiosInstance.get<RentalProductDetail>(
+export const getProduct = async (id: string, accessToken: string) => {
+  const res = await API.prod.get<RentalProductDetail>(
     //mocking
     //`/api/products/detail/${id}`
     //local http server
     // `http://3.37.196.93:8080/product/${id}`
     //vercel https server
-    `https://rentalmarket.monster/product/${id}`
+    `/product/${id}`,
+    {
+      headers: {
+        Authorization: accessToken,
+      },
+    }
   );
   return res.data;
 };
 
 export const getPayProduct = async (id: string) => {
-  const res = await axiosInstance.get<RentalProductDetail>(
+  const res = await API.prod.get<RentalProductDetail>(
     //`/api/products/pay/${id}`
-    `http://3.37.196.93:8080/payment/product/${id}`
+    `/payment/product/${id}`
   );
   return res.data;
 };
 
-export const getSellerHistoryProducts = async (
+export const getHistoryProducts = async (
+  accessToken: string = "",
   isSeller: boolean = false,
   userId: string = "",
   page: number = 1,
@@ -84,14 +98,24 @@ export const getSellerHistoryProducts = async (
 ) => {
   let res;
   if (isSeller) {
-    res = await axiosInstance.get<RentalProductHistory[]>(
+    res = await API.prod.get<RentalProductHistory[]>(
       //`/api/seller/history?page=${page}&size=${size}&userId=${userId}`
-      `http://3.37.196.93:8080/history/${userId}/seller?page=${page}&size=${size}`
+      `/history/${userId}/seller?page=${page}&size=${size}`,
+      {
+        headers: {
+          Authorization: accessToken,
+        },
+      }
     );
   } else {
-    res = await axiosInstance.get<RentalProductHistory[]>(
+    res = await API.prod.get<RentalProductHistory[]>(
       //`/api/buyer/history?page=${page}&size=${size}&userId=${userId}`
-      `http://3.37.196.93:8080/history/${userId}/buyer?page=${page}&size=${size}`
+      `/history/${userId}/buyer?page=${page}&size=${size}`,
+      {
+        headers: {
+          Authorization: accessToken,
+        },
+      }
     );
   }
   console.log(isSeller, userId, page, size);
@@ -101,8 +125,8 @@ export const getSellerHistoryProducts = async (
 //update
 //update product status seller의 반납완료 처리
 export const updateProductHistory = async (productId: string) => {
-  const res = await axiosInstance.put(
-    `http://3.37.196.93:8080/rental/${productId}`
+  const res = await API.prod.put(
+    `https://rentalmarket.monster/rental/${productId}`
   );
   return res;
 };
@@ -113,8 +137,6 @@ export const updateProductHistory = async (productId: string) => {
 //   return res;
 // };
 export const deleteProductHistory = async (id: string) => {
-  const res = await axiosInstance.delete(
-    `http://3.37.196.93:8080/history/${id}`
-  );
+  const res = await API.prod.delete(`/history/${id}`);
   return res;
 };
