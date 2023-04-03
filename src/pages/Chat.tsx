@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import RentalProductItem from "../components/RentalProductItem";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { userInfo } from "../atoms/userInfo";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { ChatMessage } from "../components/ChatMessage";
 
@@ -29,12 +29,14 @@ export interface PrevChat {
 
 const Chat: React.FC = () => {
   const roomId = useParams().roomId;
-  console.log(roomId);
+  // console.log(roomId);
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<string>("");
   const [stompClient, setStompClient] = useState<Stomp.Client | null>(null);
 
   const { userNickName } = useRecoilValue(userInfo);
+
+  const queryClient = useQueryClient();
 
   // 이전 채팅 내역 데이터 가져오기
   const { isLoading, isError, data, error }: any = useQuery(
@@ -42,13 +44,13 @@ const Chat: React.FC = () => {
     async () => {
       return await axios
         .get(
-          `http://43.200.141.247:8080/chat/room?roomId=${roomId}&senderId=${userNickName}`
+          `http://43.200.141.247:8080/chat/room?roomId=${roomId}&nickname=${userNickName}`
         )
         .then((res) => res.data);
     }
   );
 
-  console.log(data);
+  // console.log(data);
 
   useEffect(() => {
     let stompClient: Stomp.Client | null = null;
@@ -98,6 +100,10 @@ const Chat: React.FC = () => {
     }
   }, [roomId, stompClient]);
 
+  useEffect(() => {
+    queryClient.invalidateQueries("prevChat");
+  }, [messages]);
+
   const sendMessage = () => {
     if (!stompClient) return;
 
@@ -136,7 +142,7 @@ const Chat: React.FC = () => {
   const loginUserInfo = useRecoilValue(userInfo);
   return (
     <div className="divide-y px-5 md:px-28 lg:px-40">
-      <RentalProductItem />
+      <RentalProductItem product={data?.product} />
       <div>
         <div className="h-96 py-3.5 overflow-y-scroll scrollbar-hide">
           {/* 실시간 채팅 주고 받기 이전에 채팅내역들 화면에 보여주어야함. */}
