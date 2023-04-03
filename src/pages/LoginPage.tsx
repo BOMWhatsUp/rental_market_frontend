@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { onSilentRefresh } from "../api/login/loginAPI";
 import { userInfo } from "../atoms/userInfo";
 import jwtDecode from "jwt-decode";
+import axios from "axios";
 
 export default function LoginPage() {
   // Access Token 전역 상태로 관리
