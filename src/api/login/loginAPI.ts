@@ -8,8 +8,8 @@ export const onLogin = async (loginValues: {
   try {
     const response = await axios({
       method: "post",
-      url: "http://52.78.150.154:8080/login",
-      // url: "http://43.200.141.247:8080/login",
+      // url: "http://52.78.150.154:8080/login",
+      url: "http://43.200.141.247:8080/login",
       headers: {
         "content-type": "application/json",
       },
