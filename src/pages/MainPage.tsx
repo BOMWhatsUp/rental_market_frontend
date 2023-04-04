@@ -28,6 +28,8 @@ export default function MainPage() {
   const accessToken = useRecoilValue(token); //TODO: hook 에러 나서
   //Login User 지역 정보
   const userRegion = useRecoilValue(userInfo).userRegion;
+  //Login User 정보
+  const userId = useRecoilValue(userInfo).userEmail;
   console.log(userRegion ? userRegion : "로그인 해주세요");
   console.log(useRecoilValue(userInfo).userNickName);
   // const queryClient = useQueryClient();
@@ -107,6 +109,7 @@ export default function MainPage() {
         size
       ),
     {
+      enabled: !!userRegion,
       getNextPageParam: (lastPage, allPages) => {
         const nextPage = allPages.length + 1;
         return nextPage;
@@ -365,7 +368,7 @@ export default function MainPage() {
               <p>Error...</p>
             </div>
           )}
-          <ProductList data={data} isSuccess={isSuccess} />
+          <ProductList data={data} isSuccess={isSuccess} userId={userId} />
         </div>
       </div>
     </>

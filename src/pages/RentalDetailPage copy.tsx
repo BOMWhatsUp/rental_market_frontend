@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
-  deleteProduct,
+  //deleteProduct,
   getProduct,
 } from "../api/rentalProduct/rentalProductAPI";
 import { useMutation, useQuery } from "react-query";
@@ -101,6 +101,7 @@ export default function RentalDetailPage() {
     "https://img1.daumcdn.net/thumb/C176x176/?fname=https://blog.kakaocdn.net/dn/cv7UPT/btrSm0BDg2h/bigd2G5zkOERd0S1KEq3Ek/img.jpg",
   ];
 
+  //TODO: 지시사항
   // 테스트
   const { userNickName } = useRecoilValue(userInfo);
   console.log(userNickName);
@@ -110,8 +111,8 @@ export default function RentalDetailPage() {
   const deleteMutation = useMutation(
     "deleteProduct",
     async (productId: string) => {
-      const res = await deleteProduct(productId);
-      return res;
+      //const res = await deleteProduct(productId);
+      //return res;
     },
     {
       onSuccess: (res) => {
@@ -120,6 +121,7 @@ export default function RentalDetailPage() {
     }
   );
 
+  //TODO: 지시사항
   const tokenKey = useRecoilValue(token);
   const moveChatRoom = useMutation(
     async () => {
@@ -158,7 +160,7 @@ export default function RentalDetailPage() {
 
   const loginUserInfo = useRecoilValue(userInfo);
 
-  // 채팅방 입장
+  // 채팅방 입장 //TODO: 지시사항
   const rental = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (event.currentTarget.name === "rentalRequest") {
       setRentalRequest((prev) => !prev);

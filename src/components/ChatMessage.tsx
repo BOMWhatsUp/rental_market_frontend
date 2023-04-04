@@ -1,6 +1,6 @@
 import { useRecoilValue } from "recoil";
 import { userInfo } from "../atoms/userInfo";
-
+import moment from "moment";
 export const ChatMessage = ({ prevChat }: any) => {
   const loginUserInfo = useRecoilValue(userInfo);
   return (
@@ -37,7 +37,10 @@ export const ChatMessage = ({ prevChat }: any) => {
         >
           {prevChat.message}
         </div>
-        <time className="mx-1.5 chat-footer text-xs opacity-50">12:45</time>
+        <time className="mx-1.5 chat-footer text-xs opacity-50">
+          {" "}
+          {moment(prevChat.sendTime).format("HH:mm")}
+        </time>
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ import { userInfo } from "../atoms/userInfo";
 import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { ChatMessage } from "../components/ChatMessage";
+import { token } from "../atoms/token";
+import { RentalProduct } from "../types/product";
 
 interface Message {
   roomId: string;
@@ -37,16 +39,61 @@ const Chat: React.FC = () => {
   const { userNickName } = useRecoilValue(userInfo);
 
   const queryClient = useQueryClient();
+  //token
+  const accessToken = useRecoilValue(token); //TODO: hook 에러 나서
+  //Login User 지역 정보
+  const userId = useRecoilValue(userInfo).userEmail;
+  const [rentalProduct, setRentalProduct] = useState<RentalProduct>();
 
   // 이전 채팅 내역 데이터 가져오기
-  const { isLoading, isError, data, error }: any = useQuery(
+  const config = {
+    headers: { Authorization: accessToken },
+  };
+  const { isLoading, isError, data, error, isSuccess }: any = useQuery(
     ["prevChat", roomId],
     async () => {
       return await axios
         .get(
-          `http://43.200.141.247:8080/chat/room?roomId=${roomId}&nickname=${userNickName}`
+          `https://rentalmarket.monster/chat/room?roomId=${roomId}&nickname=${userNickName}`,
+          config
         )
-        .then((res) => res.data);
+        .then((res) => {
+          console.log("이전메세지", res.data.messages);
+
+          const resProduct = res.data.product;
+          const productData = {
+            id: resProduct.id,
+            title: resProduct.title,
+            maxRentalPeriod: resProduct.maxRentalPeriod,
+            categoryName: resProduct.categoryName,
+            sellerId: resProduct.sellerId.email,
+            status: resProduct.status,
+            content: resProduct.content,
+            unitPrice: resProduct.unitPrice,
+            mainImageUrl: resProduct.mainImageUrl,
+          };
+
+          setRentalProduct(productData);
+          console.log(rentalProduct);
+
+          return res.data;
+        });
+
+      //이전채팅 내역에서 product sellerid
+      // private String senderName;
+      // private String receiverName;
+      // private ProductBoard product; //product 개체
+      // product {
+      //   ....
+      //  sellerId: {
+      //   email: data.sellerId,
+      //   nickName: data.nickname,
+      //   region: data.wishRegion,
+      //   title: data.title,//TODO: 의미없는 타이틀 -> 지울것임
+      //   imageUrl: data.imageURLs[0],//TODO: 태초에 리스트였던 흔적, profile url string
+      // },
+      //}
+      // private List<ChatMessage> messages;
     }
   );
 
@@ -55,7 +102,8 @@ const Chat: React.FC = () => {
   useEffect(() => {
     let stompClient: Stomp.Client | null = null;
     // 웹소켓 연결을 수립합니다.
-    const socket = new SockJS("http://43.200.141.247:8080/chatting");
+    //const socket = new SockJS("http://43.200.141.247:8080/chatting");
+    const socket = new SockJS("https://rentalmarket.monster/chatting");
     // console.log(socket);
     try {
       stompClient = Stomp.over(socket);
@@ -113,7 +161,7 @@ const Chat: React.FC = () => {
       JSON.stringify({
         roomId: roomId,
         sender: loginUserInfo.userNickName,
-        receiver: data.receiverName,
+        receiver: data?.receiverName,
         // 채팅룸 DB에서 설정된 receiver 정보를 그대로 사용.
         // /chat/list?userId='유저id';
 
@@ -142,15 +190,23 @@ const Chat: React.FC = () => {
   const loginUserInfo = useRecoilValue(userInfo);
   return (
     <div className="divide-y px-5 md:px-28 lg:px-40">
-      <RentalProductItem product={data?.product} />
+      {rentalProduct &&
+        (userId == rentalProduct.sellerId ? (
+          <RentalProductItem product={rentalProduct} isSeller={true} />
+        ) : (
+          <RentalProductItem product={rentalProduct} />
+        ))}
+
       <div>
         <div className="h-96 py-3.5 overflow-y-scroll scrollbar-hide">
           {/* 실시간 채팅 주고 받기 이전에 채팅내역들 화면에 보여주어야함. */}
           {/* 데이터를 불러오는 중이라면 isLoading 처리 */}
-          {data?.messages.map((prvChat: PrevChat) => (
-            // 이전 채팅 내역들
-            <ChatMessage key={prvChat.id} prevChat={prvChat} />
-          ))}
+
+          {isSuccess &&
+            data?.messages.map((prvChat: PrevChat) => (
+              // 이전 채팅 내역들
+              <ChatMessage key={prvChat.id} prevChat={prvChat} />
+            ))}
 
           {/* 이부분은 채팅 메시지를 실시간으로 주고 받는 경우 */}
           {/* 채팅 메시지를 따로 tailwind-styles-components 로 분리 시켜서 작업 필요 할 듯 */}
@@ -226,9 +282,14 @@ const Chat: React.FC = () => {
         </label>
       </div>
       <div className="flex justify-end py-5 mt-3.5 border-t border-solid border-black">
-        <Link to={"/product/pay"} className="btn btn-primary w-28">
-          랜탈하기
-        </Link>
+        {rentalProduct && (
+          <Link
+            to={`/product/pay/${rentalProduct.id}`}
+            className="btn btn-primary w-28"
+          >
+            랜탈하기
+          </Link>
+        )}
       </div>
     </div>
   );

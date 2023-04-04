@@ -10,8 +10,8 @@ type ProductItemProps = {
   isSeller?: boolean; //my rental 에서 구분값
   //product?: RentalProduct | RentalProductHistory;
   product?: RentalProductHistory; //TODO: null 허용 임시로 했음
-  onDeleteHistory: (historyId: string) => void;
-  onUpdateHistory: (historyId: string) => void;
+  onDeleteHistory?: (historyId: string) => void;
+  onUpdateHistory?: (historyId: string) => void;
 };
 RentalProductItem.defaultProps = {
   isSeller: false,
