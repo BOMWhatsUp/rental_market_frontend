@@ -100,7 +100,7 @@ const DaumPostcodeInput = ({
         className="btn btn-outline btn-primary whitespace-nowrap ml-2"
         onClick={openPostCode}
       >
-        우편번호 검색
+        주소검색
       </button>
 
       <div id="popupDom" className="absolute top-1/2 left-1/2">

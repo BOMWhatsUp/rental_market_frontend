@@ -118,9 +118,18 @@ export default function LoginPage() {
 
   return (
     <>
-      <h1 className="text-primary font-extrabold text-center text-3xl mb-5">
-        로그인
-      </h1>
+      <h2 className="text-center p-8">
+        <div className="text-4xl text-primary font-bold tracking-wide">
+          로그인
+        </div>
+      </h2>
+
+      <div className="alert shadow-lg max-w-xs mx-auto mb-9">
+        <div className="pl-2">
+          <span>회원만 렌탈마켓을 이용할 수 있어요! 😀</span>
+        </div>
+      </div>
+
       <div>{accessToken}</div>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col items-center">
@@ -155,13 +164,13 @@ export default function LoginPage() {
           <div className="text-error">
             {loginError.status && loginError.errorMessage}
           </div>
-          <button type="submit" className="btn btn-primary btn-wide mt-5">
+          <button type="submit" className="btn btn-primary btn-wide mt-10">
             로그인
           </button>
         </div>
       </form>
 
-      <div className="flex flex-col items-center">
+      {/* <div className="flex flex-col items-center">
         <div className=" w-full max-w-xs">
           <div className="divider">or Sign up with </div>
           <div className="flex justify-center">
@@ -175,7 +184,7 @@ export default function LoginPage() {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
