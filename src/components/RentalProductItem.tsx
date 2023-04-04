@@ -10,13 +10,16 @@ type ProductItemProps = {
   //product?: RentalProduct | RentalProductHistory;
   product?: RentalProduct; //TODO: null 허용 임시로 했음
   //isHistory?: boolean;
+  userId?: string;
 };
 RentalProductItem.defaultProps = {
   isSeller: false,
+  userId: "",
 };
 export default function RentalProductItem({
   isSeller,
   product,
+  userId,
 }: //isHistory,
 ProductItemProps) {
   const onErrorImg = (e: any) => {
@@ -76,6 +79,7 @@ ProductItemProps) {
                   상세보기
                 </Link>
                 {isSeller ||
+                userId == product.sellerId ||
                 product.status === "RENTED" ||
                 product.status === "WAITING" ? (
                   <button disabled className="btn btn-primary btn-xs md:btn-sm">
@@ -83,7 +87,7 @@ ProductItemProps) {
                   </button>
                 ) : (
                   <Link
-                    to="/product/pay/productid"
+                    to={`/product/pay/${product.id}`}
                     className="btn btn-primary btn-xs md:btn-sm"
                   >
                     렌탈하기

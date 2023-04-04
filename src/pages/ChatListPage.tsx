@@ -1,7 +1,9 @@
 import axios from "axios";
+import { response } from "msw";
 import React, { useEffect } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { token } from "../atoms/token";
 import { userInfo } from "../atoms/userInfo";
 import { ChatListItem } from "../components/ChatListItem";
 
@@ -25,13 +27,24 @@ import { ChatListItem } from "../components/ChatListItem";
 
 export default function ChatListPage() {
   const { userNickName } = useRecoilValue(userInfo);
-  // userEmail 사용해서 채팅 리스트 받아와야함
-  const { data, isLoading, isError, error } = useQuery(
+  //token
+  const accessToken = useRecoilValue(token);
+  const config = {
+    headers: { Authorization: accessToken },
+  };
+
+  const { data, isLoading, isError, error, isSuccess } = useQuery(
     ["chatList", userNickName],
     async () => {
       return await axios
-        .get(`http://43.200.141.247:8080/chat/list?nickname=${userNickName}`)
-        .then((res) => res);
+        .get(
+          `https://rentalmarket.monster/chat/list?nickname=${userNickName}`,
+          config
+        )
+        .then((res) => {
+          console.log(res.data);
+          return res.data;
+        });
     }
   );
   const queryClient = useQueryClient();
@@ -39,17 +52,29 @@ export default function ChatListPage() {
   useEffect(() => {
     queryClient.invalidateQueries("chatList");
   }, [data]);
+
   return (
     <div className="flex flex-col items-center px-5 md:px-28 lg:px-40">
       <h2 className="text-2xl md:text-xl">채팅 목록</h2>
       {/* 채팅방 리스트 -> 컴포넌트로 분류 필요 */}
       {/* 할거 */}
       {/* data를 활용 */}
+
       <ul className="divide-y">
-        {data?.data.map((list: any) => (
-          <ChatListItem key={list.roomId} list={list} />
-        ))}
+        {/* {data?.data.map((list: any) => (
+          <ChatListItem key={`${list.roomId}`} list={list} />
+        ))} */}
+        {isSuccess &&
+          data.map((list: any) => (
+            <ChatListItem key={`${list.roomId}`} list={list} />
+          ))}
       </ul>
+
+      {isError && (
+        <ul className="divide-y">
+          <li>에러가 났음</li>
+        </ul>
+      )}
     </div>
   );
 }

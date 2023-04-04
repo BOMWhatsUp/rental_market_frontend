@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   addTransaction,
   getPayProduct,
@@ -14,26 +14,45 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { userInfo } from "../atoms/userInfo";
 import sample404 from "../assets/404sample.png";
 import { token } from "../atoms/token";
+import axios from "axios";
 
 export default function RentalPayPage() {
   //token
   const accessToken = useRecoilValue(token);
   //Login User 정보
   const userId = useRecoilValue(userInfo).userEmail;
+  const userNickName = useRecoilValue(userInfo).userNickName;
+  const navigate = useNavigate();
+  //TODO: chat 확인 필요
+  const [rentalRequest, setRentalRequest] = useState(false);
   // 최대 랜탈 기간
   let maxRentalDay = 0;
 
   //TODO: 리팩토링
   const productTransactionMutation = useMutation({
     mutationFn: (form: {
+      accessToken: string;
       productId: string;
       userId: string;
+      userNickName: string;
       days: number;
       totalPrice: number;
     }) => addTransaction(form),
     onSuccess: (data) => {
       console.log(data);
-      //TODO: 정후님~ 여기에 채팅 기능 연결부탁드려요! - 방있는지 없는지 확인, 있으면 채팅방 입장 없으면 생성, buyer-> seller 메세지 전달
+      //성공코드, 방이름 , 구매하겠습니다 메세지
+      //TODO: 정후님~ 여기에 채팅 기능 연결부탁드려요! -여기는 아직
+      // 방있는지 없는지 확인, 있으면 채팅방 입장 없으면 생성,
+      //buyer-> seller 메세지 전달
+
+      //<서버에서 오는 것>
+      //data.roomid
+      //data.message
+      //<page 에 있는 것>
+      //payProduct =product 정보
+      //sellerId,
+      //nickname
+      //userId=buyer id
     },
   });
 
@@ -47,13 +66,14 @@ export default function RentalPayPage() {
   });
   const { isLoading, isSuccess, isError, data, error }: any = useQuery(
     "productPay",
-    () => getPayProduct(productId),
+    () => getPayProduct(productId, accessToken),
     {
       //TODO: accessToken 기능 머지 되면, userId, 등등 null check 해야함
       enabled: !!productId,
       onSuccess(data) {
         maxRentalDay = parseInt(maxRentalPeriod(data.maxRentalPeriod));
-        setRentalPay(data.unitPrice);
+        console.log("maxRentalDay", maxRentalDay);
+        setRentalPay(() => data.unitPrice);
       },
     }
   );
@@ -67,6 +87,8 @@ export default function RentalPayPage() {
     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   const countRentalDay = (type: string) => {
+    console.log("count...!", maxRentalDay);
+    maxRentalDay = parseInt(maxRentalPeriod(data.maxRentalPeriod));
     if (type === "increase") {
       if (rentalday >= maxRentalDay) return;
       setRentalDay((prev) => prev + 1);
@@ -93,8 +115,10 @@ export default function RentalPayPage() {
   };
 
   useEffect(() => {
-    console.log(totalrentalPay, rentalday);
-    const total = rentalday * rentalPay;
+    //TODO: 아무것도 안만졌을때 상태 조정 해야함
+    console.log(totalrentalPay, rentalday, rentalPay);
+    let total = rentalday * rentalPay;
+
     setForm((prevForm) => ({ ...prevForm, userId: userId }));
     setForm((prevForm) => ({
       ...prevForm,
@@ -106,13 +130,61 @@ export default function RentalPayPage() {
 
   const handleSubmitTransaction = () => {
     const formData = {
+      accessToken: accessToken,
       productId: productPay.id,
       userId: userId,
+      userNickName: userNickName,
       days: form.days,
       totalPrice: form.totalPrice,
     };
     productTransactionMutation.mutate(formData);
   };
+
+  const rentalChat = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (event.currentTarget.name === "rentalRequest") {
+      setRentalRequest((prev) => !prev);
+      moveChatRoomMutation.mutate();
+    } else {
+      moveChatRoomMutation.mutate();
+    }
+  };
+
+  const moveChatRoomMutation = useMutation(
+    async () => {
+      return await axios({
+        method: "post",
+        url: "https://rentalmarket.monster/chat/room",
+        headers: { Authorization: accessToken },
+        data: {
+          receiverNickname: productPay.nickname,
+          senderNickname: userNickName,
+          product: {
+            ...productPay,
+            sellerId: {
+              email: productPay.sellerId, //sellers
+              nickName: productPay.nickname, //sellers
+              region: productPay.wishRegion, //sellers
+              title: productPay.title, // 빼는거고
+              //TODO: 아래가 오류나서 안가네요...
+              //imageUrl: data.imageURLs[0], //seller 의 profile?? 상품 이미지?
+            },
+          },
+          // rentalRequest: rentalRequest,
+        },
+      }).then((res) => res.data);
+    },
+    {
+      onSuccess: (roomId) => {
+        // roomId 서버에서 보내줌
+        navigate(`/chat/room/${roomId}?senderId=${userNickName}`);
+        console.log("문의하기");
+      },
+      onError: (error) => {
+        console.log("통신 에러 발생!", error);
+      },
+    }
+  );
+
   return (
     <>
       {data && isSuccess && (
@@ -224,12 +296,13 @@ export default function RentalPayPage() {
                 </span>
               </div>
               <div className="flex justify-around mt-16">
-                <Link
-                  to={"/chat/room/:roomId"}
+                <button
+                  name="enquiry"
                   className="btn btn-primary w-36"
+                  onClick={rentalChat}
                 >
                   문의하기
-                </Link>
+                </button>
                 <button
                   className="btn btn-primary w-36"
                   onClick={handleSubmitTransaction}

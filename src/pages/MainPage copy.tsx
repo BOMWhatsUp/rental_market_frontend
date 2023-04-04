@@ -451,7 +451,9 @@ export default function MainPage() {
             </div>
           )} */}
 
-          <ProductList data={data} />
+          {/* <ProductList
+          //data={data}
+          /> */}
         </div>
       </div>
     </>

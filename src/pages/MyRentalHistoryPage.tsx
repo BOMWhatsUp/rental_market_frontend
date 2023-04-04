@@ -6,7 +6,7 @@ import { userInfo } from "../atoms/userInfo";
 import {
   deleteProductHistory,
   getHistoryProducts,
-  updateProductHistory,
+  updateSellerProductHistory,
 } from "../api/rentalProduct/rentalProductAPI";
 import {
   useInfiniteQuery,
@@ -28,10 +28,11 @@ export default function MyRentalHistoryPage() {
   //const userId = user.userEmail;//FIXME: 더미데이터 없앤것
   const [currentTab, setCurrentTab] = useState("seller");
   const queryClient = useQueryClient();
+
   const deleteHistoryMutation = useMutation(
     "deleteProductHistory",
-    async (historyId: string) => {
-      const res = await deleteProductHistory(historyId);
+    async (form: { historyId: string; accessToken: string }) => {
+      const res = await deleteProductHistory(form);
       return res;
     },
     {
@@ -44,8 +45,8 @@ export default function MyRentalHistoryPage() {
   );
   const updateHistoryMutation = useMutation(
     "updateProductHistory",
-    async (historyId: string) => {
-      const res = await updateProductHistory(historyId);
+    async (form: { historyId: string; accessToken: string }) => {
+      const res = await updateSellerProductHistory(form);
       return res;
     },
     {
@@ -59,8 +60,11 @@ export default function MyRentalHistoryPage() {
   const onDeleteHistory = (historyId: string) => {
     if (confirm("해당 렌탈내역을 정말로 삭제하시겠습니까?")) {
       console.log("삭제함");
-
-      deleteHistoryMutation.mutate(historyId);
+      const form = {
+        historyId: historyId,
+        accessToken: accessToken,
+      };
+      deleteHistoryMutation.mutate(form);
     }
   };
 
@@ -73,7 +77,11 @@ export default function MyRentalHistoryPage() {
       //submit delete id
       //product id 말고 history id 보내면 됨
       console.log("반납완료 처리");
-      updateHistoryMutation.mutate(historyId);
+      const form = {
+        historyId: historyId,
+        accessToken: accessToken,
+      };
+      updateHistoryMutation.mutate(form);
     }
   };
 

@@ -8,10 +8,12 @@ type ProductListProps = {
   data: InfiniteData<RentalProduct[]>;
   isSuccess: boolean;
   isSeller?: boolean; //로그인 유저가 올린 아이템인지 여부
+  userId?: string; //로그인 유저 id =email
   //isHistory?: boolean;
 };
 ProductList.defaultProps = {
   isSeller: false,
+  userId: "",
   //isHistory: false,
 };
 
@@ -19,6 +21,7 @@ export default function ProductList({
   data,
   isSuccess,
   isSeller,
+  userId,
 }: //isHistory,
 ProductListProps) {
   return (
@@ -32,6 +35,7 @@ ProductListProps) {
               key={pd.id}
               product={pd}
               isSeller={isSeller}
+              userId={userId}
               //isHistory={isHistory}
             />
           ))

@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getProduct } from "../api/rentalProduct/rentalProductAPI";
 import { useMutation, useQuery } from "react-query";
 import Badge from "../components/Badge";
@@ -15,6 +15,7 @@ import { Carousel } from "react-responsive-carousel";
 import { userInfo } from "../atoms/userInfo";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { token } from "../atoms/token";
+import axios from "axios";
 
 export default function RentalDetailPage() {
   const productId = useParams().id;
@@ -22,6 +23,10 @@ export default function RentalDetailPage() {
   const accessToken = useRecoilValue(token); //FIXME: hook 에러 나서
   //Login User 정보
   const userId = useRecoilValue(userInfo).userEmail;
+  const userNickName = useRecoilValue(userInfo).userNickName;
+  const navigate = useNavigate();
+  //TODO: chat 확인 필요
+  const [rentalRequest, setRentalRequest] = useState(false);
 
   const { isLoading, isError, data, error }: any = useQuery(
     "productDetail",
@@ -46,6 +51,54 @@ export default function RentalDetailPage() {
   const onErrorProfile = (e: any) => {
     e.target.src = profileSample;
   };
+
+  //TODO: 확인 필요 chat 관련
+
+  const rentalChat = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (event.currentTarget.name === "rentalRequest") {
+      setRentalRequest((prev) => !prev);
+      moveChatRoomMutation.mutate();
+    } else {
+      moveChatRoomMutation.mutate();
+    }
+  };
+
+  //TODO: 데이터 형식 확인해서 고쳐야 ... 미스테리..sellerId
+  const moveChatRoomMutation = useMutation(
+    async () => {
+      return await axios({
+        method: "post",
+        url: "https://rentalmarket.monster/chat/room",
+        headers: { Authorization: accessToken },
+        data: {
+          receiverNickname: productDetail.nickname,
+          senderNickname: userNickName,
+          product: {
+            ...productDetail,
+            sellerId: {
+              email: productDetail.sellerId, //sellers
+              nickName: productDetail.nickname, //sellers
+              region: productDetail.wishRegion, //sellers
+              title: productDetail.title, // 빼는거고
+              //TODO: 아래가 오류나서 안가네요...
+              //imageUrl: data.imageURLs[0], //seller 의 profile?? 상품 이미지?
+            },
+          },
+          // rentalRequest: rentalRequest,
+        },
+      }).then((res) => res.data);
+    },
+    {
+      onSuccess: (roomId) => {
+        // roomId 서버에서 보내줌
+        navigate(`/chat/room/${roomId}?senderId=${userNickName}`);
+        console.log("문의하기");
+      },
+      onError: (error) => {
+        console.log("통신 에러 발생!", error);
+      },
+    }
+  );
 
   return (
     <>
@@ -139,13 +192,14 @@ export default function RentalDetailPage() {
                     // >
                     //   상품삭제
                     // </button>
-                    <Link
-                      to="/chat/room/roomid"
+                    <button
+                      name="enquiry"
                       className="btn btn-sm btn-outline btn-primary"
+                      onClick={rentalChat}
                     >
                       <ChatBubbleBottomCenterTextIcon className="h-3 w-3 mr-0.5" />
                       상품문의
-                    </Link>
+                    </button>
                   )}
                 </div>
               </section>
