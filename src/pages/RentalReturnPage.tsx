@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,19 +9,17 @@ import {
 import { token } from "../atoms/token";
 import { userInfo } from "../atoms/userInfo";
 import RentalProductHistoryItem from "../components/RentalProductHistoryItem";
-import RentalProductItem from "../components/RentalProductItem";
 import { RentalProductHistory } from "../types/product";
-import Stomp from "stompjs";
-import SockJS from "sockjs-client";
 
 export default function RentalReturnPage() {
   const productHistoryId = useParams().id;
+
   //token
   const accessToken = useRecoilValue(token);
+
   //Login User 정보
   const userId = useRecoilValue(userInfo).userEmail;
   const { userNickName } = useRecoilValue(userInfo);
-
   const navigate = useNavigate();
 
   const { isLoading, isError, data, error }: any = useQuery(
@@ -52,143 +49,37 @@ export default function RentalReturnPage() {
 
   const productHistoryBuyerMutation = useMutation({
     mutationFn: (form: {
-      // historyId: string;
-      // trackingInfo: string;
-      // accessToken: string;
-      // productId: string;
-      // userNickname: string;
-      // sellerNickName: string;
-      // returnYn: boolean;
-
-      id: number; // historyId
+      id: string; // historyId
+      productId: string;
       message: string;
-      productId: {
-        id: number; // productId
-        senderId: string;
-        nickname: string;
-        content: string;
-        unitPrice: number;
-        categoryName: string;
-        mainImageURL: string;
-        maxRentalPeriod: string;
-        status: string;
-        withRegion: string;
-      };
       userNickname: string;
       sellerNickname: string;
       returnYn: boolean;
       accessToken: string;
     }) => updateBuyerProductHistory(form),
     onSuccess: (response) => {
-      //TODO:아직 백엔드쪽-지기님 구현중...4.4 화 오전
-      //roomId <--- 해당 부분 없어짐..4.4 화 오후
-
-      //TODO: 관호님 작업중..4.4 화 오후
+      //roomId
       console.log(response);
-      //성공코드, 방이름 , 반납하겠습니다 메세지
-      //TODO: 정후님~ 여기에 채팅 기능 연결부탁드려요! -여기는 아직
-      // 방있는지 없는지 확인, 있으면 채팅방 입장 없으면 생성,
-      //buyer-> seller 메세지 전달
+
       const roomId = response.data;
+
       // 받아오는 roomId 채팅방으로 이동
       navigate(`/chat/room/${roomId}?nickname=${userNickName}`);
-
-      //<서버에서 오는 것>
-      //data.roomid
-      //data.message
-      //<page 에 있는 것>
-      //payProduct =product 정보
-      //sellerId,
-      //nickname
-      //userId=buyer id
-
-      // 요청 폼 양식 - 관호님
-      //private Long roomId;
-      // private String sender;
-      // private String receiver;
-      // private String userProfile;
-      // private String message; // 운송장번호
-
-      // id;
-      // productId;
-      // message;
-      // userNickname;
-      // sellerNickName;
-      // returnYn;
-
-      // axios.post("http://43.200.141.247:8080/chat/return", {
-      //   // receiver: data.sellerNickName,
-      //   // userProfile: data.sellerProfile,
-      //   // message: data.trackingInfo,
-      //   // id;
-      //   // productId;
-      //   // message;
-      //   // userNickname;
-      //   // sellerNickName;
-      //   // returnYn;
-      // });
     },
   });
 
-  const [stompClient, setStompClient] = useState<Stomp.Client | null>(null);
-
   const returnProduct = (historyId: string) => {
     const form = {
-      historyId: historyId,
+      id: historyId, // historyId
       productId: data.productId,
-      userNickname: userNickName,
-      sellerNickName: data.sellerNickName,
-      returnYn: data.returnYn,
-      trackingInfo: trackingInfo,
-      accessToken: accessToken,
-    };
-
-    const formData = {
-      id: 1, // historyId
       message: trackingInfo,
-      productId: {
-        id: 1, // productId
-        senderId: "aaa123@gmail.com",
-        nickname: "레모나",
-        content: "content",
-        unitPrice: 600,
-        categoryName: "HOME",
-        mainImageURL: "998f15eb-c565-4f87-a",
-        maxRentalPeriod: "ONEMONTH",
-        status: "WAITING",
-        withRegion: "서울시 중랑구",
-      },
-      userNickname: "라라라",
-      sellerNickname: "레모나",
-      returnYn: false,
+      userNickname: userNickName,
+      sellerNickname: data.sellerNickName,
+      returnYn: data.returnYn,
       accessToken: accessToken,
     };
 
-    // let chatClient: Stomp.Client | null = null;
-    // // 웹소켓 연결을 수립합니다.
-    // // const socket = new SockJS("https://rentalmarket.monster/chatting");
-    // const socket = new SockJS("http://43.200.141.247:8080/chatting");
-    // // console.log(socket);
-    // try {
-    //   chatClient = Stomp.over(socket);
-    //   // console.log(stompClient);
-    //   chatClient.connect({}, () => {
-    //     console.log("connected to server");
-    //     setStompClient(chatClient);
-
-    //     chatClient.send(
-    //       "/pub/chat/return",
-    //       {},
-    //       JSON.stringify({ ...formData })
-    //     );
-    //   });
-    // } catch (error) {
-    //   console.error("Error occurred while connecting to WebSocket:", error);
-    // }
-
-    // 테스트 위해서 from -> fromData로 테스트
-    // productHistoryBuyerMutation.mutate(form);
-    productHistoryBuyerMutation.mutate(formData);
+    productHistoryBuyerMutation.mutate(form);
   };
 
   return (

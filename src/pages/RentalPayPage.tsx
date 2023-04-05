@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   addTransaction,
   getPayProduct,
@@ -8,9 +8,8 @@ import {
 import { RentalProductDetail } from "../types/product";
 import { categoryName, maxRentalPeriod } from "../utils/converter";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Carousel } from "react-responsive-carousel";
 import Badge from "../components/Badge";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { userInfo } from "../atoms/userInfo";
 import sample404 from "../assets/404sample.png";
 import { token } from "../atoms/token";
@@ -40,46 +39,8 @@ export default function RentalPayPage() {
     }) => addTransaction(form),
     onSuccess: (response) => {
       console.log(response);
-      //성공코드, 방이름 , 구매하겠습니다 메세지
-      //TODO: 정후님~ 여기에 채팅 기능 연결부탁드려요! -여기는 아직
-      // 방있는지 없는지 확인, 있으면 채팅방 입장 없으면 생성,
-      //buyer-> seller 메세지 전달
-
-      //<서버에서 오는 것>
-      //data.roomid
-      //data.message
-      //<page 에 있는 것>
-      //payProduct =product 정보
-      //sellerId,
-      //nickname
-      //userId=buyer id
-
-      const result = axios.post(
-        `http://43.200.141.247:8080/chat/transaction`,
-        {
-          roomId: 6,
-          userNickname: userNickName,
-          message: data.message,
-        },
-        { headers: { Authorization: accessToken } }
-      );
-
-      console.log(response);
-      // const response = axios.post(
-      //   "http://43.200.141.247:8080/chat/transaction",
-      //   {
-      //     roomId: data.roomId,
-      //     userNickname: userNickName,
-      //     message: data.message,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: accessToken,
-      //     },
-      //   }
-      // );
-
-      // navigate(`/chat/room/${roomId}?senderId=${userNickName}`)
+      // roomId 반환
+      navigate(`/chat/room/${response.data.roomId}?senderId=${userNickName}`);
     },
   });
 
@@ -180,8 +141,8 @@ export default function RentalPayPage() {
     async () => {
       return await axios({
         method: "post",
-        // url: "https://rentalmarket.monster/chat/room",
-        url: "http://43.200.141.247:8080/chat/room",
+        url: "https://rentalmarket.monster/chat/room",
+        // url: "http://43.200.141.247:8080/chat/room",
         headers: { Authorization: accessToken },
         data: {
           receiverNickname: productPay.nickname,
