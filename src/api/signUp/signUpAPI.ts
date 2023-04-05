@@ -7,8 +7,9 @@ export const isExistInfoCheck = async (checkInfo: {
   if (checkInfo.value === String(checkInfo.value)) {
     return await axios
       .get(
-        `https://rentalmarket.monster/check/${checkInfo.key}/${checkInfo.value}`
-        //`http://52.78.150.154:8080/check/${checkInfo.key}/${checkInfo.value}`
+        // `https://rentalmarket.monster/check/${checkInfo.key}/${checkInfo.value}`
+        // `http://52.78.150.154:8080/check/${checkInfo.key}/${checkInfo.value}`
+        `http://43.200.141.247:8080/check/${checkInfo.key}/${checkInfo.value}`
       )
       .then((res) => res.data);
 
@@ -30,9 +31,9 @@ export const postSignUp = async (values: any) => {
   if (values === Object(values)) {
     return await axios({
       method: "post",
-      url: "https://rentalmarket.monster/signup",
+      // url: "https://rentalmarket.monster/signup",
       //url: "http://52.78.150.154:8080/signup",
-      // url: "http://43.200.141.247:8080/signup",
+      url: "http://43.200.141.247:8080/signup",
       headers: {
         "content-type": "application/json",
       },
