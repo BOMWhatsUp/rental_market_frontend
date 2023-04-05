@@ -5,10 +5,6 @@ import {
   RentalProductHistory,
   AddProductForm,
 } from "../../types/product";
-import { useMutation } from "react-query";
-import Stomp from "stompjs";
-import SockJS from "sockjs-client";
-import { useState } from "react";
 //create
 //TODO: 연동 확인해야함
 export const addProduct = async ({ formData, accessToken }: AddProductForm) => {
@@ -17,7 +13,6 @@ export const addProduct = async ({ formData, accessToken }: AddProductForm) => {
     headers: {
       //TODO: mutation에 string 추가가 안되는 문제 해결해야. 안되면 토큰 없으면 그냥 페이지 자체를 막아서...
       Authorization: accessToken,
-      //"X-AUTH-TOKEN": accessToken,
       "Content-Type": "multipart/form-data",
     },
   });
@@ -38,7 +33,7 @@ export const addTransaction = async (form: {
     days: form.days,
     totalPrice: form.totalPrice,
   };
-  //console.log(data, form.productId);
+
   return await API.prod.post(`/payment/product/${form.productId}`, data, {
     headers: {
       Authorization: form.accessToken,
@@ -57,17 +52,9 @@ export const getProducts = async (
   size: number = 5
 ) => {
   const res = await API.prod.get<RentalProduct[]>(
-    //mocking
-    //`/api/products?page=${page}&size=${size}&categoryName=${categoryName}&wishRegion=${userRegion}&keyword=${keyword}&status=${status}`
-    //local http server
-    //`http://3.37.196.93:8080/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`
-    //vercel https server
     `/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`,
-    //proxy
-    //`/api/products?page=${page}&size=${size}&category-name=${categoryName}&keyword=${keyword}&userRegion=${userRegion}&status=${status}`
     {
       headers: {
-        //"X-AUTH-TOKEN": accessToken,
         Authorization: accessToken,
       },
     }
@@ -77,10 +64,6 @@ export const getProducts = async (
 
 export const getProduct = async (id: string, accessToken: string) => {
   const res = await API.prod.get<RentalProductDetail>(
-    //mocking
-    //`/api/products/detail/${id}`
-    //local http server
-    // `http://3.37.196.93:8080/product/${id}`
     //vercel https server
     `/product/${id}`,
     {
@@ -93,7 +76,6 @@ export const getProduct = async (id: string, accessToken: string) => {
 };
 
 export const getProductHistory = async (id: string, accessToken: string) => {
-  //console.log(id);
   const res = await API.prod.get<RentalProductHistory>(`/history/${id}`, {
     headers: {
       Authorization: accessToken,
@@ -104,7 +86,6 @@ export const getProductHistory = async (id: string, accessToken: string) => {
 
 export const getPayProduct = async (id: string, accessToken: string) => {
   const res = await API.prod.get<RentalProductDetail>(
-    //`/api/products/pay/${id}`
     `/payment/product/${id}`,
     {
       headers: {
@@ -125,7 +106,6 @@ export const getHistoryProducts = async (
   let res;
   if (isSeller) {
     res = await API.prod.get<RentalProductHistory[]>(
-      //`/api/seller/history?page=${page}&size=${size}&userId=${userId}`
       `/history/${userId}/seller?page=${page}&size=${size}`,
       {
         headers: {
@@ -135,7 +115,6 @@ export const getHistoryProducts = async (
     );
   } else {
     res = await API.prod.get<RentalProductHistory[]>(
-      //`/api/buyer/history?page=${page}&size=${size}&userId=${userId}`
       `/history/${userId}/buyer?page=${page}&size=${size}`,
       {
         headers: {
@@ -144,7 +123,7 @@ export const getHistoryProducts = async (
       }
     );
   }
-  //console.log(isSeller, userId, page, size);
+
   return res.data;
 };
 
@@ -154,10 +133,9 @@ export const updateSellerProductHistory = async (form: {
   historyId: string;
   accessToken: string;
 }) => {
-  //console.log(form);
   const res = await API.prod.put(
     `https://rentalmarket.monster/rental/${form.historyId}`,
-    // `http://43.200.141.247:8080/${form.historyId}`,
+
     {},
     {
       headers: {
@@ -169,64 +147,26 @@ export const updateSellerProductHistory = async (form: {
 };
 
 export const updateBuyerProductHistory = async (form: {
-  // historyId: string;
-  // trackingInfo: string;
-  accessToken: string;
-  // productId: string;
-  // userNickname: string;
-  // sellerNickName: string;
-  // returnYn: boolean;
-
-  id: number; // historyId
+  id: string; // historyId
+  productId: string;
   message: string;
-  productId: {
-    id: number; // productId
-    senderId: string;
-    nickname: string;
-    content: string;
-    unitPrice: number;
-    categoryName: string;
-    mainImageURL: string;
-    maxRentalPeriod: string;
-    status: string;
-    withRegion: string;
-  };
   userNickname: string;
   sellerNickname: string;
   returnYn: boolean;
+  accessToken: string;
 }) => {
   console.log(form);
 
   const res = await API.prod.post(
-    //TODO: 주소확인 필요
-    // `https://rentalmarket.monster/history/buyer/${form.historyId}`,
-    `http://43.200.141.247:8080/chat/return`,
+    `https://rentalmarket.monster/chat/return`,
     {
-      // historyId: form.historyId,
-      // message: form.trackingInfo,
-      // accessToken: form.accessToken,
-      // productId: form.productId,
-      // userNickname: form.userNickname,
-      // sellerNickName: form.sellerNickName,
-      // returnYn: form.returnYn,
-
-      id: 1, // historyId
+      id: form.id, // historyId
+      productId: form.productId,
       message: form.message,
-      productId: {
-        id: 1, // productId
-        senderId: "aaa123@gmail.com",
-        nickname: "레모나",
-        content: "content",
-        unitPrice: 600,
-        categoryName: "HOME",
-        mainImageURL: "998f15eb-c565-4f87-a",
-        maxRentalPeriod: "ONEMONTH",
-        status: "WAITING",
-        withRegion: "서울시 중랑구",
-      },
-      userNickname: "라라라",
-      sellerNickname: "레모나",
-      returnYn: false,
+      userNickname: form.userNickname,
+      sellerNickname: form.sellerNickname,
+      returnYn: form.returnYn,
+      accessToken: form.accessToken,
     },
     {
       headers: {
