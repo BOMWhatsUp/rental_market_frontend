@@ -10,7 +10,7 @@ import { useMutation } from "react-query";
 //create
 //TODO: 연동 확인해야함
 export const addProduct = async ({ formData, accessToken }: AddProductForm) => {
-  console.log(formData, accessToken ? accessToken : "로그인해야됨");
+  //console.log(formData, accessToken ? accessToken : "로그인해야됨");
   return await API.prod.post("/product", formData, {
     headers: {
       //TODO: mutation에 string 추가가 안되는 문제 해결해야. 안되면 토큰 없으면 그냥 페이지 자체를 막아서...
@@ -36,7 +36,7 @@ export const addTransaction = async (form: {
     days: form.days,
     totalPrice: form.totalPrice,
   };
-  console.log(data, form.productId);
+  //console.log(data, form.productId);
   return await API.prod.post(`/payment/product/${form.productId}`, data, {
     headers: {
       Authorization: form.accessToken,
@@ -91,7 +91,7 @@ export const getProduct = async (id: string, accessToken: string) => {
 };
 
 export const getProductHistory = async (id: string, accessToken: string) => {
-  console.log(id);
+  //console.log(id);
   const res = await API.prod.get<RentalProductHistory>(`/history/${id}`, {
     headers: {
       Authorization: accessToken,
@@ -142,7 +142,7 @@ export const getHistoryProducts = async (
       }
     );
   }
-  console.log(isSeller, userId, page, size);
+  //console.log(isSeller, userId, page, size);
   return res.data;
 };
 
@@ -152,7 +152,7 @@ export const updateSellerProductHistory = async (form: {
   historyId: string;
   accessToken: string;
 }) => {
-  console.log(form);
+  //console.log(form);
   const res = await API.prod.put(
     `https://rentalmarket.monster/rental/${form.historyId}`,
     {},

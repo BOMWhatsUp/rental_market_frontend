@@ -18,6 +18,8 @@ export const createAxiosInstance = (baseURL: string = "") => {
     withCredentials: false, //TODO: 정후님 확인 필요
   });
 
+  //intercepter
+
   return axiosInstance;
 };
 

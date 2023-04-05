@@ -109,7 +109,9 @@ export default function MyRentalHistoryPage() {
         const nextPage = allPages.length + 1;
         return nextPage;
       },
-      onSuccess(data) {},
+      onSuccess(data) {
+        console.log(data);
+      },
 
       refetchIntervalInBackground: true,
     }
