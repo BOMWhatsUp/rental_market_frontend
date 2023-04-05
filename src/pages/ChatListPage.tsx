@@ -1,51 +1,37 @@
 import axios from "axios";
-import { response } from "msw";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useQuery, useQueryClient } from "react-query";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { token } from "../atoms/token";
 import { userInfo } from "../atoms/userInfo";
 import { ChatListItem } from "../components/ChatListItem";
-
-// const chatList = [
-//   {
-//     id: 1,
-//     productId: 1,
-//     lastChatMsg: "안녕하세요.",
-//   },
-//   {
-//     id: 2,
-//     productId: 2,
-//     lastChatMsg: "반갑습니다.",
-//   },
-//   {
-//     id: 3,
-//     productId: 3,
-//     lastChatMsg: "상품 렌탈 문의 드립니다.",
-//   },
-// ];
 
 export default function ChatListPage() {
   const { userNickName } = useRecoilValue(userInfo);
   //token
   const accessToken = useRecoilValue(token);
-  const config = {
-    headers: { Authorization: accessToken },
-  };
+  // const config = {
+  //   headers: { Authorization: accessToken },
+  // };
 
   const { data, isLoading, isError, error, isSuccess } = useQuery(
     ["chatList", userNickName],
     async () => {
       return await axios
         .get(
-          // `https://rentalmarket.monster/chat/list?nickname=${userNickName}`,
-          `http://43.200.141.247:8080/chat/list?nickname=${userNickName}`,
-          config
+          `https://rentalmarket.monster/chat/list?nickname=${userNickName}`,
+          // `http://43.200.141.247:8080/chat/list?nickname=${userNickName}`,
+          { headers: { Authorization: accessToken } }
         )
         .then((res) => {
           console.log(res.data);
           return res.data;
         });
+    },
+    {
+      // refetchIntervalInBackground: true,
+      // refetchOnWindowFocus: false,
+      // refetchOnMount: false,
     }
   );
   const queryClient = useQueryClient();
@@ -62,9 +48,6 @@ export default function ChatListPage() {
       {/* data를 활용 */}
 
       <ul className="divide-y">
-        {/* {data?.data.map((list: any) => (
-          <ChatListItem key={`${list.roomId}`} list={list} />
-        ))} */}
         {isSuccess &&
           data.map((list: any) => (
             <ChatListItem key={`${list.roomId}`} list={list} />

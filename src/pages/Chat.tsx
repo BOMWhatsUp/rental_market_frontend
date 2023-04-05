@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import RentalProductItem from "../components/RentalProductItem";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { userInfo } from "../atoms/userInfo";
 import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
@@ -31,6 +31,7 @@ export interface PrevChat {
 
 const Chat: React.FC = () => {
   const roomId = useParams().roomId;
+  const navigate = useNavigate();
   // console.log(roomId);
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<string>("");
@@ -54,8 +55,8 @@ const Chat: React.FC = () => {
     async () => {
       return await axios
         .get(
-          // `https://rentalmarket.monster/chat/room?roomId=${roomId}&nickname=${userNickName}`,
-          `http://43.200.141.247:8080/chat/room?roomId=${roomId}&nickname=${userNickName}`,
+          `https://rentalmarket.monster/chat/room?roomId=${roomId}&nickname=${userNickName}`,
+          // `http://43.200.141.247:8080/chat/room?roomId=${roomId}&nickname=${userNickName}`,
           config
         )
         .then((res) => {
@@ -95,6 +96,11 @@ const Chat: React.FC = () => {
       // },
       //}
       // private List<ChatMessage> messages;
+    },
+    {
+      // refetchIntervalInBackground: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnMount: false,
     }
   );
 
@@ -104,8 +110,8 @@ const Chat: React.FC = () => {
     let stompClient: Stomp.Client | null = null;
     // 웹소켓 연결을 수립합니다.
     //const socket = new SockJS("http://43.200.141.247:8080/chatting");
-    // const socket = new SockJS("https://rentalmarket.monster/chatting");
-    const socket = new SockJS("http://43.200.141.247:8080/chatting");
+    const socket = new SockJS("https://rentalmarket.monster/chatting");
+    // const socket = new SockJS("http://43.200.141.247:8080/chatting");
     // console.log(socket);
     try {
       stompClient = Stomp.over(socket);
@@ -151,6 +157,7 @@ const Chat: React.FC = () => {
     }
   }, [roomId, stompClient]);
 
+  // TODO: react query refetch 테스트위해서 잠시 주석 23.04.06 (목)
   useEffect(() => {
     queryClient.invalidateQueries("prevChat");
   }, [messages]);
@@ -191,6 +198,28 @@ const Chat: React.FC = () => {
   // console.log(messages);
 
   const loginUserInfo = useRecoilValue(userInfo);
+
+  //TODO: 채팅방 나가기
+  // 실제 서버에서는 post가 아닌 delete로 해야 함
+  // 나머지 url, data는 동일
+  const leaveChatRoom = async () => {
+    await axios.delete(
+      `https://rentalmarket.monster/chat/room/${roomId}`,
+      // `http://43.200.141.247:8080/chat/room/${roomId}`,
+      // `http://43.200.141.247:8080/chat/room/delete/${roomId}`,
+      {
+        data: {
+          nickname: loginUserInfo.userNickName,
+        },
+        headers: {
+          Authorization: accessToken,
+        },
+      }
+    );
+    await queryClient.invalidateQueries("chatList");
+    navigate("/chat/list");
+  };
+
   return (
     <div className="divide-y px-5 md:px-28 lg:px-40">
       {rentalProduct &&
@@ -202,57 +231,12 @@ const Chat: React.FC = () => {
 
       <div>
         <div className="h-96 py-3.5 overflow-y-scroll scrollbar-hide">
-          {/* 실시간 채팅 주고 받기 이전에 채팅내역들 화면에 보여주어야함. */}
           {/* 데이터를 불러오는 중이라면 isLoading 처리 */}
-
           {isSuccess &&
             data?.messages.map((prvChat: PrevChat) => (
               // 이전 채팅 내역들
               <ChatMessage key={prvChat.id} prevChat={prvChat} />
             ))}
-
-          {/* 이부분은 채팅 메시지를 실시간으로 주고 받는 경우 */}
-          {/* 채팅 메시지를 따로 tailwind-styles-components 로 분리 시켜서 작업 필요 할 듯 */}
-          {/* {messages.map((message, index) => (
-            <div
-              className={`chat ${
-                loginUserInfo.userNickName === message.sender
-                  ? "chat-end"
-                  : "chat-start"
-              } `}
-              key={index}
-            >
-              <div className="chat-image avatar">
-                <div className="w-10 rounded-full">
-                  <img
-                    src={loginUserInfo.userProfileImage} // 로그인한 유저 이미지 말고 상대방의 유저 이미지도 필요할 듯..
-                    alt="프로필 이미지"
-                  />
-                </div>
-              </div>
-              <div className="chat-header font-medium">{message.sender}</div>
-              <div
-                className={`flex ${
-                  loginUserInfo.userNickName === message.sender
-                    ? "flex-row-reverse"
-                    : ""
-                } items-end`}
-              >
-                <div
-                  className={`chat-bubble ${
-                    loginUserInfo.userNickName === message.sender
-                      ? "bg-green-500"
-                      : ""
-                  }`}
-                >
-                  {message.message}
-                </div>
-                <time className="mx-1.5 chat-footer text-xs opacity-50">
-                  12:45
-                </time>
-              </div>
-            </div>
-          ))} */}
         </div>
         <label className="relative">
           <input
@@ -286,12 +270,22 @@ const Chat: React.FC = () => {
       </div>
       <div className="flex justify-end py-5 mt-3.5 border-t border-solid border-black">
         {rentalProduct && (
-          <Link
-            to={`/product/pay/${rentalProduct.id}`}
-            className="btn btn-primary w-28"
-          >
-            랜탈하기
-          </Link>
+          <>
+            <Link
+              to={`/product/pay/${rentalProduct.id}`}
+              className="btn btn-primary w-28 mt-5"
+            >
+              랜탈하기
+            </Link>
+            <div>
+              <button
+                onClick={leaveChatRoom}
+                className="btn btn-error w-28 ml-4 mt-5"
+              >
+                채팅방 나가기
+              </button>
+            </div>
+          </>
         )}
       </div>
     </div>

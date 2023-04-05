@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getProduct } from "../api/rentalProduct/rentalProductAPI";
@@ -9,11 +9,9 @@ import profileSample from "../assets/profile_sample.png";
 import { maxRentalPeriod, categoryName } from "../utils/converter";
 import { RentalProductDetail } from "../types/product";
 import moment from "moment";
-import ReactDOM from "react-dom";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Carousel } from "react-responsive-carousel";
 import { userInfo } from "../atoms/userInfo";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { token } from "../atoms/token";
 import axios from "axios";
 
@@ -68,24 +66,28 @@ export default function RentalDetailPage() {
     async () => {
       return await axios({
         method: "post",
-        // url: "https://rentalmarket.monster/chat/room",
-        url: "http://43.200.141.247:8080/chat/room",
-        headers: { Authorization: accessToken },
+        url: "https://rentalmarket.monster/chat/room",
+        // url: "http://43.200.141.247:8080/chat/room",
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
         data: {
-          receiverNickname: productDetail.nickname,
-          senderNickname: userNickName,
+          // receiverNickname: productDetail.nickname,
+          receiverNickname: data.nickname, // 상품 판매자
+          senderNickname: userNickName, // 상품 구매자
           product: {
-            ...productDetail,
-            sellerId: {
-              email: productDetail.sellerId, //sellers
-              nickName: productDetail.nickname, //sellers
-              region: productDetail.wishRegion, //sellers
-              title: productDetail.title, // 빼는거고
-              //TODO: 아래가 오류나서 안가네요...
-              //imageUrl: data.imageURLs[0], //seller 의 profile?? 상품 이미지?
-            },
+            id: data.id, // 상품ID
+            senderId: data.sellerId, // 판매자 email
+            nickname: data.nickname, // 판매자 nickName
+            content: data.content, // 상품 content
+            unitPrice: data.unitPrice, // 상품 unitPrice
+            categoryName: data.categoryName, // 상품 categoryName
+            mainImageURL: data.imageUrls[0], // 상품 대표 이미지
+            maxRentalPeriod: data.maxRentalPeriod, // 상품 maxRentalPeriod
+            status: data.status, // 상품 랜탈 상태
+            withRegion: data.wishRegion, // 거래 장소
           },
-          // rentalRequest: rentalRequest,
         },
       }).then((res) => res.data);
     },
