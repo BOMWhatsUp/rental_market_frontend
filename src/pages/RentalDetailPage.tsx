@@ -68,7 +68,8 @@ export default function RentalDetailPage() {
     async () => {
       return await axios({
         method: "post",
-        url: "https://rentalmarket.monster/chat/room",
+        // url: "https://rentalmarket.monster/chat/room",
+        url: "http://43.200.141.247:8080/chat/room",
         headers: { Authorization: accessToken },
         data: {
           receiverNickname: productDetail.nickname,

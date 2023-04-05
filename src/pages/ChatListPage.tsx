@@ -38,7 +38,8 @@ export default function ChatListPage() {
     async () => {
       return await axios
         .get(
-          `https://rentalmarket.monster/chat/list?nickname=${userNickName}`,
+          // `https://rentalmarket.monster/chat/list?nickname=${userNickName}`,
+          `http://43.200.141.247:8080/chat/list?nickname=${userNickName}`,
           config
         )
         .then((res) => {

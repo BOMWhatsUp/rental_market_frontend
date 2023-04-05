@@ -38,8 +38,8 @@ export default function RentalPayPage() {
       days: number;
       totalPrice: number;
     }) => addTransaction(form),
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: (response) => {
+      console.log(response);
       //성공코드, 방이름 , 구매하겠습니다 메세지
       //TODO: 정후님~ 여기에 채팅 기능 연결부탁드려요! -여기는 아직
       // 방있는지 없는지 확인, 있으면 채팅방 입장 없으면 생성,
@@ -53,6 +53,33 @@ export default function RentalPayPage() {
       //sellerId,
       //nickname
       //userId=buyer id
+
+      const result = axios.post(
+        `http://43.200.141.247:8080/chat/transaction`,
+        {
+          roomId: 6,
+          userNickname: userNickName,
+          message: data.message,
+        },
+        { headers: { Authorization: accessToken } }
+      );
+
+      console.log(response);
+      // const response = axios.post(
+      //   "http://43.200.141.247:8080/chat/transaction",
+      //   {
+      //     roomId: data.roomId,
+      //     userNickname: userNickName,
+      //     message: data.message,
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: accessToken,
+      //     },
+      //   }
+      // );
+
+      // navigate(`/chat/room/${roomId}?senderId=${userNickName}`)
     },
   });
 
@@ -153,7 +180,8 @@ export default function RentalPayPage() {
     async () => {
       return await axios({
         method: "post",
-        url: "https://rentalmarket.monster/chat/room",
+        // url: "https://rentalmarket.monster/chat/room",
+        url: "http://43.200.141.247:8080/chat/room",
         headers: { Authorization: accessToken },
         data: {
           receiverNickname: productPay.nickname,

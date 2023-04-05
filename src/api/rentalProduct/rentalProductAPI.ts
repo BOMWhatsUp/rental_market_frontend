@@ -6,7 +6,9 @@ import {
   AddProductForm,
 } from "../../types/product";
 import { useMutation } from "react-query";
-
+import Stomp from "stompjs";
+import SockJS from "sockjs-client";
+import { useState } from "react";
 //create
 //TODO: 연동 확인해야함
 export const addProduct = async ({ formData, accessToken }: AddProductForm) => {
@@ -155,6 +157,7 @@ export const updateSellerProductHistory = async (form: {
   console.log(form);
   const res = await API.prod.put(
     `https://rentalmarket.monster/rental/${form.historyId}`,
+    // `http://43.200.141.247:8080/${form.historyId}`,
     {},
     {
       headers: {
@@ -166,20 +169,72 @@ export const updateSellerProductHistory = async (form: {
 };
 
 export const updateBuyerProductHistory = async (form: {
-  historyId: string;
-  trackingInfo: string;
+  // historyId: string;
+  // trackingInfo: string;
   accessToken: string;
+  // productId: string;
+  // userNickname: string;
+  // sellerNickName: string;
+  // returnYn: boolean;
+
+  id: number; // historyId
+  message: string;
+  productId: {
+    id: number; // productId
+    senderId: string;
+    nickname: string;
+    content: string;
+    unitPrice: number;
+    categoryName: string;
+    mainImageURL: string;
+    maxRentalPeriod: string;
+    status: string;
+    withRegion: string;
+  };
+  userNickname: string;
+  sellerNickname: string;
+  returnYn: boolean;
 }) => {
   console.log(form);
+
   const res = await API.prod.post(
     //TODO: 주소확인 필요
-    `https://rentalmarket.monster/history/buyer/${form.historyId}`,
+    // `https://rentalmarket.monster/history/buyer/${form.historyId}`,
+    `http://43.200.141.247:8080/chat/return`,
+    {
+      // historyId: form.historyId,
+      // message: form.trackingInfo,
+      // accessToken: form.accessToken,
+      // productId: form.productId,
+      // userNickname: form.userNickname,
+      // sellerNickName: form.sellerNickName,
+      // returnYn: form.returnYn,
+
+      id: 1, // historyId
+      message: form.message,
+      productId: {
+        id: 1, // productId
+        senderId: "aaa123@gmail.com",
+        nickname: "레모나",
+        content: "content",
+        unitPrice: 600,
+        categoryName: "HOME",
+        mainImageURL: "998f15eb-c565-4f87-a",
+        maxRentalPeriod: "ONEMONTH",
+        status: "WAITING",
+        withRegion: "서울시 중랑구",
+      },
+      userNickname: "라라라",
+      sellerNickname: "레모나",
+      returnYn: false,
+    },
     {
       headers: {
         Authorization: form.accessToken,
       },
     }
   );
+
   return res;
 };
 

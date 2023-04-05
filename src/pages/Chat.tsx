@@ -54,7 +54,8 @@ const Chat: React.FC = () => {
     async () => {
       return await axios
         .get(
-          `https://rentalmarket.monster/chat/room?roomId=${roomId}&nickname=${userNickName}`,
+          // `https://rentalmarket.monster/chat/room?roomId=${roomId}&nickname=${userNickName}`,
+          `http://43.200.141.247:8080/chat/room?roomId=${roomId}&nickname=${userNickName}`,
           config
         )
         .then((res) => {
@@ -103,7 +104,8 @@ const Chat: React.FC = () => {
     let stompClient: Stomp.Client | null = null;
     // 웹소켓 연결을 수립합니다.
     //const socket = new SockJS("http://43.200.141.247:8080/chatting");
-    const socket = new SockJS("https://rentalmarket.monster/chatting");
+    // const socket = new SockJS("https://rentalmarket.monster/chatting");
+    const socket = new SockJS("http://43.200.141.247:8080/chatting");
     // console.log(socket);
     try {
       stompClient = Stomp.over(socket);
@@ -132,6 +134,7 @@ const Chat: React.FC = () => {
         console.log(message);
         const messageData = JSON.parse(message.body) as Message;
         console.log("messageData" + messageData);
+
         setMessages((prevMessages) => [
           ...prevMessages,
           {
