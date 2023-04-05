@@ -115,7 +115,7 @@ export default function MainPage() {
         return nextPage;
       },
       onSuccess(data) {
-        console.log(filter);
+        console.log(filter, data);
         //console.log("success", data);
         //setPageData((prev) => ({ ...prev, ...data }));
       },

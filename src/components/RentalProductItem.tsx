@@ -56,20 +56,18 @@ ProductItemProps) {
             <p className="line-clamp-2 leading-5 min-h-[2.5rem]">
               {product.content}
             </p>
+            {product.returnDate && (
+              <p className="text-xs text-error">
+                * 반납 까지
+                {moment(product.returnDate).from(Date.now(), true)} 남음
+              </p>
+            )}
             <div className="card-actions justify-between items-center">
               <div className="flex flex-col md:flex-row md:items-center">
                 <span>
                   {product.unitPrice}원 / 일 ∙ 최대{" "}
                   {maxRentalPeriod(product.maxRentalPeriod)} 일
                 </span>
-                {product.returnDate ? (
-                  <span className="text-xs text-error md:ml-3">
-                    * 반납 까지
-                    {moment(product.returnDate).from(Date.now(), true)} 남음
-                  </span>
-                ) : (
-                  ""
-                )}
               </div>
               <div>
                 <Link

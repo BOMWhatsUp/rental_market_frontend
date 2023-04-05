@@ -25,8 +25,6 @@ export default function RentalCreatePage() {
   //const { rentalProductFormMutation } = useProduct();
 
   const rentalProductFormMutation = useMutation({
-    //mutationFn: (data: FormData) => addRentalProductForm(data),
-    //mutationFn: (data: FormData) => addProduct(data),
     mutationFn: (data: AddProductForm) => addProduct(data),
   });
 
@@ -64,6 +62,15 @@ export default function RentalCreatePage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.persist();
+    const isInputsFilled = Object.values(userInputs).every((input) =>
+      Boolean(input)
+    );
+
+    if (!isInputsFilled) {
+      alert("🚨 모든 입력값을 채워주세요 🚨");
+      return;
+    }
+
     const {
       title,
       content,
@@ -85,7 +92,8 @@ export default function RentalCreatePage() {
     };
 
     const formData = new FormData();
-    for (let i = 0; i < showImages.length; i++) {
+    let imageLength = showImages?.length > 3 ? 3 : showImages?.length;
+    for (let i = 0; i < imageLength; i++) {
       formData.append("imageFiles", showImages[i].file);
     }
     const thumbnailIndex = { thumbnailIndex: currentThumbnailIndex };
@@ -130,6 +138,9 @@ export default function RentalCreatePage() {
           });
           navigte("/main");
         },
+        onError: (data) => {
+          alert("에러발생! 입력값 확인 및 파일 용량을 확인해주세요.😓");
+        },
       });
     }
 
@@ -151,8 +162,8 @@ export default function RentalCreatePage() {
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const imageLists = e.target.files;
     //let imageUrlLists: any[] = [...showImages];
-
-    for (let i = 0; i < imageLists!.length; i++) {
+    let imageLength = imageLists?.length > 3 ? 3 : imageLists?.length;
+    for (let i = 0; i < imageLength; i++) {
       const currentImageUrl: any = URL.createObjectURL(imageLists![i]);
       const imagePreview: ImagePreview = {
         index: i,
@@ -181,6 +192,11 @@ export default function RentalCreatePage() {
   const handleSelectAddress = (address: string) => {
     setUserInputs({ ...userInputs, ["wishRegion"]: address });
   };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (isNaN(Number(e.key)) && e.key !== "Backspace") {
+      e.preventDefault();
+    }
+  };
   return (
     <>
       <h1 className="text-primary font-extrabold text-center text-3xl mb-5">
@@ -202,7 +218,7 @@ export default function RentalCreatePage() {
               <option value="" disabled>
                 -- 상품 카테고리 선택--
               </option>
-              <option value="ClOTHING">의류</option>
+              <option value="CLOTHING">의류</option>
               <option value="HOME">생활가전</option>
               <option value="FURNITURE">가구/인테리어</option>
               <option value="DIGITAL">디지털기기</option>
@@ -249,6 +265,7 @@ export default function RentalCreatePage() {
               name="unitPrice"
               onChange={handleChange}
               value={userInputs.unitPrice}
+              onKeyPress={handleKeyDown}
             />
           </div>
           <div className="form-control w-full max-w-sm">
@@ -328,7 +345,9 @@ export default function RentalCreatePage() {
               </div>
             ))}
           </div>
-
+          <p className="text-xs text-info text-start">
+            * 이미지 파일은 총합 10MB 이하만 업로드 가능합니다.
+          </p>
           <button type="submit" className="btn btn-primary btn-wide mt-5">
             렌탈상품 생성
           </button>

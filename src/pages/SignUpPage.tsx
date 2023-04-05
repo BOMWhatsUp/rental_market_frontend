@@ -138,137 +138,138 @@ export default function SignUpPage() {
     <div className="flex flex-col items-center">
       <div className="text-center">
         <h2 className="text-center p-8">
-          <div className="text-4xl text-blue-600 font-bold tracking-wide">
-            렌탈마켓
-          </div>
-          <div className="text-4xl text-blue-600 font-bold tracking-wide">
+          <div className="text-4xl text-primary font-bold tracking-wide">
             회원가입
           </div>
         </h2>
 
         <form onSubmit={onSubmithandler}>
-          <div className="form-control w-full max-w-xs h-28">
-            <label className="label">
-              <span className="label-text">이메일</span>
-            </label>
-            <div className="flex w-10/12 md:w-full">
-              <input
-                name="email"
-                type="text"
-                placeholder="email"
-                className={`mr-3 input input-bordered w-11/12  max-w-xs  focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
-                  errorData["email"].length === 0
-                    ? ""
-                    : errorData["email"] === true
-                    ? ""
-                    : "border-red-500"
-                }`}
-                value={signUpInfo["email"]}
-                onBlur={onChangeHandler}
-                onChange={onChangeHandler}
-                autoFocus
-              />
-              <button
-                className={`btn ${
-                  errorData["email"] === true ? "" : "btn-disabled"
-                }`}
-                type="button"
-                onClick={
-                  () =>
-                    onClickHandler({ key: "email", value: signUpInfo["email"] })
-                  // setSignUpInfoCheck({ email: false, nickName: "" })
-                }
-              >
-                중복확인
-              </button>
-            </div>
+          <div className="flex flex-col">
+            <div className="form-control w-full h-28">
+              <label className="label">
+                <span className="label-text">이메일</span>
+              </label>
+              <div className="flex w-10/12 md:w-full">
+                <input
+                  name="email"
+                  type="text"
+                  placeholder="email"
+                  className={`mr-3 input input-bordered w-11/12  max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
+                    errorData["email"].length === 0
+                      ? ""
+                      : errorData["email"] === true
+                      ? ""
+                      : "border-red-500"
+                  }`}
+                  value={signUpInfo["email"]}
+                  onBlur={onChangeHandler}
+                  onChange={onChangeHandler}
+                  autoFocus
+                />
+                <button
+                  className={`btn ${
+                    errorData["email"] === true ? "" : "btn-disabled"
+                  }`}
+                  type="button"
+                  onClick={
+                    () =>
+                      onClickHandler({
+                        key: "email",
+                        value: signUpInfo["email"],
+                      })
+                    // setSignUpInfoCheck({ email: false, nickName: "" })
+                  }
+                >
+                  중복확인
+                </button>
+              </div>
 
-            <label className="label">
-              <span
-                className={`label-text-alt ${
-                  signUpInfoCheck.email !== true &&
-                  errorData.email === true &&
-                  signUpInfoCheck.email !== ""
-                    ? "text-accent"
-                    : "text-error"
-                } `}
-              >
-                {errorData !== true ? ERROR_MSG[errorData["email"]] : ""}
-
-                {signUpInfoCheck.email === true &&
-                errorData.email === true &&
-                signUpInfoCheck.email !== ""
-                  ? CHECK_MSG["invalidEmail"]
-                  : signUpInfoCheck.email !== true &&
+              <label className="label">
+                <span
+                  className={`label-text-alt ${
+                    signUpInfoCheck.email !== true &&
                     errorData.email === true &&
                     signUpInfoCheck.email !== ""
-                  ? CHECK_MSG["isValidEmail"]
-                  : ""}
-              </span>
-            </label>
-          </div>
-          <div className="form-control w-full max-w-xs shrink-0 h-28">
-            <label className="label">
-              <span className="label-text">닉네임</span>
-            </label>
-            <div className="flex w-10/12 md:w-full">
-              <input
-                name="nickName"
-                type="text"
-                placeholder="닉네임"
-                className={`mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
-                  errorData["nickName"].length === 0
-                    ? ""
-                    : errorData["nickName"] === true
-                    ? ""
-                    : "border-red-500"
-                }`}
-                value={signUpInfo["nickName"]}
-                onBlur={onChangeHandler}
-                onChange={onChangeHandler}
-              />
-              <button
-                className={`btn ${
-                  errorData["nickName"] === true ? "" : "btn-disabled"
-                }`}
-                type="button"
-                onClick={
-                  () =>
-                    onClickHandler({
-                      key: "nickName",
-                      value: signUpInfo["nickName"],
-                    })
-                  // setSignUpInfoCheck({ email: false, nickName: false })
-                }
-              >
-                중복확인
-              </button>
-            </div>
-            <label className="label">
-              <span
-                className={`label-text-alt ${
-                  signUpInfoCheck.nickName !== true &&
-                  errorData.nickName === true &&
-                  signUpInfoCheck.nickName !== ""
-                    ? "text-accent"
-                    : "text-error"
-                } `}
-              >
-                {errorData !== true ? ERROR_MSG[errorData["nickName"]] : ""}
+                      ? "text-accent"
+                      : "text-error"
+                  } `}
+                >
+                  {errorData !== true ? ERROR_MSG[errorData["email"]] : ""}
 
-                {signUpInfoCheck.nickName === true &&
-                errorData.nickName === true &&
-                signUpInfoCheck.nickName !== ""
-                  ? CHECK_MSG["invalidNickName"]
-                  : signUpInfoCheck.nickName !== true &&
+                  {signUpInfoCheck.email === true &&
+                  errorData.email === true &&
+                  signUpInfoCheck.email !== ""
+                    ? CHECK_MSG["invalidEmail"]
+                    : signUpInfoCheck.email !== true &&
+                      errorData.email === true &&
+                      signUpInfoCheck.email !== ""
+                    ? CHECK_MSG["isValidEmail"]
+                    : ""}
+                </span>
+              </label>
+            </div>
+            <div className="form-control w-full max-w-sm shrink-0 h-28">
+              <label className="label">
+                <span className="label-text">닉네임</span>
+              </label>
+              <div className="flex w-10/12 md:w-full">
+                <input
+                  name="nickName"
+                  type="text"
+                  placeholder="닉네임"
+                  className={`mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
+                    errorData["nickName"].length === 0
+                      ? ""
+                      : errorData["nickName"] === true
+                      ? ""
+                      : "border-red-500"
+                  }`}
+                  value={signUpInfo["nickName"]}
+                  onBlur={onChangeHandler}
+                  onChange={onChangeHandler}
+                />
+                <button
+                  className={`btn ${
+                    errorData["nickName"] === true ? "" : "btn-disabled"
+                  }`}
+                  type="button"
+                  onClick={
+                    () =>
+                      onClickHandler({
+                        key: "nickName",
+                        value: signUpInfo["nickName"],
+                      })
+                    // setSignUpInfoCheck({ email: false, nickName: false })
+                  }
+                >
+                  중복확인
+                </button>
+              </div>
+              <label className="label">
+                <span
+                  className={`label-text-alt ${
+                    signUpInfoCheck.nickName !== true &&
                     errorData.nickName === true &&
                     signUpInfoCheck.nickName !== ""
-                  ? CHECK_MSG["isValidNickName"]
-                  : ""}
-              </span>
-            </label>
-          </div>
-          {/* <div className="form-control h-28">
+                      ? "text-accent"
+                      : "text-error"
+                  } `}
+                >
+                  {errorData !== true ? ERROR_MSG[errorData["nickName"]] : ""}
+
+                  {signUpInfoCheck.nickName === true &&
+                  errorData.nickName === true &&
+                  signUpInfoCheck.nickName !== ""
+                    ? CHECK_MSG["invalidNickName"]
+                    : signUpInfoCheck.nickName !== true &&
+                      errorData.nickName === true &&
+                      signUpInfoCheck.nickName !== ""
+                    ? CHECK_MSG["isValidNickName"]
+                    : ""}
+                </span>
+              </label>
+            </div>
+            {/* <div className="form-control h-28">
             <label className="label">
               <span className="label-text">주요 거래 장소</span>
             </label>
@@ -314,95 +315,96 @@ export default function SignUpPage() {
             </label>
           </div> */}
 
-          {/* 테스트 */}
-          <div className="flex items-end w-full max-w-sm mb-6">
-            <div className="w-full">
+            {/* 테스트 */}
+            <div className="flex items-end w-full max-w-sm mb-6">
+              <div className="w-full">
+                <label className="label">
+                  <span className="label-text">주요 거래 장소</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="ex. 서울시 종로구"
+                  className="mr-1 input input-bordered w-[320px] focus:outline-none shrink-0"
+                  name="region"
+                  // onChange={() => }
+                  value={signUpInfo.region}
+                  // disabled
+                  readOnly={true}
+                />
+              </div>
+              <DaumAddressInput
+                onSelectAddress={handleSelectAddress}
+                isFullAddress={false}
+              />
+            </div>
+            {/* 테스트 */}
+            <div className="form-control w-full h-28">
               <label className="label">
-                <span className="label-text">주요 거래 장소</span>
+                <span className="label-text">비밀번호</span>
               </label>
-              <input
-                type="text"
-                placeholder="ex. 서울시 종로구"
-                className="mr-1 input input-bordered w-[294px] max-w-xs focus:outline-none shrink-0"
-                name="region"
-                // onChange={() => }
-                value={signUpInfo.region}
-                // disabled
-                readOnly={true}
-              />
+              <div className="flex w-10/12 md:w-full">
+                <input
+                  name="password"
+                  type="password"
+                  placeholder="비밀번호"
+                  className={`mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
+                    errorData["password"].length === 0
+                      ? ""
+                      : errorData["password"] === true
+                      ? ""
+                      : "border-red-500"
+                  }`}
+                  value={signUpInfo["password"]}
+                  onBlur={onChangeHandler}
+                  onChange={onChangeHandler}
+                  autoComplete="off"
+                />
+              </div>
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {errorData !== true ? ERROR_MSG[errorData["password"]] : ""}
+                </span>
+              </label>
             </div>
-            <DaumAddressInput
-              onSelectAddress={handleSelectAddress}
-              isFullAddress={false}
-            />
-          </div>
-          {/* 테스트 */}
-          <div className="form-control w-full max-w-xs h-28">
-            <label className="label">
-              <span className="label-text">비밀번호</span>
-            </label>
-            <div className="flex w-10/12 md:w-full">
-              <input
-                name="password"
-                type="password"
-                placeholder="비밀번호"
-                className={`mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
-                  errorData["password"].length === 0
-                    ? ""
-                    : errorData["password"] === true
-                    ? ""
-                    : "border-red-500"
-                }`}
-                value={signUpInfo["password"]}
-                onBlur={onChangeHandler}
-                onChange={onChangeHandler}
-                autoComplete="off"
-              />
+            <div className="form-control w-full max-w-sm mb-8 h-20">
+              <label className="label">
+                <span className="label-text">비밀번호 확인</span>
+              </label>
+              <div className="flex w-10/12 ">
+                <input
+                  name="passwordCheck"
+                  type="password"
+                  placeholder="비밀번호 확인"
+                  className={`input input-bordered w-full focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
+                    errorData["passwordCheck"].length === 0
+                      ? ""
+                      : errorData["passwordCheck"] === true
+                      ? ""
+                      : "border-red-500"
+                  }`}
+                  value={signUpInfo["passwordCheck"]}
+                  onBlur={onChangeHandler}
+                  onChange={onChangeHandler}
+                  autoComplete="off"
+                />
+              </div>
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {errorData !== true
+                    ? ERROR_MSG[errorData["passwordCheck"]]
+                    : ""}
+                </span>
+              </label>
             </div>
-            <label className="label">
-              <span className="label-text-alt text-error">
-                {errorData !== true ? ERROR_MSG[errorData["password"]] : ""}
-              </span>
-            </label>
+            <button
+              type="submit"
+              className={`btn btn-wide mt-5 ${
+                isValid && isValidCheck ? "btn-primary" : "btn-disabled"
+              } `}
+            >
+              회원가입
+            </button>
           </div>
-          <div className="form-control w-full max-w-xs mb-8 h-20">
-            <label className="label">
-              <span className="label-text">비밀번호 확인</span>
-            </label>
-            <div className="flex w-10/12 md:w-full">
-              <input
-                name="passwordCheck"
-                type="password"
-                placeholder="비밀번호 확인"
-                className={`mr-3 input input-bordered w-11/12 max-w-xs focus:outline-none focus:border-blue-500 focus:border-1 shrink-0 ${
-                  errorData["passwordCheck"].length === 0
-                    ? ""
-                    : errorData["passwordCheck"] === true
-                    ? ""
-                    : "border-red-500"
-                }`}
-                value={signUpInfo["passwordCheck"]}
-                onBlur={onChangeHandler}
-                onChange={onChangeHandler}
-                autoComplete="off"
-              />
-            </div>
-            <label className="label">
-              <span className="label-text-alt text-error">
-                {errorData !== true
-                  ? ERROR_MSG[errorData["passwordCheck"]]
-                  : ""}
-              </span>
-            </label>
-          </div>
-          <button
-            type="submit"
-            className={`btn ${
-              isValid && isValidCheck ? "btn-primary" : "btn-disabled"
-            } w-28 `}
-          >
-            회원가입
-          </button>
         </form>
       </div>
     </div>

@@ -24,9 +24,11 @@ export default function ProductHistoryList({
   onDeleteHistory,
   onUpdateHistory,
 }: ProductHistoryListProps) {
+  console.log(data);
   return (
     <div>
       {data === null && <div>데이터 없음 테스트</div>}
+
       {isSuccess &&
         data &&
         data!.pages.map((page, index) =>
