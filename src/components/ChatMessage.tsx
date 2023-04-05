@@ -2,11 +2,12 @@ import { useRecoilValue } from "recoil";
 import { userInfo } from "../atoms/userInfo";
 import moment from "moment";
 export const ChatMessage = ({ prevChat }: any) => {
+  console.log(prevChat);
   const loginUserInfo = useRecoilValue(userInfo);
   return (
     <div
       className={`chat ${
-        loginUserInfo.userNickName === prevChat.userName
+        loginUserInfo.userNickName === prevChat.nickname
           ? "chat-end"
           : "chat-start"
       } `}
@@ -23,14 +24,14 @@ export const ChatMessage = ({ prevChat }: any) => {
       <div className="chat-header font-medium">{prevChat.userName}</div>
       <div
         className={`flex ${
-          loginUserInfo.userNickName === prevChat.userName
+          loginUserInfo.userNickName === prevChat.nickname
             ? "flex-row-reverse"
             : ""
         } items-end`}
       >
         <div
           className={`chat-bubble ${
-            loginUserInfo.userNickName === prevChat.userName
+            loginUserInfo.userNickName === prevChat.nickname
               ? "bg-green-500"
               : ""
           }`}
